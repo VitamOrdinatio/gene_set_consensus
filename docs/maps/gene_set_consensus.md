@@ -1,14 +1,16 @@
 # Milestone Map: gene_set_consensus (GSC)
 
 ## Purpose
-Provide a system to aggregate, normalize, and score gene-level evidence from multiple sources, producing:
-    - curated gene-level evidence
-    - consensus-scored gene-level evidence
-    - provenance-aware gene-level annotations
+
+Provide a phenotype-aware system to aggregate, normalize, and score gene-level evidence from multiple phenotype-associated sources, producing:
+- curated phenotype-scoped gene-level evidence
+- consensus-scored phenotype-specific gene-level evidence
+- provenance-aware gene-level annotations
+
 These outputs serve as overlay evidence for:
-    - VAP (annotation context) 
-    - RSP (functional interpretation) 
-    - RDGP (prioritization weighting) 
+  - VAP (annotation context) 
+  - RSP (functional interpretation) 
+  - RDGP (prioritization weighting) 
 
 GSC converts heterogeneous gene sets into structured, comparable, and auditable gene-level evidence.
 
@@ -26,7 +28,9 @@ GSC converts heterogeneous gene sets into structured, comparable, and auditable 
 - "gene-level evidence" refers to a gene annotated with one or more supporting sources and associated metadata.
 - "gene sets" refer to collections of genes derived from a single source prior to aggregation.
 
-- GSC gene-level evidence is global (not sample-specific) and is applied uniformly across samples unless versioned otherwise
+- GSC gene-level evidence is phenotype-scoped and non-sample-specific.
+
+- Within a given phenotype context, the same GSC evidence may be applied uniformly across samples unless versioned otherwise.
 
 ---
 
@@ -47,6 +51,7 @@ Provenance is preserved in GSC outputs but downstream systems may consume summar
 At minimum, GSC operates on a gene-centric representation:
 
 Fields:
+- phenotype
 - gene_symbol
 - gene_id (if available)
 - source_list
@@ -54,12 +59,17 @@ Fields:
 - consensus_score
 - provenance (source names, timestamps)
 
+Conceptually, define each record as:
+
+`(phenotype, gene_id)`
+
 ### Example Record (v1)
 
 A single gene-level evidence record should resemble:
 
-- gene_symbol: TP53
-- gene_id: ENSG00000141510
+- phenotype: mitochondrial disease
+- gene_symbol: POLG
+- gene_id: ENSG00000140521
 - source_list: ["OMIM", "ClinVar", "Literature_Study_X"]
 - source_count: 3
 - consensus_score: 3
@@ -75,9 +85,11 @@ A single gene-level evidence record should resemble:
 
 ## Standard Output Format (v1)
 
-All downstream integrations (VDB, RSP, RDGP) should consume:
+All downstream integrations (VDB, RSP, RDGP) should consume at minimum:
 
+- phenotype
 - gene_symbol
+- gene_id (if available)
 - consensus_score
 - source_list
 - source_count
@@ -142,9 +154,14 @@ GSC moves from generic aggregation → clinically contextualized gene-level evid
 Implement initial deterministic scoring:
 
 - base score = number of supporting sources
-- optional weighting:
-    curated sources > literature-derived > automated
 - preserve raw counts alongside score
+- explicit authority-aware weighting:
+
+```text
+curated sources > literature-derived > automated
+```
+
+At least one explicit weighting scheme must be defined per phenotype configuration in v1.
 
 Important:
 - scoring must be explainable
@@ -187,6 +204,8 @@ GSC outputs must be compatible with VDB gene identifiers (gene_symbol or gene_id
 
 This enables GSC outputs to be directly joined with variant-level evidence in VDB for downstream prioritization workflows.
 
+GSC integrates with VDB only at the gene-linked overlay layer and does not participate in variant-to-gene aggregation.
+
 Enable:
 - linking gene-level evidence to VDB gene table 
 - ability to: 
@@ -202,6 +221,8 @@ GSC becomes data-aware, not standalone
 ### M7 — Integration with RSP (Functional Context)
 
 GSC outputs must be compatible with RSP gene identifiers (gene_symbol or gene_id)
+
+Any RSP-derived functional evidence incorporated into GSC must remain phenotype-scoped and must not convert GSC into a sample-specific reasoning layer.
 
 Add:
 - ability to incorporate: 
@@ -257,9 +278,9 @@ System is defensible and transparent
 ## Release Gate (Public v1.0)
 
 GSC is portfolio-ready when:
-- supports multi-source aggregation 
+- supports phenotype-specific multi-source aggregation
 - includes GTR integration 
-- produces consensus gene-level evidence 
+- produces phenotype-scoped consensus gene-level evidence
 - tracks provenance per gene 
 - generates versioned outputs 
 - integrates (at least minimally) with VDB 
@@ -291,7 +312,7 @@ This repo is NOT:
 “a list of genes”
 
 The gene_set_consensus (GSC) repo is 
-`a system for managing uncertainty in gene-level evidence across heterogeneous sources.`
+`a system for managing uncertainty for phenotype-scoped gene-level evidence across heterogeneous sources.`
 
 ---
 
@@ -300,7 +321,7 @@ The gene_set_consensus (GSC) repo is
 
 ```text
 GSC → provides:
-    gene-level evidence
+    phenotype-scoped gene-level evidence
     consensus scores
     provenance
 
@@ -313,11 +334,13 @@ Integrated via:
     VDB (central hub)
 ```
 
+RDGP must consume GSC outputs within an explicitly selected phenotype context.
+
 ---
 
 
 ## One Sentence Summary
-GSC answers: “Which genes have supporting evidence, and how strong is that support?”
+GSC answers: “For any particular phenotype, which genes are likely major contributors, and how strong is that supporting evidence?”
 
 ---
 
