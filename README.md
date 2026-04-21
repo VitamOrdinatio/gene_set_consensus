@@ -1,89 +1,228 @@
-# ================================
-# root/README.md
-# ================================
-
 # gene_set_consensus
 
 ## Overview
 
-gene_set_consensus is a bioinformatics utility for constructing evidence-aware consensus gene rankings for a given phenotype.
+`gene_set_consensus` (GSC) is a bioinformatics system for constructing **phenotype-specific, evidence-weighted gene-level evidence models** by integrating multiple heterogeneous gene lists into a unified, provenance-aware consensus framework.
 
-It aggregates multiple gene lists and produces a unified scoring framework that reflects:
+Unlike enrichment tools that *consume* gene sets, GSC is designed to **construct, evaluate, and version gene sets themselves**.
 
-- source quality
+It produces gene-level evidence models that reflect:
 - cross-source agreement
-- traceable provenance
-- future integration of both literature-derived and GTR-derived evidence
+- source authority (e.g., curated vs literature-derived)
+- explicit weighting schemes
+- full provenance per gene
+- phenotype-specific context
 
 ---
 
 ## Motivation
 
-Variant interpretation depends on the quality of gene sets used to contextualize results.
+Downstream interpretation in genomics is only as strong as the gene sets used to 
+contextualize results.
 
-`Poor gene sets → noisy biological conclusions`
+```text
+Noisy gene sets → weak biological conclusions
+```
+Most RNA-seq and variant pipelines rely on predefined gene sets (e.g., GO terms, MSigDB collections), but these sets:
+    • are static snapshots 
+    • do not encode source-level authority 
+    • cannot be adapted to specific research contexts 
+    • do not preserve provenance at the gene level 
 
-This repository addresses that gap by providing a reproducible method for:
+GSC addresses this gap by providing a reproducible system for:
 
-`multi-source integration → consensus scoring → ranked gene output`
+```text
+multi-source integration → weighted consensus → phenotype-specific gene evidence
+```
+
 
 ---
 
 ## Core Concept
 
 ```text
-Multiple gene lists + evidence tiers (gold / silver / bronze) → weighted consensus gene ranking
+Multiple phenotype-associated gene lists
++ explicit source weighting (gold / silver / bronze)
++ provenance tracking
+→ consensus gene-level evidence model
 ```
 
 ---
 
-## Why This Repo Matters
+## What GSC Produces
 
-A sequencing pipeline can be technically correct and still produce weak biological conclusions if the interpretation scaffold is noisy.
+GSC does not produce a simple gene list.
 
-This repository is designed to improve the interpretation layer by answering:
+It produces a **gene-level evidence model**, where each gene is associated with:
 
-`Which genes have the strongest cross-source support for association with a phenotype?`
+- multiple independent sources of support
+- source-level provenance
+- explicit weighting based on source authority
+- a consensus score reflecting both support and agreement
+
+Conceptually:
+
+```text
+gene → {sources, weights, provenance} → consensus_score
+```
+
+This differs from traditional gene sets, where membership is binary:
+
+`gene ∈ set → yes/no`
+
+GSC instead represents:
+
+```text
+“How strongly is this gene supported for this phenotype,
+and by which sources?”
+```
+
+GSC explicitly preserves uncertainty.
+
+```text
+Conflicting or sparse evidence is not collapsed into a single decision,
+but retained as part of the gene-level evidence model.
+```
+
+This allows downstream systems to reason about:
+- agreement vs disagreement across sources
+- strength vs absence of evidence
+
+---
+
+
+## Key Distinction: GSC vs DEG → GO → MSigDB Workflows
+
+Traditional workflows vs. GSC:
+```text
+Traditional gene sets treat membership as binary:
+a gene is either in the set or not.
+
+GSC instead models how strongly a gene is supported
+for a phenotype, and why.
+```
+
+
+A common transcriptomics workflow is:
+
+```text
+DEG list → enrichment (e.g., g:Profiler) → GO / MSigDB terms
+```
+
+This answers:
+
+`“What biological processes are enriched in my gene list?”`
+
+GSC answers a fundamentally different question:
+
+```text
+“Are the affected genes already associated with a specific phenotype,
+and how strong is that evidence across multiple sources?”
+```
+
+
+---
+
+## Side-by-Side Comparison
+
+```text
+Feature
+GO / MSigDB / g:Profiler
+GSC
+Primary role
+Gene set consumption
+Gene set construction
+Input
+Gene list
+Multiple gene lists (sources)
+Output
+Enriched pathways / terms
+Weighted gene-level evidence
+Structure
+Ontology-driven (GO DAG)
+Evidence-driven (source aggregation)
+Weighting
+None (flat membership)
+Explicit (source tiers / weights)
+Provenance
+Limited
+Full per-gene source tracking
+Adaptability
+Static (versioned releases)
+Dynamic (config-driven per phenotype)
+Question answered
+“What biology is perturbed?”
+“Does this perturbation matter for phenotype X?”
+```
+
+---
+
+## Why This Matters
+GO and pathway analysis identify biological processes.
+GSC identifies phenotype relevance.
+
+These are complementary:
+
+```text
+GO → what biology is changing
+GSC → whether those changes are clinically meaningful
+```
 
 ---
 
 ## Example Use Case
 
-```text
-Phenotype: Epilepsy
+**Phenotype:** Epilepsy
 
-Sources:
+**Sources:**
 - ClinGen (gold)
 - OMIM (gold)
 - Genes4Epilepsy (silver)
+- (future) GTR-derived epilepsy gene associations
 
-Future source class:
-- GTR-derived epilepsy panel genes (clinical utilization evidence)
+**Output:**
+- Ranked genes by consensus_score
+- Weighted evidence contributions
+- Source provenance per gene
 
-Output:
-- Ranked genes with consensus scores
-- Supporting source provenance per gene
+**Interpretation:**
+
+```text
+This gene is not just present in a list—
+it is supported by multiple independent, high-confidence sources.
 ```
+
 
 ---
 
-## Installation
+## Relationship to Transcriptomics (RSP)
 
-```bash
-git clone <repo_url>
-cd gene_set_consensus
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+In a transcriptomics workflow:
+
+`RNA-seq → DEGs → GO/pathway analysis`
+
+GSC interacts with transcriptomic outputs in two ways:
+
+1) RSP → GSC
+   functional signals (e.g., DEG, network evidence) may be incorporated into GSC evidence models
+
+2) GSC → RSP
+   phenotype-scoped gene evidence may be used to interpret transcriptomic perturbations
+
+This bidirectional relationship enables integration of:
+    functional perturbation ↔ phenotype relevance
+
+This enables questions such as:
+
+```text
+Do EBV-induced transcriptional changes disproportionately affect
+genes associated with mitochondrial disease or epilepsy?
 ```
 
----
+This bridges:
 
-## Usage
+`functional perturbation → clinical relevance`
 
-```bash
-python scripts/build_consensus.py --config data/input/config.yaml
-```
 
 ---
 
@@ -92,37 +231,31 @@ python scripts/build_consensus.py --config data/input/config.yaml
 ### Config File (YAML)
 
 Defines:
-
-- phenotype
-- source files
-- source types
-- tier assignments
-- weights
+    • phenotype 
+    • source files 
+    • source types 
+    • tier assignments (e.g., gold/silver/bronze) 
+    • weighting scheme 
 
 ### Gene Lists (TSV)
 
 Minimum:
-- gene_symbol
+    • gene_symbol 
 
 Optional:
-- gene_id
-- ensembl_id
-- notes
+    • gene_id 
+    • ensembl_id 
+    • source metadata 
 
 ### v1 Source Model
+    • curated phenotype gene lists 
+    • literature-derived gene sets 
+    • manually assembled panels 
 
-v1 uses:
+Future:
+    • GTR-derived gene associations 
+    • automated ingestion pipelines 
 
-- user-supplied, provenance-preserving curated phenotype gene lists
-
-Typical examples include:
-
-- literature-derived gene lists
-- manually curated phenotype panels
-- exported tables from vetted resources such as ClinGen, OMIM, MitoCarta, or Genes4Epilepsy
-
-Future versions will add:
-- GTR-derived phenotype-associated gene lists
 
 ---
 
@@ -130,81 +263,97 @@ Future versions will add:
 
 `data/output/<phenotype>_consensus.tsv`
 
-Expected fields include:
+Fields include:
+    • phenotype 
+    • gene_symbol 
+    • weighted_score 
+    • consensus_score 
+    • supporting_sources 
+    • source_types 
+Each row represents:
 
-- gene_symbol
-- weighted_score
-- consensus_score
-- supporting_sources
-- source_types
-
----
+`(phenotype, gene_id) → evidence model`
 
 ## Scoring Philosophy
 
-`More independent support + higher evidence tiers → higher confidence`
+`More independent support + higher-confidence sources → higher consensus`
 
-v1 intentionally uses a simple, interpretable weighting system.
+Key principles:
+    • deterministic scoring 
+    • interpretable weighting 
+    • no hidden heuristics 
+    • full transparency of evidence sources 
 
----
-
-## Repository Structure
-
-```text
-data/
-docs/
-scripts/
-src/
-tests/
-```
 
 ---
 
-## Relationship to Other Projects
+## System Role
 
-This repository complements:
-
-```text
-variant_annotation_pipeline
-```
-
-by improving the interpretation layer of genomic analyses.
-
-Together, the two repositories answer:
+GSC operates within a larger system:
 
 ```text
 variant_annotation_pipeline → What variants are present?
-gene_set_consensus          → Which genes have the strongest evidence for phenotype relevance?
+rnaseq_pipeline (RSP)       → What biology is perturbed?
+gene_set_consensus (GSC)    → Which genes matter for this phenotype?
+rare_disease_gene_prioritization (RDGP) → What matters for this patient?
 ```
+
+GSC provides phenotype-scoped, gene-level evidence overlays that support downstream interpretation.
+
+
+---
+
+Why Not Just Use MSigDB?
+
+MSigDB provides curated gene sets, but:
+
+
+```text
+MSigDB provides predefined gene sets with binary membership.
+
+GSC constructs phenotype-specific gene evidence models that:
+- integrate multiple sources
+- weight sources by authority
+- preserve provenance per gene
+- produce interpretable consensus scores
+
+This allows downstream systems to reason about evidence strength,
+not just gene set membership.
+```
+
+GSC enables:
+    • combining multiple sources 
+    • weighting sources by authority 
+    • preserving provenance 
+    • adapting gene sets to specific research questions 
+    • versioning phenotype-specific evidence models 
+
 
 ---
 
 ## Roadmap
-
 ### v1
-- literature-driven consensus scoring
-- YAML-driven inputs
-- TSV outputs
-- provenance-preserving source integration
-
+    • multi-source integration 
+    • YAML-driven configuration 
+    • weighted consensus scoring 
+    • provenance tracking 
 ### v2
-- identifier harmonization
-- ClinGen / OMIM integration improvements
-- GTR phenotype mining and ingestion
-
+    • identifier harmonization 
+    • improved curated database integration 
+    • GTR ingestion 
 ### v3
-- integrated literature + GTR meta-scoring
-- citation-aware weighting
-- richer evidence modeling
-
----
+    • integrated literature + clinical evidence modeling 
+    • richer weighting schemes 
+    • tighter integration with transcriptomic (RSP) outputs 
+    • support for convergence analyses 
 
 ## Disclaimer
 
 ```text
 This tool does NOT establish causality.
-It ranks genes based on cross-source support and preserved provenance.
+It provides structured, weighted evidence of gene–phenotype association.
 ```
+
 
 ---
 
@@ -214,25 +363,13 @@ It ranks genes based on cross-source support and preserved provenance.
 Reproducibility > convenience
 Traceability > automation
 Signal > noise
+Evidence > assumption
 ```
+
 
 ---
 
 ## License
-
-`See LICENSE file.`
+See LICENSE file.
 
 ---
-
-# END of README.md
-
-
-
-
-
-
-
-
-
-
-

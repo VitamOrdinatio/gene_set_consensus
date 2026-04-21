@@ -308,11 +308,23 @@ GSC v1.0 (public)
 
 
 ## Critical Teaching Point
-This repo is NOT:
-“a list of genes”
 
-The gene_set_consensus (GSC) repo is 
-`a system for managing uncertainty for phenotype-scoped gene-level evidence across heterogeneous sources.`
+This repo is NOT:
+- a list of genes
+- an enrichment tool
+- a replacement for GO or MSigDB
+
+GSC operates at a different layer:
+
+```text
+it constructs gene-level evidence models from heterogeneous sources.
+```
+
+GSC is thus:
+
+```text
+a system for managing uncertainty for phenotype-scoped gene-level evidence across heterogeneous sources.
+```
 
 ---
 
