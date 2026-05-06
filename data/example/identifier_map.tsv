@@ -1,0 +1,9 @@
+input_gene_symbol	normalized_gene_symbol	gene_id	ensembl_gene_id	hgnc_id	alias_symbol	mapping_status	mapping_source	mapping_version
+POLG	POLG	ENSG00000140521	ENSG00000140521	HGNC:9179		resolved	example_static_map	v0.1
+TWNK	TWNK	ENSG00000107815	ENSG00000107815	HGNC:1160	C10orf2	resolved	example_static_map	v0.1
+C10orf2	TWNK	ENSG00000107815	ENSG00000107815	HGNC:1160	TWNK	deprecated_symbol_resolved	example_static_map	v0.1
+OPA1	OPA1	ENSG00000198836	ENSG00000198836	HGNC:8140		resolved	example_static_map	v0.1
+MPV17	MPV17	ENSG00000115204	ENSG00000115204	HGNC:7224		resolved	example_static_map	v0.1
+RRM2B	RRM2B	ENSG00000048392	ENSG00000048392	HGNC:17296		resolved	example_static_map	v0.1
+TYMP	TYMP	ENSG00000025708	ENSG00000025708	HGNC:3148		resolved	example_static_map	v0.1
+AMBIG1	AMBIG1			AMBIG_TEST		ambiguous	example_static_map	v0.1

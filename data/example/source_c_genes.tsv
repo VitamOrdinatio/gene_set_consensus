@@ -1,0 +1,5 @@
+gene_symbol	evidence_label	notes
+POLG	literature_support	literature-derived overlap
+MPV17	literature_support	literature-derived overlap
+TYMP	literature_support	mitochondrial disease gene
+AMBIG1	ambiguous_test	synthetic ambiguous identifier

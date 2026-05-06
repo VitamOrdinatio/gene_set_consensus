@@ -1,0 +1,7 @@
+gene_symbol	evidence_label	notes
+POLG	curated_core	known mitochondrial disease gene
+TWNK	curated_core	mitochondrial DNA maintenance gene
+OPA1	curated_core	mitochondrial dynamics gene
+POLG	duplicate_test	duplicate within same source should not inflate source_count
+C10orf2	deprecated_symbol_test	legacy alias for TWNK
+UNKNOWN1	unresolved_test	should remain flagged if not in identifier map

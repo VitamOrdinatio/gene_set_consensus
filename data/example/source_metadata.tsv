@@ -1,0 +1,4 @@
+source_id	source_name	source_type	source_version	download_date	source_weight	weight_tier
+curated_panel	Example Curated Panel	curated_database	v0.1	2026-05-06	3.0	gold
+clinical_panel	Example Clinical Panel	clinical_panel	v0.1	2026-05-06	3.0	gold
+literature_list	Example Literature List	literature_derived	v0.1	2026-05-06	2.0	silver

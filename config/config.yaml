@@ -1,0 +1,31 @@
+project:
+  name: gene_set_consensus
+  version: "0.1.0"
+
+runtime:
+  environment: sys76
+  run_id_strategy: timestamp
+  fail_on_schema_error: true
+  fail_on_unmapped_required_gene_id: false
+
+paths:
+  input_root: data/example
+  interim_dir: data/interim
+  processed_dir: data/processed
+  results_dir: results
+  logs_dir: logs
+  external_gene_sets_dir: /mnt/storage/gene_sets
+  external_gtr_dir: /mnt/storage/gtr
+  external_databases_dir: /mnt/storage/databases
+
+identifier_normalization:
+  preferred_gene_id: ensembl_gene_id
+  allow_symbol_fallback: true
+  unresolved_identifier_policy: flag
+
+outputs:
+  write_consensus_gene_set: true
+  write_gene_source_matrix: true
+  write_gene_frequency_table: true
+  write_provenance_table: true
+  write_validation_report: true
