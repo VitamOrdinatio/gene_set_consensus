@@ -6,9 +6,14 @@ from gene_set_consensus.adapters.gtr_panel import (
     GTRPanelAdapter
 )
 
+from gene_set_consensus.adapters.mitocarta import (
+    MitoCartaAdapter
+)
+
 ADAPTER_REGISTRY = {
     "generic_gene_list": GenericGeneListAdapter,
     "gtr_panel": GTRPanelAdapter,
+    "mitocarta": MitoCartaAdapter,
 }
 
 def get_adapter(adapter_name):
