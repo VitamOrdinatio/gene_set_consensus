@@ -214,3 +214,42 @@ Near-term development is focused on:
 
 ---
 
+## Real Source Ingestion: MitoCarta
+
+For v1, MitoCarta ingestion is operator-staged rather than automatically downloaded.
+
+Manual staging is preferred because:
+- source formats may change over time
+- downloaded files should remain outside Git
+- acquisition date and source version should be recorded explicitly
+- source provenance should be auditable
+
+Expected sys76 staging location:
+
+
+`/mnt/storage/gene_sets/mitocarta/`
+
+
+Recommended staged files:
+
+`/mnt/storage/gene_sets/mitocarta/Human.MitoCarta3.0.xls`
+`/mnt/storage/gene_sets/mitocarta/mitocarta_human.tsv`
+
+The original downloaded Excel file should be preserved.
+
+A cleaned TSV should be derived from it for GSC pipeline input.
+
+The cleaned TSV should minimally contain:
+
+- gene_symbol
+- gene_id
+- evidence_label
+- notes
+
+For MitoCarta, `gene_symbol` should be derived from the MitoCarta `Symbol` column. 
+
+Additional MitoCarta fields such as `Evidence`, `Sub-compartment`, `MitoPathways`, or `Maestro` score may be preserved in `evidence_label` or `notes` during early v1 ingestion.
+
+Do not commit real MitoCarta source files to Git.
+
+---
