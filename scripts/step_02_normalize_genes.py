@@ -112,9 +112,12 @@ def main():
 
         logger.info(f"source_rows={len(source_df)}")
 
+        normalized_source_config = source.copy()
+        normalized_source_config["gene_column"] = "gene_symbol"
+
         normalized_df = normalize_source_dataframe(
             source_df=source_df,
-            source_config=source,
+            source_config=normalized_source_config,
             phenotype_id=phenotype_id,
             identifier_map=identifier_map
         )

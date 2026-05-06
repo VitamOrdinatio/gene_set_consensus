@@ -1,0 +1,25 @@
+phenotype:
+  phenotype_id: mitocarta_only
+  phenotype_label: "MitoCarta-only mitochondrial gene set"
+  version: "v0.1"
+
+sources:
+  - source_id: mitocarta_human
+    source_name: MitoCarta Human
+    source_type: curated_database
+    adapter: mitocarta
+    file_path: /mnt/storage/gene_sets/mitocarta/mitocarta_human.tsv
+    gene_column: Symbol
+    weight_tier: gold
+    source_weight: 3.0
+
+scoring:
+  base_score: source_count
+  weighted_score: sum_source_weights
+  consensus_score_formula: weighted_score
+  minimum_source_count: 1
+  include_single_source_genes: true
+  deterministic_sort:
+    - consensus_score: descending
+    - source_count: descending
+    - gene_symbol: ascending
