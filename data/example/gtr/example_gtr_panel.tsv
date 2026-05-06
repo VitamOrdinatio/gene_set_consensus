@@ -1,0 +1,5 @@
+condition_label	condition_id	test_name	test_id	panel_name	gene_symbol	gene_id	source_version	download_date
+Mitochondrial disease	GTR:000001	Mito Panel A	TEST:001	Mito Basic	POLG	ENSG00000140521	v0.1	2026-05-06
+Mitochondrial disease	GTR:000001	Mito Panel A	TEST:001	Mito Basic	TWNK	ENSG00000107815	v0.1	2026-05-06
+Mitochondrial disease	GTR:000002	Mito Panel B	TEST:002	Mito Extended	MPV17	ENSG00000115204	v0.1	2026-05-06
+Mitochondrial disease	GTR:000002	Mito Panel B	TEST:002	Mito Extended	RRM2B	ENSG00000048392	v0.1	2026-05-06
