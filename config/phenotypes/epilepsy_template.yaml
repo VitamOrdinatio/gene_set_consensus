@@ -1,0 +1,40 @@
+phenotype:
+  phenotype_id: epilepsy
+  phenotype_label: "Epilepsy"
+  version: "v0.1-template"
+
+sources:
+  - source_id: gtr_epilepsy_panel
+    source_name: GTR epilepsy panel export
+    source_type: clinical_panel
+    file_path: /mnt/storage/gtr/epilepsy_gtr_panel.tsv
+    gene_column: gene_symbol
+    weight_tier: gold
+    source_weight: 3.0
+
+  - source_id: epi25_gene_list
+    source_name: Epi25 epilepsy-associated gene list
+    source_type: literature_derived
+    file_path: /mnt/storage/gene_sets/epi25/epi25_genes.tsv
+    gene_column: gene_symbol
+    weight_tier: silver
+    source_weight: 2.0
+
+  - source_id: user_epilepsy_gene_list
+    source_name: User-curated epilepsy gene list
+    source_type: user_provided
+    file_path: /mnt/storage/gene_sets/epilepsy/user_curated_epilepsy_genes.tsv
+    gene_column: gene_symbol
+    weight_tier: bronze
+    source_weight: 1.0
+
+scoring:
+  base_score: source_count
+  weighted_score: sum_source_weights
+  consensus_score_formula: weighted_score
+  minimum_source_count: 1
+  include_single_source_genes: true
+  deterministic_sort:
+    - consensus_score: descending
+    - source_count: descending
+    - gene_symbol: ascending
