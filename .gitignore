@@ -1,3 +1,6 @@
+# DEV workspace
+_notes/
+
 # Local machine configs:
 config/config.sys76.local.yaml
 config/config.mark.local.yaml
