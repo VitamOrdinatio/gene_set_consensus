@@ -24,6 +24,10 @@ from gene_set_consensus.normalization import (
     collapse_within_source_duplicates
 )
 
+from gene_set_consensus.adapters.registry import (
+    get_adapter
+)
+
 def detect_separator(path):
     suffix = Path(path).suffix.lower()
     if suffix == ".tsv":
@@ -79,13 +83,18 @@ def main():
         logger.info(f"loading_source={source['source_id']}")
         logger.info(f"source_path={source_path}")
 
-        sep = detect_separator(source_path)
+        adapter_name = source.get(
+            "adapter",
+            "generic_gene_list"
+        )
 
-        source_df = pd.read_csv(
-            source_path,
-            sep=sep,
-            dtype=str
-        ).fillna("")
+        logger.info(
+            f"adapter={adapter_name}"
+        )
+
+        adapter = get_adapter(adapter_name)
+
+        source_df = adapter.run(source_path)
 
         logger.info(f"source_rows={len(source_df)}")
 

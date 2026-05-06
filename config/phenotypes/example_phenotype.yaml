@@ -1,33 +1,32 @@
 phenotype:
   phenotype_id: example_phenotype
-  phenotype_label: "Example phenotype"
-  version: "v0.1"
-
+  phenotype_label: Example phenotype
+  version: v0.1
 sources:
-  - source_id: curated_panel
-    source_name: Example Curated Panel
-    source_type: curated_database
-    file_path: data/example/source_a_genes.tsv
-    gene_column: gene_symbol
-    weight_tier: gold
-    source_weight: 3.0
-
-  - source_id: clinical_panel
-    source_name: Example Clinical Panel
-    source_type: clinical_panel
-    file_path: data/example/source_b_genes.tsv
-    gene_column: gene_symbol
-    weight_tier: gold
-    source_weight: 3.0
-
-  - source_id: literature_list
-    source_name: Example Literature List
-    source_type: literature_derived
-    file_path: data/example/source_c_genes.tsv
-    gene_column: gene_symbol
-    weight_tier: silver
-    source_weight: 2.0
-
+- source_id: curated_panel
+  source_name: Example Curated Panel
+  source_type: curated_database
+  file_path: data/example/source_a_genes.tsv
+  gene_column: gene_symbol
+  weight_tier: gold
+  source_weight: 3.0
+  adapter: generic_gene_list
+- source_id: clinical_panel
+  source_name: Example Clinical Panel
+  source_type: clinical_panel
+  file_path: data/example/source_b_genes.tsv
+  gene_column: gene_symbol
+  weight_tier: gold
+  source_weight: 3.0
+  adapter: generic_gene_list
+- source_id: literature_list
+  source_name: Example Literature List
+  source_type: literature_derived
+  file_path: data/example/source_c_genes.tsv
+  gene_column: gene_symbol
+  weight_tier: silver
+  source_weight: 2.0
+  adapter: generic_gene_list
 scoring:
   base_score: source_count
   weighted_score: sum_source_weights
@@ -35,6 +34,6 @@ scoring:
   minimum_source_count: 1
   include_single_source_genes: true
   deterministic_sort:
-    - consensus_score: descending
-    - source_count: descending
-    - gene_symbol: ascending
+  - consensus_score: descending
+  - source_count: descending
+  - gene_symbol: ascending
