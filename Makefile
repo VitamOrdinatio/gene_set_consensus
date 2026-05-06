@@ -35,3 +35,12 @@ clean-runtime:
 	find data/processed -mindepth 1 ! -name README.md -exec rm -rf {} +
 	find results/tables -mindepth 1 -exec rm -rf {} +
 	find results/reports -mindepth 1 -exec rm -rf {} +
+
+
+run-mito:
+	@echo "Preparing mitochondrial disease execution target"
+	@echo "Requires real source files under /mnt/storage"
+
+run-epilepsy:
+	@echo "Preparing epilepsy execution target"
+	@echo "Requires real source files under /mnt/storage"

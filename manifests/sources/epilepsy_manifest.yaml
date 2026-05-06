@@ -1,0 +1,63 @@
+manifest_version: "1.0"
+
+sources:
+
+  - source_id: gtr_epilepsy_panel
+    source_name: "GTR epilepsy panel"
+    source_type: clinical_panel
+    adapter: gtr_panel
+
+    biological_context:
+      phenotype: epilepsy
+      species: Homo sapiens
+      genome_build: GRCh38
+
+    provenance:
+      provider: NCBI_GTR
+      acquisition_method: panel_export
+      acquisition_date: "2026-05-06"
+      source_version: "pending_real_export"
+
+    file_metadata:
+      path: /mnt/storage/gtr/epilepsy_gtr_panel.tsv
+      file_format: tsv
+
+  - source_id: epi25_gene_list
+    source_name: "Epi25 epilepsy-associated genes"
+    source_type: literature_derived
+    adapter: generic_gene_list
+
+    biological_context:
+      phenotype: epilepsy
+      species: Homo sapiens
+      genome_build: GRCh38
+
+    provenance:
+      provider: Epi25
+      acquisition_method: supplementary_table_extraction
+      acquisition_date: "2026-05-06"
+      source_version: "pending_real_download"
+
+    file_metadata:
+      path: /mnt/storage/gene_sets/epi25/epi25_genes.tsv
+      file_format: tsv
+
+  - source_id: user_epilepsy_panel
+    source_name: "User curated epilepsy genes"
+    source_type: user_provided
+    adapter: generic_gene_list
+
+    biological_context:
+      phenotype: epilepsy
+      species: Homo sapiens
+      genome_build: GRCh38
+
+    provenance:
+      provider: user_curated
+      acquisition_method: manual_curation
+      acquisition_date: "2026-05-06"
+      source_version: "pending_real_curation"
+
+    file_metadata:
+      path: /mnt/storage/gene_sets/epilepsy/user_epilepsy_genes.tsv
+      file_format: tsv
