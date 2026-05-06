@@ -42,6 +42,11 @@ def main():
         default="data/example/identifier_map.tsv"
     )
 
+    parser.add_argument(
+        "--source-manifest",
+        default="manifests/sources/example_source_manifest.yaml"
+    )
+
     args = parser.parse_args()
 
     python = sys.executable
@@ -75,6 +80,8 @@ def main():
             *shared_args,
             "--identifier-map",
             args.identifier_map,
+            "--source-manifest",
+            args.source_manifest,
         ],
         "step_02_normalize_genes",
     )

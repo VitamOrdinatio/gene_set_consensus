@@ -28,6 +28,11 @@ from gene_set_consensus.adapters.registry import (
     get_adapter
 )
 
+from gene_set_consensus.manifests import (
+    load_source_manifest,
+    build_manifest_source_lookup
+)
+
 def detect_separator(path):
     suffix = Path(path).suffix.lower()
     if suffix == ".tsv":
@@ -46,6 +51,7 @@ def main():
         default="data/example/identifier_map.tsv"
     )
     parser.add_argument("--run-id", default=None)
+    parser.add_argument("--source-manifest", default=None)
 
     args = parser.parse_args()
 
@@ -74,6 +80,12 @@ def main():
 
     identifier_map = load_identifier_map(args.identifier_map)
 
+    manifest_lookup = {}
+    if args.source_manifest:
+        manifest = load_source_manifest(args.source_manifest)
+        manifest_lookup = build_manifest_source_lookup(manifest)
+        logger.info(f"source_manifest={args.source_manifest}")
+
     all_normalized = []
 
     for source in phenotype_config["sources"]:
@@ -83,9 +95,11 @@ def main():
         logger.info(f"loading_source={source['source_id']}")
         logger.info(f"source_path={source_path}")
 
+        manifest_record = manifest_lookup.get(source["source_id"], {})
+
         adapter_name = source.get(
             "adapter",
-            "generic_gene_list"
+            manifest_record.get("adapter", "generic_gene_list")
         )
 
         logger.info(
