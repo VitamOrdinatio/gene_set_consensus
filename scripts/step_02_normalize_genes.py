@@ -13,10 +13,10 @@ from gene_set_consensus.config import (
 )
 
 from gene_set_consensus.logging_utils import (
-    make_run_id,
     setup_run_dirs,
     get_logger
 )
+from gene_set_consensus.runtime import generate_run_id
 
 from gene_set_consensus.normalization import (
     load_identifier_map,
@@ -41,6 +41,7 @@ def main():
         "--identifier-map",
         default="data/example/identifier_map.tsv"
     )
+    parser.add_argument("--run-id", default=None)
 
     args = parser.parse_args()
 
@@ -55,7 +56,7 @@ def main():
 
     phenotype_id = phenotype_config["phenotype"]["phenotype_id"]
 
-    run_id = make_run_id()
+    run_id = args.run_id if args.run_id else generate_run_id()
 
     run_dirs = setup_run_dirs(project_config, run_id)
 

@@ -6,18 +6,20 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from gene_set_consensus.config import load_project_config, load_phenotype_config, resolve_phenotype_config_path
-from gene_set_consensus.logging_utils import make_run_id, setup_run_dirs, get_logger
+from gene_set_consensus.logging_utils import setup_run_dirs, get_logger
+from gene_set_consensus.runtime import generate_run_id
 from gene_set_consensus.validation import validate_project_paths, validate_sources
 
 def main():
     parser = argparse.ArgumentParser(description="Validate GSC project and phenotype inputs.")
     parser.add_argument("--config", default="config/config.yaml")
     parser.add_argument("--phenotype", required=True)
+    parser.add_argument("--run-id", default=None)
     args = parser.parse_args()
     project_config = load_project_config(args.config)
     phenotype_path = resolve_phenotype_config_path(project_config, args.phenotype)
     phenotype_config = load_phenotype_config(phenotype_path)
-    run_id = make_run_id()
+    run_id = args.run_id if args.run_id else generate_run_id()
     run_dirs = setup_run_dirs(project_config, run_id)
     logger = get_logger("step_01_validate_inputs", run_dirs["logs_dir"] / "step_01_validate_inputs.log")
     logger.info(f"run_id={run_id}")
