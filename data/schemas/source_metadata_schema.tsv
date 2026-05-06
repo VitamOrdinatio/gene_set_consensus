@@ -1,0 +1,8 @@
+column	required	type	description
+source_id	yes	string	Stable snake_case source identifier
+source_name	yes	string	Human-readable source name
+source_type	yes	string	Source class such as curated_database, clinical_panel, literature_derived, user_provided
+source_version	recommended	string	Version or release label for the source
+download_date	recommended	date	Date source was downloaded or exported
+source_weight	yes	numeric	Numeric evidence weight used in consensus scoring
+weight_tier	yes	string	Evidence tier such as gold, silver, bronze

@@ -1,0 +1,5 @@
+column	required	type	description
+gene_symbol	conditional	string	Input gene symbol from source; required if gene_id absent
+gene_id	conditional	string	Stable gene identifier; preferred Ensembl gene ID when available
+evidence_label	no	string	Optional source-specific evidence label
+notes	no	string	Optional notes preserved for provenance

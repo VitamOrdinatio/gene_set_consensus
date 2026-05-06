@@ -1,0 +1,14 @@
+column	required	type	description
+phenotype	yes	string	Explicit phenotype context
+gene_id	conditional	string	Stable gene identifier; preferred join key when available
+gene_symbol	yes	string	Normalized gene symbol
+consensus_score	yes	numeric	Deterministic v1 consensus score
+source_count	yes	integer	Number of contributing sources
+weighted_source_sum	yes	numeric	Sum of contributing source weights
+source_list	yes	string	Pipe-delimited source IDs
+weight_tier_summary	yes	string	Pipe-delimited source tiers observed
+mapping_status_summary	yes	string	Pipe-delimited identifier mapping statuses
+provenance_id	yes	string	Join key to provenance table
+run_id	yes	string	Pipeline run identifier
+gsc_version	yes	string	GSC project version
+generated_at	yes	string	Output timestamp
