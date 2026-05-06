@@ -112,6 +112,8 @@ def main():
             python,
             "scripts/step_05_write_outputs.py",
             *shared_args,
+            "--source-manifest",
+            args.source_manifest,
         ],
         "step_05_write_outputs",
     )

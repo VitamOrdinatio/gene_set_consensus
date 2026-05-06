@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--config", default="config/config.yaml")
     parser.add_argument("--phenotype", required=True)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--source-manifest", default=None)
     args = parser.parse_args()
     project_config = load_project_config(args.config)
     phenotype_path = resolve_phenotype_config_path(project_config, args.phenotype)
@@ -81,7 +82,8 @@ def main():
         phenotype_config_file=phenotype_path,
         input_files=[normalized_path, scored_path, matrix_path, frequency_path],
         output_files=[consensus_output, provenance_output, matrix_output, frequency_output, validation_output],
-        status="PASS"
+        status="PASS",
+        source_manifest_file=Path(args.source_manifest) if args.source_manifest else None
     )
     logger.info(f"run_id={args.run_id}")
     logger.info(f"phenotype={phenotype_id}")

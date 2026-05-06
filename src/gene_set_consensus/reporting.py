@@ -12,12 +12,14 @@ def file_sha256(path):
             h.update(chunk)
     return h.hexdigest()
 
-def write_run_manifest(path, run_id, phenotype, config_file, phenotype_config_file, input_files, output_files, status):
+def write_run_manifest(path, run_id, phenotype, config_file, phenotype_config_file, input_files, output_files, status, source_manifest_file=None):
     manifest = {
         "run_id": run_id,
         "phenotype": phenotype,
         "config_file": str(config_file),
         "phenotype_config_file": str(phenotype_config_file),
+        "source_manifest_file": str(source_manifest_file) if source_manifest_file else None,
+        "source_manifest_hash": file_sha256(source_manifest_file) if source_manifest_file and Path(source_manifest_file).exists() else None,
         "input_files": {str(p): file_sha256(p) for p in input_files if Path(p).exists()},
         "output_files": {str(p): file_sha256(p) for p in output_files if Path(p).exists()},
         "software_versions": {
