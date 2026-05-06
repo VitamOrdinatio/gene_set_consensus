@@ -1,0 +1,63 @@
+manifest_version: "1.0"
+
+sources:
+
+  - source_id: curated_panel
+    source_name: "Example curated mitochondrial panel"
+    source_type: curated_database
+    adapter: generic_gene_list
+
+    biological_context:
+      phenotype: mitochondrial_disease
+      species: Homo sapiens
+      genome_build: GRCh38
+
+    provenance:
+      provider: internal_example
+      acquisition_method: manual_demo_construction
+      acquisition_date: "2026-05-06"
+      source_version: "demo_v1"
+
+    file_metadata:
+      path: data/example/source_a_genes.tsv
+      file_format: tsv
+
+  - source_id: clinical_panel
+    source_name: "Example clinical panel"
+    source_type: clinical_panel
+    adapter: generic_gene_list
+
+    biological_context:
+      phenotype: mitochondrial_disease
+      species: Homo sapiens
+      genome_build: GRCh38
+
+    provenance:
+      provider: internal_example
+      acquisition_method: manual_demo_construction
+      acquisition_date: "2026-05-06"
+      source_version: "demo_v1"
+
+    file_metadata:
+      path: data/example/source_b_genes.tsv
+      file_format: tsv
+
+  - source_id: literature_panel
+    source_name: "Example literature-derived panel"
+    source_type: literature_derived
+    adapter: generic_gene_list
+
+    biological_context:
+      phenotype: mitochondrial_disease
+      species: Homo sapiens
+      genome_build: GRCh38
+
+    provenance:
+      provider: internal_example
+      acquisition_method: manual_demo_construction
+      acquisition_date: "2026-05-06"
+      source_version: "demo_v1"
+
+    file_metadata:
+      path: data/example/source_c_genes.tsv
+      file_format: tsv
