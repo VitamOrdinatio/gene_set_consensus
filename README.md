@@ -1,375 +1,216 @@
 # gene_set_consensus
 
-## Overview
+`gene_set_consensus` (GSC) builds phenotype-scoped consensus gene sets from multiple heterogeneous gene-list sources.
 
-`gene_set_consensus` (GSC) is a bioinformatics system for constructing **phenotype-specific, evidence-weighted gene-level evidence models** by integrating multiple heterogeneous gene lists into a unified, provenance-aware consensus framework.
+GSC is designed as a reproducible upstream evidence layer for downstream repositories such as:
 
-Unlike enrichment tools that *consume* gene sets, GSC is designed to **construct, evaluate, and version gene sets themselves**.
+- `variant_annotation_pipeline` (VAP)
+- `variant_database` (VDB)
+- `rnaseq_pipeline` (RSP)
+- `rare_disease_gene_prioritization` (RDGP)
 
-It produces gene-level evidence models that reflect:
-- cross-source agreement
-- source authority (e.g., curated vs literature-derived)
-- explicit weighting schemes
-- full provenance per gene
-- phenotype-specific context
 
 ---
 
-## Motivation
+## What GSC Does
 
-Downstream interpretation in genomics is only as strong as the gene sets used to 
-contextualize results.
-
-```text
-Noisy gene sets → weak biological conclusions
-```
-Most RNA-seq and variant pipelines rely on predefined gene sets (e.g., GO terms, MSigDB collections), but these sets:
-    • are static snapshots 
-    • do not encode source-level authority 
-    • cannot be adapted to specific research contexts 
-    • do not preserve provenance at the gene level 
-
-GSC addresses this gap by providing a reproducible system for:
+GSC converts:
 
 ```text
-multi-source integration → weighted consensus → phenotype-specific gene evidence
+multiple phenotype-associated gene lists
+→ normalized gene identifiers
+→ source-aware gene matrix
+→ weighted consensus gene evidence
+→ provenance-aware output tables
 ```
 
 
 ---
 
-## Core Concept
+## What GSC Does Not Do
 
-```text
-Multiple phenotype-associated gene lists
-+ explicit source weighting (gold / silver / bronze)
-+ provenance tracking
-→ consensus gene-level evidence model
-```
+GSC does not:
+    - call variants 
+    - parse VCF/BAM/FASTQ files 
+    - perform enrichment analysis 
+    - perform RNA-seq analysis 
+    - rank patient-specific genes 
+    - store sample-specific evidence 
+
+GSC is phenotype-scoped and gene-level.
+
+The core evidence identity is:
+`(phenotype, gene_id)`
+
 
 ---
 
-## What GSC Produces
+## Current Status
+Current working MVP includes:
+  - config-driven execution 
+  - phenotype config files 
+  - source adapters 
+  - identifier normalization 
+  - gene-source matrix construction 
+  - weighted consensus scoring 
+  - provenance table generation 
+  - output contract validation 
+  - reproducibility validation 
+  - source manifest support 
+  - Makefile operator commands 
+  - pytest test suite 
 
-GSC does not produce a simple gene list.
-
-It produces a **gene-level evidence model**, where each gene is associated with:
-
-- multiple independent sources of support
-- source-level provenance
-- explicit weighting based on source authority
-- a consensus score reflecting both support and agreement
-
-Conceptually:
-
-```text
-gene → {sources, weights, provenance} → consensus_score
-```
-
-This differs from traditional gene sets, where membership is binary:
-
-`gene ∈ set → yes/no`
-
-GSC instead represents:
-
-```text
-“How strongly is this gene supported for this phenotype,
-and by which sources?”
-```
-
-GSC explicitly preserves uncertainty.
-
-```text
-Conflicting or sparse evidence is not collapsed into a single decision,
-but retained as part of the gene-level evidence model.
-```
-
-This allows downstream systems to reason about:
-- agreement vs disagreement across sources
-- strength vs absence of evidence
 
 ---
 
+## Quick Start
 
-## Key Distinction: GSC vs DEG → GO → MSigDB Workflows
+Create and activate a virtual environment:
 
-Traditional workflows vs. GSC:
-```text
-Traditional gene sets treat membership as binary:
-a gene is either in the set or not.
-
-GSC instead models how strongly a gene is supported
-for a phenotype, and why.
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
+Run the example pipeline:
 
-A common transcriptomics workflow is:
-
-```text
-DEG list → enrichment (e.g., g:Profiler) → GO / MSigDB terms
+```bash
+make run-example
 ```
 
-This answers:
+Run reproducibility validation:
 
-`“What biological processes are enriched in my gene list?”`
+```bash
+make reproduce
+```
 
-GSC answers a fundamentally different question:
+Run tests:
+```bash
+make test
+```
 
-```text
-“Are the affected genes already associated with a specific phenotype,
-and how strong is that evidence across multiple sources?”
+Inspect the consensus output:
+
+```bash
+make show-consensus
 ```
 
 
 ---
 
-## Side-by-Side Comparison
+## Example Outputs
 
-```text
-Feature
-GO / MSigDB / g:Profiler
-GSC
-Primary role
-Gene set consumption
-Gene set construction
-Input
-Gene list
-Multiple gene lists (sources)
-Output
-Enriched pathways / terms
-Weighted gene-level evidence
-Structure
-Ontology-driven (GO DAG)
-Evidence-driven (source aggregation)
-Weighting
-None (flat membership)
-Explicit (source tiers / weights)
-Provenance
-Limited
-Full per-gene source tracking
-Adaptability
-Static (versioned releases)
-Dynamic (config-driven per phenotype)
-Question answered
-“What biology is perturbed?”
-“Does this perturbation matter for phenotype X?”
-```
+The example run writes:
+- `results/tables/example_phenotype/consensus_gene_set.tsv`
+- `results/tables/example_phenotype/gene_source_matrix.tsv`
+- `results/tables/example_phenotype/gene_frequency_table.tsv`
+- `results/tables/example_phenotype/gene_provenance.tsv`
+- `results/reports/example_phenotype/run_manifest.yaml`
+- `results/reports/example_phenotype/validation_report.md`
+- `results/reports/example_phenotype/output_contract_validation.tsv`
 
----
-
-## Why This Matters
-GO and pathway analysis identify biological processes.
-GSC identifies phenotype relevance.
-
-These are complementary:
-
-```text
-GO → what biology is changing
-GSC → whether those changes are clinically meaningful
-```
-
----
-
-## Example Use Case
-
-**Phenotype:** Epilepsy
-
-**Sources:**
-- ClinGen (gold)
-- OMIM (gold)
-- Genes4Epilepsy (silver)
-- (future) GTR-derived epilepsy gene associations
-
-**Output:**
-- Ranked genes by consensus_score
-- Weighted evidence contributions
-- Source provenance per gene
-
-**Interpretation:**
-
-```text
-This gene is not just present in a list—
-it is supported by multiple independent, high-confidence sources.
-```
 
 
 ---
 
-## Relationship to Transcriptomics (RSP)
+## Repository Structure
 
-In a transcriptomics workflow:
+| Folder | Utility
+| ------- |  ------- |
+| `config/` | pipeline and phenotype configs |
+| `data/example/` | tiny toy data for reproducible testing |
+| `data/schemas/` | tabular schema descriptions |
+| `docs/` | architecture, contracts, plans, notes |
+| `manifests/sources/` | source provenance manifests|
+| `scripts/` | executable pipeline steps and validators |
+| `src/gene_set_consensus/` | reusable Python package code |
+| `tests/` | unit, integration, and validation tests |
+| `results/` | generated outputs; not committed |
+| `logs/` | generated logs; not committed |
 
-`RNA-seq → DEGs → GO/pathway analysis`
-
-GSC interacts with transcriptomic outputs in two ways:
-
-1) RSP → GSC
-   functional signals (e.g., DEG, network evidence) may be incorporated into GSC evidence models
-
-2) GSC → RSP
-   phenotype-scoped gene evidence may be used to interpret transcriptomic perturbations
-
-This bidirectional relationship enables integration of:
-    functional perturbation ↔ phenotype relevance
-
-This enables questions such as:
-
-```text
-Do EBV-induced transcriptional changes disproportionately affect
-genes associated with mitochondrial disease or epilepsy?
-```
-
-This bridges:
-
-`functional perturbation → clinical relevance`
 
 
 ---
 
-## Input Requirements
+## Source Adapters
 
-### Config File (YAML)
+GSC separates biological source type from file parsing strategy.
 
-Defines:
-    • phenotype 
-    • source files 
-    • source types 
-    • tier assignments (e.g., gold/silver/bronze) 
-    • weighting scheme 
+`source_type` describes biological meaning:
+- `curated_database`
+- `clinical_panel`
+- `literature_derived`
+- `user_provided`
 
-### Gene Lists (TSV)
+`adapter` describes file structure:
+- `generic_gene_list`
+- `gtr_panel`
 
-Minimum:
-    • gene_symbol 
+This means a clinical panel can use `generic_gene_list` if it is already flattened into a simple TSV, while a full GTR-style export should use `gtr_panel`.
 
-Optional:
-    • gene_id 
-    • ensembl_id 
-    • source metadata 
-
-### v1 Source Model
-    • curated phenotype gene lists 
-    • literature-derived gene sets 
-    • manually assembled panels 
-
-Future:
-    • GTR-derived gene associations 
-    • automated ingestion pipelines 
 
 
 ---
 
-## Output
+## Real Source Storage
 
-`data/output/<phenotype>_consensus.tsv`
+Real gene-set files should not be committed to Git.
 
-Fields include:
-    • phenotype 
-    • gene_symbol 
-    • weighted_score 
-    • consensus_score 
-    • supporting_sources 
-    • source_types 
-Each row represents:
+Use external storage:
+  - sys76: `/mnt/storage/gene_sets/`
+  - sys76 GTR: `/mnt/storage/gtr/`
+  - MARK: `/data/storage/gene_sets/`
+  - MARK GTR: `/data/storage/gtr/`
 
-`(phenotype, gene_id) → evidence model`
-
-## Scoring Philosophy
-
-`More independent support + higher-confidence sources → higher consensus`
-
-Key principles:
-    • deterministic scoring 
-    • interpretable weighting 
-    • no hidden heuristics 
-    • full transparency of evidence sources 
+Phenotype configs point to those files using `file_path`.
 
 
 ---
 
-## System Role
+## Assumptions
 
-GSC operates within a larger system:
-
-```text
-variant_annotation_pipeline → What variants are present?
-rnaseq_pipeline (RSP)       → What biology is perturbed?
-gene_set_consensus (GSC)    → Which genes matter for this phenotype?
-rare_disease_gene_prioritization (RDGP) → What matters for this patient?
-```
-
-GSC provides phenotype-scoped, gene-level evidence overlays that support downstream interpretation.
+  - Input gene lists are phenotype-associated by configuration. 
+  - Source authority is represented with explicit numeric weights. 
+  - Gene identifier normalization depends on the configured identifier map. 
+  - Absence from a source is not negative evidence. 
 
 
 ---
 
-Why Not Just Use MSigDB?
+## Limitations
 
-MSigDB provides curated gene sets, but:
-
-
-```text
-MSigDB provides predefined gene sets with binary membership.
-
-GSC constructs phenotype-specific gene evidence models that:
-- integrate multiple sources
-- weight sources by authority
-- preserve provenance per gene
-- produce interpretable consensus scores
-
-This allows downstream systems to reason about evidence strength,
-not just gene set membership.
-```
-
-GSC enables:
-    • combining multiple sources 
-    • weighting sources by authority 
-    • preserving provenance 
-    • adapting gene sets to specific research questions 
-    • versioning phenotype-specific evidence models 
+  - v1 scoring is heuristic and deterministic, not probabilistic. 
+  - v1 does not perform phenotype ontology harmonization. 
+  - v1 does not automate external source downloads. 
+  - v1 does not perform literature mining. 
+  - v1 does not compare consensus scores across phenotypes. 
 
 
 ---
 
-## Roadmap
-### v1
-    • multi-source integration 
-    • YAML-driven configuration 
-    • weighted consensus scoring 
-    • provenance tracking 
-### v2
-    • identifier harmonization 
-    • improved curated database integration 
-    • GTR ingestion 
-### v3
-    • integrated literature + clinical evidence modeling 
-    • richer weighting schemes 
-    • tighter integration with transcriptomic (RSP) outputs 
-    • support for convergence analyses 
+## Validation
 
-## Disclaimer
-
-```text
-This tool does NOT establish causality.
-It provides structured, weighted evidence of gene–phenotype association.
-```
+GSC validates:
+  - input schemas 
+  - source configuration 
+  - identifier normalization behavior 
+  - output contracts 
+  - forbidden sample/variant-level fields 
+  - provenance joinability 
+  - reproducibility across repeated runs 
 
 
 ---
 
-## Author Philosophy
+## Current Development Target
 
-```text
-Reproducibility > convenience
-Traceability > automation
-Signal > noise
-Evidence > assumption
-```
-
-
----
-
-## License
-See LICENSE file.
+Near-term development is focused on:
+1. strengthening source adapters 
+2. preparing real MitoCarta / GTR / Epi25 ingestion 
+3. adding `make run-mito` and `make run-epilepsy`
+4. improving documentation and validation reports 
+5. preparing future downstream compatibility with VDB/RDGP/RSP
 
 ---
+
