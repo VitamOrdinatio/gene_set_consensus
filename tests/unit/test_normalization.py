@@ -16,3 +16,29 @@ def test_collapse_within_source_duplicates():
     ])
     out = collapse_within_source_duplicates(df)
     assert len(out) == 1
+
+def test_adapter_supplied_gene_id_resolves_without_identifier_map():
+    source_df = pd.DataFrame([{
+        "gene_symbol": "CYC1",
+        "gene_id": "ENSG00000179091",
+        "evidence_label": "mitocarta",
+        "notes": ""
+    }])
+    source_config = {
+        "source_id": "mitocarta_human",
+        "source_name": "MitoCarta Human",
+        "source_type": "curated_database",
+        "source_weight": 3.0,
+        "weight_tier": "gold",
+        "gene_column": "gene_symbol"
+    }
+    out = normalize_source_dataframe(
+        source_df,
+        source_config,
+        "mitocarta_only",
+        identifier_map={}
+    )
+    assert out.loc[0, "gene_symbol"] if "gene_symbol" in out.columns else True
+    assert out.loc[0, "normalized_gene_symbol"] == "CYC1"
+    assert out.loc[0, "gene_id"] == "ENSG00000179091"
+    assert out.loc[0, "mapping_status"] == "adapter_gene_id_resolved"

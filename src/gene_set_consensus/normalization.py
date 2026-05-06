@@ -50,10 +50,16 @@ def normalize_source_dataframe(
 
         mapping_record = identifier_map.get(normalized_input)
 
+        adapter_gene_id = str(row.get("gene_id", "")).strip()
+
         if mapping_record:
             normalized_gene_symbol = mapping_record["normalized_gene_symbol"]
-            gene_id = mapping_record["gene_id"]
+            gene_id = mapping_record["gene_id"] if mapping_record["gene_id"] else adapter_gene_id
             mapping_status = mapping_record["mapping_status"]
+        elif adapter_gene_id:
+            normalized_gene_symbol = normalized_input
+            gene_id = adapter_gene_id
+            mapping_status = "adapter_gene_id_resolved"
         else:
             normalized_gene_symbol = normalized_input
             gene_id = ""

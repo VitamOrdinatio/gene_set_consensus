@@ -237,18 +237,27 @@ Recommended staged files:
 
 The original downloaded Excel file should be preserved.
 
-A cleaned TSV should be derived from it for GSC pipeline input.
+For v1, the operator may export the `human_mitocarta` worksheet as TSV without renaming columns manually.
 
-The cleaned TSV should minimally contain:
+The MitoCarta adapter reads native MitoCarta columns directly, including:
 
-- gene_symbol
-- gene_id
-- evidence_label
-- notes
+- `Symbol`
+- `HumanGeneID`
+- `Description`
+- `MitoCarta3.0_List`
+- `MitoCarta3.0_Evidence`
+- `MitoCarta3.0_SubMitoLocalization`
+- `MitoCarta3.0_MitoPathways`
+- `EnsemblGeneID_mapping_version_20200130`
 
-For MitoCarta, `gene_symbol` should be derived from the MitoCarta `Symbol` column. 
+The adapter translates native MitoCarta fields into GSC's internal source schema:
 
-Additional MitoCarta fields such as `Evidence`, `Sub-compartment`, `MitoPathways`, or `Maestro` score may be preserved in `evidence_label` or `notes` during early v1 ingestion.
+- `Symbol` → `gene_symbol`
+- `EnsemblGeneID_mapping_version_20200130` → `gene_id`
+- `MitoCarta3.0_Evidence` → `evidence_label`
+- selected source fields → `notes`
+
+The operator should not manually rename MitoCarta columns to match GSC. Column translation belongs to the `mitocarta` adapter.
 
 Do not commit real MitoCarta source files to Git.
 
