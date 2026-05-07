@@ -217,3 +217,100 @@ external source files
 not by rewriting pipeline code.
 
 ---
+
+## Scientific Revision Architecture
+
+GSC outputs are treated as versioned scientific interpretations rather than immutable biological truth.
+
+Scientific knowledge evolves over time due to:
+- larger cohorts
+- revised phenotype definitions
+- updated consortium analyses
+- improved statistical frameworks
+- new publications
+- revised curation standards
+
+Therefore, GSC preserves:
+- source releases
+- acquisition timestamps
+- publication anchors
+- evidence channels
+- identifier mapping provenance
+- processing versions
+- rule configurations
+
+rather than treating any gene set as permanently authoritative.
+
+---
+
+## Evidence Channels
+
+GSC preserves distinct evidence channels independently.
+
+Example:
+- browser-derived SNV/indel burden evidence
+- publication-derived joint CNV + SNV evidence
+
+These channels are intentionally not flattened into a single opaque evidence source.
+
+This allows future users to distinguish:
+- direct statistical evidence
+vs
+- publication-level interpretive assertions
+
+---
+
+## Release-Aware Design
+
+Future GSC releases may preserve:
+- source_release
+- source_download_date
+- source_checksum
+- identifier_map_version
+- rule_set_version
+- release manifests
+
+This allows deterministic regeneration of historical outputs.
+
+Planned future release-layer directories include:
+
+```text
+config/releases/
+docs/releases/
+```
+
+---
+
+## Identifier Governance
+
+Identifier harmonization is treated as a governed process.
+
+GSC therefore:
+
+- preserves original source identifiers
+- uses pinned identifier maps
+- separates live API resolution from deterministic execution
+- avoids unsafe implicit merges
+
+External APIs such as:
+
+- `MyGene.info`
+may be used to construct pinned local resources, but production GSC runs should consume versioned local identifier maps.
+
+---
+
+## Consensus Score Interpretation
+
+The GSC consensus score reflects:
+
+- aggregated cross-source support
+
+not:
+
+- pathogenicity probability
+- penetrance
+- causal certainty
+
+Higher scores indicate stronger multi-source evidence support within the configured phenotype context.
+
+---

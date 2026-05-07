@@ -149,3 +149,89 @@ GSC validates:
 
 ---
 
+
+---
+
+## Scientific Revision Policy
+
+GSC is designed to support scientific revision with provenance preservation.
+
+Gene-disease associations may change over time due to:
+- new consortium releases
+- larger patient cohorts
+- revised phenotype ontology
+- updated burden analyses
+- publication reinterpretation
+
+Therefore:
+- GSC outputs are versioned interpretations
+- not permanent biological truth
+
+Historical outputs should remain reproducible even after future scientific revisions.
+
+---
+
+## Temporal Provenance
+
+A GSC output reflects:
+- the source releases
+- source acquisition timestamps
+- identifier mappings
+- rule configurations
+- evidence channels
+
+available at the time of processing.
+
+Future runs using newer source releases may legitimately produce different outputs.
+
+Planned provenance-aware metadata includes:
+- source_release
+- source_download_date
+- publication_anchor
+- identifier_map_version
+- mapping_source
+- rule_set_version
+
+---
+
+## Evidence Tier Philosophy
+
+Evidence tiers reflect:
+- curation philosophy
+- scale of supporting evidence
+- source confidence
+
+not absolute biological truth.
+
+Current tier semantics:
+
+- gold
+  - flagship consortium-scale evidence
+  - highly curated canonical resources
+
+- silver
+  - systematic aggregation
+  - clinical data mining
+
+- bronze
+  - literature-derived lists
+  - smaller curated publications
+
+---
+
+## Phenotype Rollups
+
+Some phenotypes represent umbrella clinical concepts.
+
+Example:
+- EPI may incorporate subtype evidence from:
+  - DEE
+  - NAFE
+
+Rollup behavior should remain:
+- explicit
+- versioned
+- reproducible
+- provenance-aware
+
+rather than implicit.

@@ -79,3 +79,38 @@ Final file:
 `results/tables/{phenotype}/gene_provenance.tsv`
 
 Each row links one gene-level consensus record back to one contributing source record.
+
+---
+
+## Provenance-Aware Source Metadata (Planned)
+
+Future source manifests and provenance tables may preserve:
+
+| Field | Description |
+|---|---|
+| `source_release` | Versioned source release identifier |
+| `source_download_date` | Date source was acquired |
+| `source_publication_year` | Publication year associated with source |
+| `source_accession` | Consortium accession or external identifier |
+| `source_checksum` | Optional source integrity hash |
+| `publication_anchor` | Publication or consortium reference |
+| `evidence_channel` | Evidence pathway classification |
+| `identifier_map_version` | Identifier map version used during normalization |
+| `mapping_source` | Identifier resolution source |
+| `mapping_timestamp` | Timestamp of identifier resolution |
+| `rule_set_version` | Versioned scoring or rollup rule set |
+
+---
+
+## Consensus Score Semantics
+
+`consensus_score` represents:
+- deterministic aggregated cross-source support
+
+It does not represent:
+- pathogenicity probability
+- penetrance
+- causal certainty
+- clinical severity
+
+Interpretation of consensus evidence should remain phenotype-aware and provenance-aware.
