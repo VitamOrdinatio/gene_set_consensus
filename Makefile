@@ -44,3 +44,8 @@ run-mito:
 run-epilepsy:
 	@echo "Preparing epilepsy execution target"
 	@echo "Requires real source files under /mnt/storage"
+
+
+validate-releases:
+	python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_gold_bronze_v0.1.yaml
+	python scripts/validation/validate_release_manifest.py --release config/releases/mitocarta_only_v0.1.yaml
