@@ -1,0 +1,3 @@
+phenotype	gene_symbol	ensembl_gene_id	evidence_channel	evidence_basis	variant_classes	source_name	source_tier	source_type	source_release	publication_anchor	notes
+EPI	NPRL3	ENSG00000103148	publication_joint_cnv_snv_high_confidence	joint CNV plus SNV/indel burden	CNV;SNV_indel	Epi25	gold	consortium_wes_burden	Epi25_2024	Epi25_2024	NPRL3 included because publication reports exome-wide significance after joint CNV+SNV/indel analysis
+NAFE	NPRL3	ENSG00000103148	publication_joint_cnv_snv_high_confidence	joint CNV plus SNV/indel burden	CNV;SNV_indel	Epi25	gold	consortium_wes_burden	Epi25_2024	Epi25_2024	NPRL3 included because publication reports exome-wide significance after joint CNV+SNV/indel analysis

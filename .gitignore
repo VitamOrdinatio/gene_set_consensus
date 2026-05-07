@@ -1,3 +1,5 @@
+_notes/
+
 .venv/
 __pycache__/
 *.pyc
