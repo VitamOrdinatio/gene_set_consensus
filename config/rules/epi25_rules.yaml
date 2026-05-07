@@ -1,0 +1,15 @@
+epi25_2024_browser_exomewide_ptv:
+  variant_class: PTV
+  p_value_lte: 3.4e-7
+  odds_ratio_gt: 1
+  case_count_gte: 1
+
+epi25_2024_browser_strong_candidate:
+  p_value_lte: 1.0e-5
+  odds_ratio_gt: 1
+  case_count_gte: 3
+
+epi25_2024_browser_exploratory_candidate:
+  p_value_lte: 1.0e-3
+  odds_ratio_gt: 1
+  case_count_gte: 5
