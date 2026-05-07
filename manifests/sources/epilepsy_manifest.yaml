@@ -57,3 +57,29 @@ sources:
     file_format: tsv
   status: planned
   weight_tier: silver
+- source_id: gtr_epilepsy_gene_summary
+  source_name: GTR epilepsy gene summary
+  source_type: gtr_gene_summary
+  adapter: generic_gene_list
+  file_path: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
+  gene_column: gene_symbol
+  weight_tier: silver
+  source_weight: 2.0
+  status: planned
+  active: false
+  provenance:
+    source_release: GTR_FTP_late_2025
+    source_download_date: late_2025
+    source_snapshot: GTR_FTP_late_2025
+    parser_version: gtr_xml_gene_measure_parser_v0.2
+    extraction_rule_version: gtr_epilepsy_terms_v0.1
+    derived_from: /mnt/storage/gtr/gtr_ftp.xml
+    derived_artifact: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
+    evidence_semantics: clinical_testing_utilization
+    notes: Planned silver-tier GTR summary source. Not active in production release yet.
+    provider: NCBI Genetic Testing Registry
+    acquisition_method: local_pinned_ftp_xml_derivation
+    acquisition_date: late_2025
+  file_metadata:
+    path: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
+    file_format: tsv
