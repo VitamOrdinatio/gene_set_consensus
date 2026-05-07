@@ -1,0 +1,37 @@
+release:
+  release_id: epilepsy_gold_bronze_v0.1
+  phenotype_id: epilepsy_gold_bronze
+  release_date: "2026-05-07"
+  gsc_version: "0.1.0"
+  release_status: development
+  revision_policy: "Versioned scientific interpretation; not immutable biological truth."
+
+execution:
+  phenotype_config: config/phenotypes/epilepsy_gold_bronze.yaml
+  source_manifest: manifests/sources/epilepsy_manifest.yaml
+  identifier_map: data/metadata/gene_identifier_maps/epilepsy_identifier_map.tsv
+
+sources:
+  - source_id: epi25_2024_epi_high_confidence
+    source_tier: gold
+    source_weight: 3.0
+    source_release: Epi25_2024
+    source_path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_epi_high_confidence.tsv
+    acquisition_date: "2026-05-06"
+
+  - source_id: genes4epilepsy
+    source_tier: bronze
+    source_weight: 1.0
+    source_release: Genes4Epilepsy_v1
+    source_path: /mnt/storage/gene_sets/genes4epilepsy/genes4epilepsy.tsv
+    acquisition_date: "2026-05-06"
+
+rules:
+  - config/rules/epi25_rules.yaml
+  - config/rules/epi25_rollups.yaml
+
+expected_behavior:
+  score_formula: weighted_source_sum
+  overlapping_gold_bronze_score: 4.0
+  overlapping_gold_bronze_source_count: 2
+  notes: "Expected behavior applies to this release and source snapshot only."
