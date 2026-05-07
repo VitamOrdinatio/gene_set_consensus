@@ -58,3 +58,38 @@ Release configs answer:
 What scientific snapshot did this execution represent?
 ```
 
+
+## Registry-Hydrated Phenotype Configs
+
+Newer phenotype configs may reference canonical source IDs instead of repeating full source metadata.
+
+Example:
+
+```yaml
+sources:
+  - source_id: epi25_2024_epi_high_confidence
+    source_weight: 3.0
+
+  - source_id: genes4epilepsy
+    source_weight: 1.0
+```
+
+In this model:
+
+- source identity, adapter, file path, provenance, and tier are hydrated from `manifests/sources/*.yaml`
+- phenotype configs define source inclusion and weighting policy
+- release configs define the versioned scientific snapshot
+
+This reduces source metadata drift while preserving explicit weighting decisions.
+
+## Configuration Hierarchy
+
+`manifests/sources/*.yaml`
+  canonical source registry
+
+`config/phenotypes/*.yaml`
+  phenotype composition and weighting
+
+`config/releases/*.yaml`
+  versioned scientific release record
+  
