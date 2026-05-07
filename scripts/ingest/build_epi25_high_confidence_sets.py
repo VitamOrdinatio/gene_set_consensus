@@ -2,6 +2,7 @@
 from pathlib import Path
 import argparse
 import pandas as pd
+import yaml
 
 def browser_to_high_confidence(browser_df, symbol_map):
     out = browser_df.copy()
@@ -43,6 +44,7 @@ def main():
     parser.add_argument("--browser-core", default="/mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_browser_exomewide_ptv.tsv")
     parser.add_argument("--publication-joint", default="data/metadata/epi25/epi25_2024_publication_joint_high_confidence.tsv")
     parser.add_argument("--symbol-map", default="data/metadata/epi25/epi25_2024_high_confidence_ensembl_symbol_map.tsv")
+    parser.add_argument("--rollups", default="config/rules/epi25_rollups.yaml")
     parser.add_argument("--output-dir", default="/mnt/storage/gene_sets/epi25/2024/processed")
     args = parser.parse_args()
 
@@ -60,6 +62,29 @@ def main():
     if (combined["gene_symbol"].fillna("").str.strip() == "").any():
         missing = combined.loc[combined["gene_symbol"].fillna("").str.strip() == "", ["phenotype", "ensembl_gene_id", "evidence_channel"]]
         raise ValueError(f"Missing gene_symbol after mapping: {missing.to_dict(orient='records')}")
+
+    if args.rollups and Path(args.rollups).exists():
+        with open(args.rollups, "r", encoding="utf-8") as handle:
+            rollup_config = yaml.safe_load(handle) or {}
+        rollup_rows = []
+        for target_phenotype, rule in rollup_config.get("rollups", {}).items():
+            include_phenotypes = rule.get("include_phenotypes", [])
+            source_rows = combined[combined["phenotype"].isin(include_phenotypes)].copy()
+            for _, row in source_rows.iterrows():
+                new_row = row.copy()
+                new_row["phenotype"] = target_phenotype
+                new_row["evidence_channel"] = str(row["evidence_channel"]) + "_rollup"
+                new_row["evidence_basis"] = (
+                    str(row["evidence_basis"])
+                    + f"; rollup_from={row['phenotype']}"
+                )
+                rollup_rows.append(new_row)
+        if rollup_rows:
+            combined = pd.concat([combined, pd.DataFrame(rollup_rows)], ignore_index=True)
+            combined = combined.drop_duplicates(
+                subset=["phenotype", "gene_symbol", "ensembl_gene_id", "evidence_channel"],
+                keep="first"
+            )
 
     combined = combined.sort_values(
         by=["phenotype", "gene_symbol", "evidence_channel"],

@@ -1,0 +1,6 @@
+rollups:
+  EPI:
+    include_phenotypes:
+      - EPI
+      - DEE
+      - NAFE
