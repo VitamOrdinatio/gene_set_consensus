@@ -1,0 +1,34 @@
+phenotype:
+  phenotype_id: epilepsy_gold_bronze
+  phenotype_label: "Epilepsy gold + bronze consensus"
+  version: "v0.1"
+
+sources:
+  - source_id: epi25_2024_epi_high_confidence
+    source_name: Epi25 2024 EPI high-confidence genes
+    source_type: consortium_wes_burden
+    adapter: generic_gene_list
+    file_path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_epi_high_confidence.tsv
+    gene_column: gene_symbol
+    weight_tier: gold
+    source_weight: 3.0
+
+  - source_id: genes4epilepsy
+    source_name: Genes4Epilepsy
+    source_type: literature_derived
+    adapter: generic_gene_list
+    file_path: /mnt/storage/gene_sets/genes4epilepsy/genes4epilepsy.tsv
+    gene_column: gene_symbol
+    weight_tier: bronze
+    source_weight: 1.0
+
+scoring:
+  base_score: source_count
+  weighted_score: sum_source_weights
+  consensus_score_formula: weighted_score
+  minimum_source_count: 1
+  include_single_source_genes: true
+  deterministic_sort:
+    - consensus_score: descending
+    - source_count: descending
+    - gene_symbol: ascending
