@@ -176,7 +176,6 @@ def main():
     output.parent.mkdir(parents=True, exist_ok=True)
 
     rows = []
-    current_lab = None
     lab_id = ""
     lab_name = ""
 
@@ -184,20 +183,17 @@ def main():
         for event, elem in ET.iterparse(handle, events=("start", "end")):
             tag = strip_ns(elem.tag)
 
-            if event == "start" and tag == "GTRLab":
-                current_lab = elem
-                lab_id = elem.attrib.get("id", "")
-
             if event == "end" and tag == "GTRLab":
+                lab_id = elem.attrib.get("id", "")
+                lab_name = get_lab_name(elem)
                 elem.clear()
-                current_lab = None
+
+            if event == "end" and tag == "GTRLabData":
                 lab_id = ""
                 lab_name = ""
+                elem.clear()
 
             if event == "end" and tag == "GTRLabTest":
-                if current_lab is not None and not lab_name:
-                    lab_name = get_lab_name(current_lab)
-
                 test_id = elem.attrib.get("id", "")
                 gtr_accession = elem.attrib.get("GTRAccession", "")
                 test_version = elem.attrib.get("Version", "")

@@ -142,7 +142,7 @@ Observed example:
 Measure Type="Analyte"
 ```
 
-These records may support future metabolomics-oriented projects, especially if collaborators move toward:
+These records may support future metabolomics- or biochemical-genetics-oriented projects, especially if collaborators move toward:
 
 - clinical metabolomics
 - biochemical genetics
@@ -161,6 +161,8 @@ These should remain distinct from gene-set products unless a validated analyte-t
 
 ## Conservative v1 Parser Policy
 
+Current v1 implementation prioritizes conservative extraction fidelity over aggressive ontology inference.
+
 The initial production parser should:
 
 - operate only on pinned local GTR XML snapshots
@@ -171,7 +173,7 @@ The initial production parser should:
 - preserve lab metadata
 - preserve parser version
 - preserve extraction rule version
-- avoid fuzzy ontology expansion
+- avoid uncontrolled ontology expansion
 - avoid implicit or hidden phenotype collapsing
 - avoid premature XML element clearing during streaming iteration
 - preserve parent-child semantic integrity during extraction
@@ -203,7 +205,7 @@ A GTR-derived GSC-ready gene evidence row should preserve:
 | `source_snapshot`         | Pinned GTR snapshot identifier                   |
 | `parser_version`          | Versioned XML parser behavior                    |
 | `extraction_rule_version` | Versioned phenotype extraction rule behavior     |
-
+| `independent_lab_count` | Laboratory count |
 
 ## Phenotype Matching
 
@@ -235,6 +237,33 @@ Example mitochondrial terms may include:
 These term sets should eventually live in versioned extraction-rule configuration files, not hardcoded parser logic.
 
 This allows the same pinned GTR snapshot to be reinterpreted under evolving phenotype definitions without modifying raw source data.
+
+## Ontology Governance
+
+Phenotype matching may introduce ontology expansion effects.
+
+For example:
+- broad neurological syndromes
+- developmental disorders
+- mitochondrial umbrella conditions
+
+may recursively connect to many downstream trait aliases.
+
+Therefore:
+
+```text
+raw matched trait counts should not automatically be interpreted as phenotype specificity
+```
+
+Future summarization layers may apply:
+
+- ontology collapse
+- trait deduplication
+- generic term suppression
+- primary-keyword prioritization
+- ontology depth constraints
+
+to reduce trait explosion and preserve phenotype interpretability.
 
 ## Parser Version vs Extraction Rule Version
 
@@ -306,6 +335,19 @@ genes incidentally captured by broad sequencing modality
 
 ## Conservative v1 Policy for Broad Tests
 
+Current v1 GTR summarization behavior:
+
+- preserve all raw parsed evidence rows
+- exclude `test_scope = exome` from summary counts
+- exclude `test_scope = genome` from summary counts
+- preserve excluded records in raw evidence outputs
+- aggregate evidence at the gene level for GSC-ready summaries
+
+This allows:
+- reproducible raw evidence preservation
+- conservative phenotype-scoped summarization
+- future reinterpretation under revised policies
+
 For GSC v1:
 
 - raw parsed evidence tables should preserve all extracted records
@@ -372,6 +414,11 @@ This distinction is critical because:
 ```text
 clinical testing utilization evidence is not equivalent to mechanistic disease certainty
 ```
+
+Notes:
+`independent_lab_count` should be interpreted as a clinical utilization diversity metric rather than mechanistic evidence.
+
+Higher values suggest broader cross-laboratory diagnostic adoption.
 
 ## Strategic Summary
 

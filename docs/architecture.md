@@ -2,9 +2,11 @@
 
 ## Purpose
 
-`gene_set_consensus` (GSC) is a phenotype-scoped gene-level evidence construction pipeline.
+`gene_set_consensus` (GSC) is a phenotype-scoped gene-level evidence harmonization and consensus construction pipeline.
 
-It transforms heterogeneous phenotype-associated gene lists into deterministic, provenance-aware consensus gene evidence.
+GSC transforms heterogeneous biological, statistical, clinical, and translational evidence sources into deterministic, provenance-aware phenotype-scoped gene evidence.
+
+GSC is designed to preserve evidence semantics rather than flattening all evidence into a single undifferentiated signal.
 
 ---
 
@@ -81,6 +83,36 @@ reproducibility validation
 
 ---
 
+## Evidence Semantics Layer
+
+GSC distinguishes between different categories of evidence semantics.
+
+Examples include:
+
+| Evidence Type | Example Source | Interpretation |
+|---|---|---|
+| statistical association | Epi25 | disease-associated signal |
+| functional localization | MitoCarta | subcellular/pathway localization |
+| clinical utilization | GTR | real-world diagnostic testing usage |
+| clinical interpretation | future ClinVar overlays | submitted clinical variant interpretation |
+| literature-derived overlays | publications | curated or exploratory biological assertions |
+
+These evidence channels are intentionally preserved independently.
+
+GSC avoids treating all evidence as interchangeable.
+
+This distinction is critical because:
+
+```text
+utilization does not equal causality
+localization does not equal disease association
+association does not equal mechanistic certainty
+```
+
+Future scoring frameworks may weight evidence differently depending on semantic category.
+
+---
+
 ## Source Adapters
 
 Adapters translate external file structures into a common internal shape.
@@ -98,6 +130,17 @@ Examples:
 | ----------------------------------------------- | ------------------- |
 | simple TSV with `gene_symbol`                   | `generic_gene_list` |
 | GTR-style TSV with condition/test/panel columns | `gtr_panel`         |
+
+However, evidence interpretation is governed separately from file parsing.
+
+Two sources may share similar file structures while carrying fundamentally different evidence semantics.
+
+For example:
+
+- a statistically validated cohort-derived gene list
+- a clinically utilized diagnostic panel-derived gene list
+
+may both appear as TSV files, yet represent distinct evidence classes requiring different downstream interpretation policies.
 
 ---
 
@@ -132,6 +175,46 @@ gene_provenance.tsv.provenance_id
 ```
 
 This makes each gene-level evidence record traceable to contributing source rows.
+
+---
+
+## Raw Evidence vs Summarized Evidence
+
+GSC distinguishes between:
+
+### Raw Evidence
+
+Detailed parser-level outputs preserving:
+
+- ontology relationships
+- source rows
+- clinical assertions
+- test metadata
+- parser provenance
+- extraction-rule provenance
+
+Raw evidence prioritizes:
+- reproducibility
+- auditability
+- future reinterpretation
+
+---
+
+### Summarized Evidence
+
+Collapsed phenotype-scoped summaries intended for downstream aggregation and consensus scoring.
+
+Summaries may apply:
+- ontology normalization
+- duplicate collapse
+- broad test suppression
+- evidence weighting
+- source-tier interpretation policies
+
+This distinction is especially important for complex sources such as:
+- GTR XML
+- future ClinVar XML
+- ontology-expanded evidence systems
 
 ---
 
@@ -204,7 +287,7 @@ Determinism is enforced through:
 
 ## Design Principle
 
-GSC should remain a stable engine.
+GSC should remain a stable evidence harmonization engine.
 
 Phenotype-specific behavior should be controlled by:
 
@@ -257,6 +340,37 @@ This allows future users to distinguish:
 - direct statistical evidence
 vs
 - publication-level interpretive assertions
+
+---
+
+## XML Adapter Architecture
+
+Certain evidence sources are distributed as large structured XML datasets.
+
+Examples include:
+- GTR XML
+- future ClinVar XML
+
+These sources require:
+- streaming parsers
+- ontology-aware extraction
+- parser versioning
+- extraction-rule versioning
+- release-scoped provenance
+
+GSC therefore separates:
+
+```text
+parser behavior
+```
+
+from:
+
+```text
+scientific interpretation policy
+```
+
+This allows the same pinned XML snapshot to be reinterpreted under evolving phenotype definitions without modifying raw source data.
 
 ---
 
