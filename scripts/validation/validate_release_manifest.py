@@ -30,6 +30,14 @@ def main():
         if not path.exists():
             errors.append(f"Missing {label}: {path}")
 
+    manifest_sources = {}
+    if source_manifest_path.exists():
+        source_manifest = load_yaml(source_manifest_path)
+        manifest_sources = {
+            src["source_id"]: src
+            for src in source_manifest.get("sources", [])
+        }
+
     if phenotype_config_path.exists():
         phenotype_config = load_yaml(phenotype_config_path)
         config_sources = {
@@ -60,6 +68,9 @@ def main():
             source_path = Path(source.get("source_path", ""))
             if not source_path.exists():
                 errors.append(f"Missing source_path for {source_id}: {source_path}")
+
+            if manifest_sources and source_id not in manifest_sources:
+                errors.append(f"Release source_id not found in source manifest: {source_id}")
 
     for rule in release.get("rules", []):
         rule_path = Path(rule)
