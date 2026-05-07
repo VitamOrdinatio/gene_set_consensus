@@ -38,7 +38,7 @@ def hydrate_sources(phenotype_sources, manifest_path):
             "adapter": registry_source["adapter"],
             "file_path": registry_source["file_metadata"]["path"],
             "gene_column": source.get("gene_column", registry_source.get("gene_column", "gene_symbol")),
-            "weight_tier": source["weight_tier"],
+            "weight_tier": source.get("weight_tier", registry_source.get("weight_tier", registry_source.get("source_tier", ""))),
             "source_weight": source["source_weight"],
         }
 

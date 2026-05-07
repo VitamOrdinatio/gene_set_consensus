@@ -21,6 +21,7 @@ sources:
   file_metadata:
     path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_epi_high_confidence.tsv
     file_format: tsv
+  weight_tier: gold
 - source_id: genes4epilepsy
   source_name: Genes4Epilepsy
   source_type: literature_derived
@@ -37,6 +38,7 @@ sources:
   file_metadata:
     path: /mnt/storage/gene_sets/genes4epilepsy/genes4epilepsy.tsv
     file_format: tsv
+  weight_tier: bronze
 - source_id: gtr_epilepsy_panel
   source_name: GTR epilepsy panel
   source_type: clinical_panel
@@ -54,3 +56,4 @@ sources:
     path: /mnt/storage/gtr/epilepsy_gtr_panel.tsv
     file_format: tsv
   status: planned
+  weight_tier: silver
