@@ -1,68 +1,56 @@
-manifest_version: "1.0"
-
+manifest_version: '1.0'
 sources:
-
-  - source_id: epi25_2024_epi_high_confidence
-    source_name: "Epi25 2024 EPI high-confidence genes"
-    source_type: consortium_wes_burden
-    adapter: generic_gene_list
-
-    biological_context:
-      phenotype: epilepsy
-      phenotype_scope: EPI
-      species: Homo sapiens
-      genome_build: GRCh38
-
-    provenance:
-      provider: Epi25
-      acquisition_method: derived_from_browser_and_publication_evidence
-      acquisition_date: "2026-05-06"
-      source_release: "Epi25_2024"
-      evidence_channels:
-        - browser_exomewide_ptv
-        - publication_joint_cnv_snv_high_confidence
-        - phenotype_rollup
-
-    file_metadata:
-      path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_epi_high_confidence.tsv
-      file_format: tsv
-
-  - source_id: genes4epilepsy
-    source_name: "Genes4Epilepsy"
-    source_type: literature_derived
-    adapter: generic_gene_list
-
-    biological_context:
-      phenotype: epilepsy
-      species: Homo sapiens
-      genome_build: GRCh38
-
-    provenance:
-      provider: Genes4Epilepsy
-      acquisition_method: publication_table_extraction
-      acquisition_date: "2026-05-06"
-      source_release: "Genes4Epilepsy_v1"
-
-    file_metadata:
-      path: /mnt/storage/gene_sets/genes4epilepsy/genes4epilepsy.tsv
-      file_format: tsv
-
-  - source_id: gtr_epilepsy_panel
-    source_name: "GTR epilepsy panel"
-    source_type: clinical_panel
-    adapter: gtr_panel
-
-    biological_context:
-      phenotype: epilepsy
-      species: Homo sapiens
-      genome_build: GRCh38
-
-    provenance:
-      provider: NCBI_GTR
-      acquisition_method: panel_export
-      acquisition_date: "pending"
-      source_release: "pending_real_export"
-
-    file_metadata:
-      path: /mnt/storage/gtr/epilepsy_gtr_panel.tsv
-      file_format: tsv
+- source_id: epi25_2024_epi_high_confidence
+  source_name: Epi25 2024 EPI high-confidence genes
+  source_type: consortium_wes_burden
+  adapter: generic_gene_list
+  biological_context:
+    phenotype: epilepsy
+    phenotype_scope: EPI
+    species: Homo sapiens
+    genome_build: GRCh38
+  provenance:
+    provider: Epi25
+    acquisition_method: derived_from_browser_and_publication_evidence
+    acquisition_date: '2026-05-06'
+    source_release: Epi25_2024
+    evidence_channels:
+    - browser_exomewide_ptv
+    - publication_joint_cnv_snv_high_confidence
+    - phenotype_rollup
+  file_metadata:
+    path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_epi_high_confidence.tsv
+    file_format: tsv
+- source_id: genes4epilepsy
+  source_name: Genes4Epilepsy
+  source_type: literature_derived
+  adapter: generic_gene_list
+  biological_context:
+    phenotype: epilepsy
+    species: Homo sapiens
+    genome_build: GRCh38
+  provenance:
+    provider: Genes4Epilepsy
+    acquisition_method: publication_table_extraction
+    acquisition_date: '2026-05-06'
+    source_release: Genes4Epilepsy_v1
+  file_metadata:
+    path: /mnt/storage/gene_sets/genes4epilepsy/genes4epilepsy.tsv
+    file_format: tsv
+- source_id: gtr_epilepsy_panel
+  source_name: GTR epilepsy panel
+  source_type: clinical_panel
+  adapter: gtr_panel
+  biological_context:
+    phenotype: epilepsy
+    species: Homo sapiens
+    genome_build: GRCh38
+  provenance:
+    provider: NCBI_GTR
+    acquisition_method: panel_export
+    acquisition_date: pending
+    source_release: pending_real_export
+  file_metadata:
+    path: /mnt/storage/gtr/epilepsy_gtr_panel.tsv
+    file_format: tsv
+  status: planned
