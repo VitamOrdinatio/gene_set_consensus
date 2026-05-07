@@ -1,0 +1,19 @@
+rule_id: gtr_epilepsy_v0.1
+phenotype_id: gtr_epilepsy
+source_snapshot: GTR_FTP_late_2025
+parser_version: gtr_xml_gene_measure_parser_v0.2
+extraction_rule_version: gtr_epilepsy_terms_v0.1
+match_scope: trait_text
+measure_types_included:
+  - Gene
+ontology_expansion: false
+broad_test_policy: preserve_raw_exclude_from_summary
+terms:
+  - epilepsy
+  - epileptic
+  - seizure
+  - seizures
+  - developmental epileptic encephalopathy
+  - infantile spasms
+  - generalized epilepsy
+  - focal epilepsy

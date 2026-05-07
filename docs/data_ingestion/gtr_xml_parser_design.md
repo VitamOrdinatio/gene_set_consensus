@@ -53,6 +53,8 @@ These identifiers should be preserved when possible.
 
 ## Gene Evidence Route
 
+Not all `Measure` records represent genes; modality interpretation must therefore occur before downstream aggregation.
+
 For GSC v1, the preferred conservative gene extraction route is:
 
 ```text
@@ -170,7 +172,7 @@ The initial production parser should:
 - preserve parser version
 - preserve extraction rule version
 - avoid fuzzy ontology expansion
-- avoid hidden phenotype collapsing
+- avoid implicit or hidden phenotype collapsing
 - avoid premature XML element clearing during streaming iteration
 - preserve parent-child semantic integrity during extraction
 
@@ -263,6 +265,113 @@ It does not directly represent:
 - consortium statistical significance
 
 Genes may appear in broad panels, exploratory panels, or commercially permissive testing products. Raw GTR frequency should therefore not be interpreted as mechanistic certainty.
+
+## Broad Sequencing Test Interpretation Policy
+
+GTR contains heterogeneous clinical testing modalities, including:
+
+- targeted single-gene assays
+- focused disease panels
+- broad multigene panels
+- whole exome sequencing (WES)
+- whole genome sequencing (WGS)
+
+Broad sequencing assays introduce an important interpretation challenge for GSC.
+
+For example:
+
+```text
+a WGS clinical test may technically assay ~20,000 genes
+```
+
+but this does not imply:
+
+```text
+all assayed genes are phenotype-relevant
+```
+
+for the associated clinical indication.
+
+Therefore, GSC must distinguish:
+
+```text
+genes explicitly linked to phenotype-associated clinical interpretation
+```
+
+from:
+
+```text
+genes incidentally captured by broad sequencing modality
+```
+
+## Conservative v1 Policy for Broad Tests
+
+For GSC v1:
+
+- raw parsed evidence tables should preserve all extracted records
+- phenotype-matched WES/WGS records may remain in raw evidence outputs
+- GSC-ready summarized gene sets should conservatively exclude broad sequencing tests unless explicit phenotype-linked gene evidence is present
+
+Broad assays should not automatically inflate phenotype-specific gene consensus.
+
+## Proposed Test Scope Classification
+
+Future GTR summarization may classify tests into categories such as:
+
+| test_scope      | interpretation                      |
+| --------------- | ----------------------------------- |
+| `targeted_gene` | single-gene or highly focused assay |
+| `small_panel`   | limited disease-focused panel       |
+| `medium_panel`  | moderate panel size                 |
+| `large_panel`   | very broad multigene panel          |
+| `exome`         | whole exome sequencing              |
+| `genome`        | whole genome sequencing             |
+| `unknown`       | unable to confidently classify      |
+
+These classifications may eventually support:
+
+- filtering
+- weighting
+- sensitivity analyses
+- provenance-aware interpretation
+- reproducible downstream GSC aggregation
+
+## Raw Evidence vs GSC-Ready Summaries
+
+GSC-ready summaries are derived artifacts generated from raw parsed evidence rather than independent primary-source datasets.
+
+GTR-derived outputs should be separated conceptually into:
+
+### Raw Parsed Evidence
+
+Detailed row-level evidence preserving:
+
+- traits
+- measures
+- tests
+- labs
+- accessions
+- parser provenance
+
+These outputs prioritize completeness and reproducibility.
+
+### GSC-Ready Gene Summaries
+
+Collapsed phenotype-scoped summaries intended for consensus scoring.
+
+These summaries may apply conservative interpretation policies such as:
+
+- exclusion of broad WES/WGS tests
+- panel-size heuristics
+- duplicate assertion collapse
+- analyte exclusion
+- lab redundancy reduction
+
+This distinction is critical because:
+
+```text
+clinical testing utilization evidence is not equivalent to mechanistic disease certainty
+```
 
 ## Strategic Summary
 

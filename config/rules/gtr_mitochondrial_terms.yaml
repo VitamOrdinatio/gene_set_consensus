@@ -1,0 +1,21 @@
+rule_id: gtr_mitochondrial_v0.1
+phenotype_id: gtr_mitochondrial
+source_snapshot: GTR_FTP_late_2025
+parser_version: gtr_xml_gene_measure_parser_v0.2
+extraction_rule_version: gtr_mitochondrial_terms_v0.1
+match_scope: trait_text
+measure_types_included:
+  - Gene
+ontology_expansion: false
+broad_test_policy: preserve_raw_exclude_from_summary
+terms:
+  - mitochondrial
+  - mitochondria
+  - mitochondrial disease
+  - mitochondrial disorder
+  - mitochondrial depletion
+  - oxidative phosphorylation
+  - oxphos
+  - respiratory chain
+  - leigh syndrome
+  - polg
