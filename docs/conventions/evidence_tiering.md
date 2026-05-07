@@ -8,6 +8,16 @@ Not all evidence sources carry equivalent biological or clinical meaning.
 
 This document defines the conceptual interpretation framework for evidence tiering within GSC.
 
+See also:
+
+`docs/conventions/evidence_semantics_and_tiers.md`
+
+for the formal distinction between:
+
+- evidence semantics
+- evidence confidence tiers
+- semantic orthogonality
+
 ---
 
 ## Core Principle
@@ -38,36 +48,40 @@ rather than collapsing all evidence into a single undifferentiated score.
 
 ### Platinum
 
-Expert-curated, highly validated, or consensus clinical resources.
+Highest-confidence evidence with exceptional rigor, direct disease relevance, and strong governance.
+
+Platinum evidence generally reflects direct large-scale human disease-association evidence or exceptionally mature expert consensus frameworks.
 
 Characteristics:
 
-- extensive expert review
-- strong curation
-- stable interpretation frameworks
-- low exploratory noise
-
-Examples:
-
-- future expert-curated overlays
-- future consensus diagnostic standards
-
-### Gold
-
-Strong statistical or experimental evidence directly associating genes with phenotype.
-
-Characteristics:
-
-- replicated cohort studies
-- statistically rigorous association
-- disease-focused analyses
-- strong publication support
+- massive cohort scale where applicable
+- stringent statistical conservatism
+- highly reproducible
+- direct disease-association evidence
+- exceptional governance quality
 
 Examples:
 
 - Epi25 high-confidence loci
-- replicated rare disease cohorts
-- future validated transcriptomic convergence analyses
+
+Platinum tier should remain rare.
+
+### Gold
+
+Strong biological evidence with high-quality validation and governance.
+
+Characteristics:
+
+- strong biological evidence
+- multi-modal integration
+- extensive validation
+- high governance quality
+
+Examples:
+
+- MitoCarta
+
+Gold evidence is highly valuable but may not directly represent disease association.
 
 ### Silver
 
@@ -116,6 +130,7 @@ Examples:
 - broad literature mining
 - exploratory computational overlays
 - weakly replicated associations
+- Genes4Epilepsy
 
 ---
 
