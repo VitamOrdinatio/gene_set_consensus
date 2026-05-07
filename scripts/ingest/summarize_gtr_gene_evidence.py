@@ -5,11 +5,29 @@ import pandas as pd
 
 EXCLUDED_TEST_SCOPES = {"exome", "genome"}
 
+def explode_pipe_values(values):
+    out = []
+    for value in values:
+        for token in str(value).split("|"):
+            token = token.strip()
+            if token and token.lower() != "nan":
+                out.append(token)
+    return out
+
 def pipe_unique(values, limit=None):
     vals = sorted({str(v).strip() for v in values if str(v).strip() and str(v).strip().lower() != "nan"})
     if limit is not None:
         vals = vals[:limit]
     return "|".join(vals)
+
+def pipe_unique_exploded(values, limit=None):
+    vals = sorted(set(explode_pipe_values(values)))
+    if limit is not None:
+        vals = vals[:limit]
+    return "|".join(vals)
+
+def count_unique_exploded(values):
+    return len(set(explode_pipe_values(values)))
 
 def summarize(input_path, output_path, source_id, source_name, source_tier):
     df = pd.read_csv(input_path, sep="\t", dtype=str).fillna("")
@@ -29,17 +47,21 @@ def summarize(input_path, output_path, source_id, source_name, source_tier):
         lab_ids = sorted(set(x for x in group["lab_id"].tolist() if x))
         trait_ids = sorted(set(x for x in group["matched_trait_id"].tolist() if x))
 
+        matched_keyword_count = count_unique_exploded(group["matched_keyword"])
+        matched_trait_name_count = count_unique_exploded(group["matched_trait_name"])
         rows.append({
             "gene_symbol": gene_symbol,
             "gene_id": gene_id,
             "gtr_test_count": len(gtr_accessions),
             "independent_lab_count": len(lab_ids),
             "matched_trait_count": len(trait_ids),
-            "test_scope_summary": pipe_unique(group["test_scope"]),
-            "matched_keywords": pipe_unique(group["matched_keyword"]),
-            "matched_trait_names": pipe_unique(group["matched_trait_name"], limit=25),
-            "gtr_accessions": pipe_unique(gtr_accessions, limit=50),
-            "lab_ids": pipe_unique(lab_ids, limit=50),
+            "unique_matched_keyword_count": matched_keyword_count,
+            "matched_trait_name_count": matched_trait_name_count,
+            "test_scope_summary": pipe_unique_exploded(group["test_scope"]),
+            "matched_keywords": pipe_unique_exploded(group["matched_keyword"]),
+            "matched_trait_names_capped": pipe_unique_exploded(group["matched_trait_name"], limit=25),
+            "gtr_accessions_capped": pipe_unique(gtr_accessions, limit=50),
+            "lab_ids_capped": pipe_unique(lab_ids, limit=50),
             "source_id": source_id,
             "source_name": source_name,
             "source_tier": source_tier,
