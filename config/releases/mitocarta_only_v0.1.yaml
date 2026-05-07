@@ -1,0 +1,27 @@
+release:
+  release_id: mitocarta_only_v0.1
+  phenotype_id: mitocarta_only
+  release_date: "2026-05-07"
+  gsc_version: "0.1.0"
+  release_status: development
+  revision_policy: "Versioned scientific interpretation based on MitoCarta3.0; future MitoCarta releases may change membership."
+
+execution:
+  phenotype_config: config/phenotypes/mitocarta_only.yaml
+  source_manifest: manifests/sources/mitochondrial_manifest.yaml
+  identifier_map: data/example/identifier_map.tsv
+
+sources:
+  - source_id: mitocarta_human
+    source_tier: gold
+    source_weight: 3.0
+    source_release: MitoCarta3.0
+    source_path: /mnt/storage/gene_sets/mitocarta/mitocarta_human.tsv
+    original_source_file: /mnt/storage/gene_sets/mitocarta/Human.MitoCarta3.0.xls
+    acquisition_date: "2026-05-06"
+
+expected_behavior:
+  score_formula: weighted_source_sum
+  single_source_score: 3.0
+  expected_gene_count: 1136
+  notes: "Expected behavior applies to the staged MitoCarta3.0 human worksheet snapshot only."
