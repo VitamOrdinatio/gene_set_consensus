@@ -33,6 +33,8 @@ from gene_set_consensus.manifests import (
     build_manifest_source_lookup
 )
 
+from gene_set_consensus.source_registry import hydrate_sources
+
 def detect_separator(path):
     suffix = Path(path).suffix.lower()
     if suffix == ".tsv":
@@ -84,6 +86,10 @@ def main():
     if args.source_manifest:
         manifest = load_source_manifest(args.source_manifest)
         manifest_lookup = build_manifest_source_lookup(manifest)
+        phenotype_config["sources"] = hydrate_sources(
+            phenotype_config["sources"],
+            args.source_manifest
+        )
         logger.info(f"source_manifest={args.source_manifest}")
 
     all_normalized = []

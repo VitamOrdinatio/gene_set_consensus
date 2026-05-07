@@ -69,6 +69,8 @@ def main():
             python,
             "scripts/step_01_validate_inputs.py",
             *shared_args,
+            "--source-manifest",
+            args.source_manifest,
         ],
         "step_01_validate_inputs",
     )

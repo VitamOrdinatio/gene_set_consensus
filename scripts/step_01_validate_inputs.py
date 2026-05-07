@@ -9,12 +9,14 @@ from gene_set_consensus.config import load_project_config, load_phenotype_config
 from gene_set_consensus.logging_utils import setup_run_dirs, get_logger
 from gene_set_consensus.runtime import generate_run_id
 from gene_set_consensus.validation import validate_project_paths, validate_sources
+from gene_set_consensus.source_registry import hydrate_sources
 
 def main():
     parser = argparse.ArgumentParser(description="Validate GSC project and phenotype inputs.")
     parser.add_argument("--config", default="config/config.yaml")
     parser.add_argument("--phenotype", required=True)
     parser.add_argument("--run-id", default=None)
+    parser.add_argument("--source-manifest", default=None)
     args = parser.parse_args()
     project_config = load_project_config(args.config)
     phenotype_path = resolve_phenotype_config_path(project_config, args.phenotype)
@@ -28,6 +30,12 @@ def main():
     errors = []
     warnings = []
     errors.extend(validate_project_paths(project_config))
+    if args.source_manifest:
+        phenotype_config["sources"] = hydrate_sources(
+            phenotype_config["sources"],
+            args.source_manifest
+        )
+
     source_errors, source_warnings = validate_sources(phenotype_config)
     errors.extend(source_errors)
     warnings.extend(source_warnings)
