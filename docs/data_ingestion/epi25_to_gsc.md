@@ -1,4 +1,4 @@
-# Epi25-to-GSC Build Notes
+# Epi25-to-GSC Data Ingestion Strategy
 
 **Purpose:** summarize how to use Epi25 consortium outputs to build deterministic epilepsy gene sets for the `gene_set_consensus` (GSC) repository.
 
