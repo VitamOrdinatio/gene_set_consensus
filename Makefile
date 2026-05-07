@@ -49,3 +49,8 @@ run-epilepsy:
 validate-releases:
 	python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_gold_bronze_v0.1.yaml
 	python scripts/validation/validate_release_manifest.py --release config/releases/mitocarta_only_v0.1.yaml
+
+
+validate-source-manifests:
+	python scripts/validation/validate_source_manifest.py --manifest manifests/sources/epilepsy_manifest.yaml
+	python scripts/validation/validate_source_manifest.py --manifest manifests/sources/mitochondrial_manifest.yaml

@@ -5,7 +5,8 @@ sources:
   - source_id: mitocarta_human
     source_name: "MitoCarta Human"
     source_type: curated_database
-    adapter: generic_gene_list
+    adapter: mitocarta
+    status: active
 
     biological_context:
       phenotype: mitochondrial_disease
@@ -14,18 +15,20 @@ sources:
 
     provenance:
       provider: Broad_Institute
-      acquisition_method: manual_download
+      acquisition_method: manual_download_and_worksheet_export
       acquisition_date: "2026-05-06"
-      source_version: "pending_real_download"
+      source_release: "MitoCarta3.0"
 
     file_metadata:
       path: /mnt/storage/gene_sets/mitocarta/mitocarta_human.tsv
+      original_source_file: /mnt/storage/gene_sets/mitocarta/Human.MitoCarta3.0.xls
       file_format: tsv
 
   - source_id: gtr_mitochondrial_panel
     source_name: "GTR mitochondrial disease panel"
     source_type: clinical_panel
     adapter: gtr_panel
+    status: planned
 
     biological_context:
       phenotype: mitochondrial_disease
@@ -35,8 +38,8 @@ sources:
     provenance:
       provider: NCBI_GTR
       acquisition_method: panel_export
-      acquisition_date: "2026-05-06"
-      source_version: "pending_real_export"
+      acquisition_date: "pending"
+      source_release: "pending_real_export"
 
     file_metadata:
       path: /mnt/storage/gtr/mitochondrial_disease_gtr_panel.tsv
@@ -46,6 +49,7 @@ sources:
     source_name: "Literature-derived mitochondrial disease genes"
     source_type: literature_derived
     adapter: generic_gene_list
+    status: planned
 
     biological_context:
       phenotype: mitochondrial_disease
@@ -55,8 +59,8 @@ sources:
     provenance:
       provider: literature_curation
       acquisition_method: manual_literature_extraction
-      acquisition_date: "2026-05-06"
-      source_version: "pending_real_curation"
+      acquisition_date: "pending"
+      source_release: "pending_real_curation"
 
     file_metadata:
       path: /mnt/storage/gene_sets/mitochondrial_disease/literature_mito_genes.tsv
