@@ -46,7 +46,10 @@ def build_gene_frequency_table(normalized_df, gene_source_matrix):
         .agg(
             source_list=("source_id", lambda x: "|".join(sorted(set(x)))),
             mapping_status_summary=("mapping_status", lambda x: "|".join(sorted(set(x)))),
-            weight_tier_summary=("weight_tier", lambda x: "|".join(sorted(set(x))))
+            weight_tier_summary=("weight_tier", lambda x: "|".join(sorted(set(x)))),
+            evidence_semantics_summary=("evidence_semantics", lambda x: "|".join(sorted(set(x)))),
+            evidence_tier_summary=("evidence_tier", lambda x: "|".join(sorted(set(x)))),
+            semantic_channel_summary=("semantic_channel", lambda x: "|".join(sorted(set(x))))
         )
         .reset_index()
     )
@@ -65,6 +68,9 @@ def build_gene_frequency_table(normalized_df, gene_source_matrix):
             "weighted_source_sum",
             "source_list",
             "weight_tier_summary",
+            "evidence_semantics_summary",
+            "evidence_tier_summary",
+            "semantic_channel_summary",
             "mapping_status_summary"
         ]
     ]

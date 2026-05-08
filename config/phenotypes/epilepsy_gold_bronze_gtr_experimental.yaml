@@ -10,7 +10,11 @@ sources:
   file_path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_epi_high_confidence.tsv
   gene_column: gene_symbol
   weight_tier: gold
+  evidence_semantics: statistical_association
+  evidence_tier: platinum
   source_weight: 3.0
+  semantic_channel: direct_disease
+  scoring_rule_id: epi25_exomewide_v0.1
 - source_id: genes4epilepsy
   source_name: Genes4Epilepsy
   source_type: literature_derived
@@ -18,7 +22,11 @@ sources:
   file_path: /mnt/storage/gene_sets/genes4epilepsy/genes4epilepsy.tsv
   gene_column: gene_symbol
   weight_tier: bronze
+  evidence_semantics: exploratory_literature
+  evidence_tier: bronze
   source_weight: 1.0
+  semantic_channel: exploratory_literature
+  scoring_rule_id: genes4epilepsy_membership_v0.1
 - source_id: gtr_epilepsy_gene_summary
   source_name: GTR epilepsy gene summary
   source_type: gtr_gene_summary
@@ -26,7 +34,11 @@ sources:
   file_path: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
   gene_column: gene_symbol
   weight_tier: silver
+  evidence_semantics: clinical_utilization
+  evidence_tier: silver
   source_weight: 2.0
+  semantic_channel: clinical_utilization
+  scoring_rule_id: gtr_utilization_v0.1
 scoring:
   base_score: source_count
   weighted_score: sum_source_weights

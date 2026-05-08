@@ -40,6 +40,10 @@ def normalize_source_dataframe(
     source_name = source_config["source_name"]
     source_type = source_config["source_type"]
     source_weight = float(source_config["source_weight"])
+    evidence_semantics = source_config.get("evidence_semantics", "unspecified")
+    evidence_tier = source_config.get("evidence_tier", source_config.get("weight_tier", "unspecified"))
+    semantic_channel = source_config.get("semantic_channel", evidence_semantics)
+    scoring_rule_id = source_config.get("scoring_rule_id", "")
     weight_tier = source_config["weight_tier"]
     gene_column = source_config["gene_column"]
 
@@ -78,6 +82,10 @@ def normalize_source_dataframe(
             "source_type": source_type,
             "weight_tier": weight_tier,
             "source_weight": source_weight,
+            "evidence_semantics": evidence_semantics,
+            "evidence_tier": evidence_tier,
+            "semantic_channel": semantic_channel,
+            "scoring_rule_id": scoring_rule_id,
             "source_row_number": idx + 1,
             "input_gene_symbol": raw_gene,
             "normalized_gene_symbol": normalized_gene_symbol,

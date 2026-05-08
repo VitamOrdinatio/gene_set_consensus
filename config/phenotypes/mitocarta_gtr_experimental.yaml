@@ -11,6 +11,10 @@ sources:
   gene_column: Symbol
   weight_tier: gold
   source_weight: 3.0
+  evidence_semantics: functional_localization
+  evidence_tier: gold
+  semantic_channel: contextual_biology
+  scoring_rule_id: mitocarta_contextual_v0.1
 - source_id: gtr_mitochondrial_gene_summary
   source_name: GTR mitochondrial gene summary
   source_type: gtr_gene_summary
@@ -19,6 +23,10 @@ sources:
   gene_column: gene_symbol
   weight_tier: silver
   source_weight: 2.0
+  evidence_semantics: clinical_utilization
+  evidence_tier: silver
+  semantic_channel: clinical_utilization
+  scoring_rule_id: gtr_utilization_v0.1
 scoring:
   base_score: source_count
   weighted_score: sum_source_weights
