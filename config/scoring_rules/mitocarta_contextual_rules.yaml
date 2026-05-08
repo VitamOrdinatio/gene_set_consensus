@@ -1,0 +1,12 @@
+ruleset:
+  ruleset_id: mitocarta_contextual_rules
+  version: v0.1
+  source_family: mitocarta
+
+rules:
+  - scoring_rule_id: mitocarta_contextual_v0.1
+    semantic_channel: contextual_biology
+    evidence_tier: gold
+    rule_type: fixed_score
+    score: 2.0
+    notes: MitoCarta membership contributes mitochondrial contextual biology evidence, not disease causality.

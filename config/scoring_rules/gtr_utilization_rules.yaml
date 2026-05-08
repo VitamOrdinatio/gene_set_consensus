@@ -1,0 +1,19 @@
+ruleset:
+  ruleset_id: gtr_utilization_rules
+  version: v0.1
+  source_family: gtr
+
+rules:
+  - scoring_rule_id: gtr_utilization_v0.1
+    semantic_channel: clinical_utilization
+    evidence_tier: silver
+    rule_type: saturated_support
+    channel_cap: 1.0
+    saturation_point: 20
+    support_fields:
+      targeted_gene_count: 1.0
+      small_panel_count: 0.75
+      medium_panel_count: 0.5
+      large_panel_count: 0.25
+      exome_or_genome_count: 0.0
+    notes: Saturated clinical testing utilization score; broad exome/genome assays do not inflate evidence.

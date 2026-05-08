@@ -1,0 +1,26 @@
+ruleset:
+  ruleset_id: epi25_semantic_rules
+  version: v0.1
+  source_family: epi25
+
+rules:
+  - scoring_rule_id: epi25_exomewide_v0.1
+    semantic_channel: direct_disease
+    evidence_tier: platinum
+    rule_type: fixed_score
+    score: 4.0
+    notes: Epi25 exome-wide significant disease-association evidence.
+
+  - scoring_rule_id: epi25_strong_subthreshold_v0.1
+    semantic_channel: direct_disease
+    evidence_tier: gold
+    rule_type: fixed_score
+    score: 3.0
+    notes: Strong but not exome-wide Epi25 burden evidence.
+
+  - scoring_rule_id: epi25_candidate_signal_v0.1
+    semantic_channel: direct_disease
+    evidence_tier: silver
+    rule_type: fixed_score
+    score: 1.5
+    notes: Candidate-level Epi25 burden evidence.

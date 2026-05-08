@@ -1,0 +1,55 @@
+profile:
+  profile_id: epilepsy_semantic_v0.1
+  phenotype_family: epilepsy
+  version: v0.1
+  active_score: weighted_source_sum
+  emit_legacy_scores: true
+  emit_semantic_scores: true
+  strict_semantic_validation: true
+
+tier_weights:
+  platinum: 4.0
+  gold: 3.0
+  silver: 1.5
+  bronze: 0.75
+  annotation_only: 0.0
+
+channel_caps:
+  direct_disease_score: 4.0
+  clinical_interpretation_score: 3.0
+  contextual_biology_score: 2.0
+  utilization_score: 1.0
+  exploratory_score: 0.75
+  convergence_score: 1.5
+
+semantic_channel_map:
+  direct_disease: direct_disease_score
+  clinical_interpretation: clinical_interpretation_score
+  contextual_biology: contextual_biology_score
+  clinical_utilization: utilization_score
+  exploratory_literature: exploratory_score
+  convergence: convergence_score
+
+modifier_defaults:
+  source_quality_modifier: 1.0
+  phenotype_match_modifier: 1.0
+  independence_modifier: 1.0
+
+unknown_policy:
+  unknown_semantic_channel: fail
+  unknown_evidence_tier: fail
+  missing_scoring_rule: annotation_only
+
+source_rules:
+  - source_id: epi25_2024_epi_high_confidence
+    semantic_channel: direct_disease
+    evidence_tier: platinum
+    scoring_rule_id: epi25_exomewide_v0.1
+  - source_id: genes4epilepsy
+    semantic_channel: exploratory_literature
+    evidence_tier: bronze
+    scoring_rule_id: genes4epilepsy_membership_v0.1
+  - source_id: gtr_epilepsy_gene_summary
+    semantic_channel: clinical_utilization
+    evidence_tier: silver
+    scoring_rule_id: gtr_utilization_v0.1

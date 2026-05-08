@@ -1,0 +1,12 @@
+ruleset:
+  ruleset_id: genes4epilepsy_exploratory_rules
+  version: v0.1
+  source_family: genes4epilepsy
+
+rules:
+  - scoring_rule_id: genes4epilepsy_membership_v0.1
+    semantic_channel: exploratory_literature
+    evidence_tier: bronze
+    rule_type: fixed_score
+    score: 0.75
+    notes: Genes4Epilepsy membership contributes exploratory literature evidence only.
