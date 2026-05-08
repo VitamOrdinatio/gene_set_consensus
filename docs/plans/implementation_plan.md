@@ -1,5 +1,3 @@
-# implementation_plan.md
-
 # Implementation Plan: `gene_set_consensus`
 
 ## Document Control
@@ -12,1179 +10,631 @@
 | Owning agent | DEX — SWE Agent |
 | Intended location | `gene_set_consensus/docs/plans/implementation_plan.md` |
 | Companion artifact | `gene_set_consensus/docs/contracts/system_contract.md` |
-| Current target | v1.0 portfolio-ready repository |
-| Implementation status | Pre-code action plan |
+| Current target | v1.0 portfolio-ready repository with staged semantic-channel scoring |
+| Implementation status | Active staged implementation plan |
 
 ---
 
 ## 1. Objective
 
-Build a reproducible Python/Bash pipeline that constructs phenotype-scoped, provenance-aware consensus gene sets from heterogeneous gene-list sources.
+Build a reproducible Python/Bash pipeline that constructs phenotype-scoped, provenance-aware, semantically decomposed consensus gene evidence from heterogeneous sources.
 
-The minimal viable pipeline must:
+The pipeline must:
 
-1. ingest multiple source gene lists
-2. validate input schemas
-3. normalize identifiers
+1. ingest multiple governed gene-level evidence sources
+2. validate input schemas, source manifests, release manifests, and scoring profiles
+3. normalize gene identifiers
 4. collapse within-source duplicates
-5. aggregate genes across sources
-6. construct a gene-source matrix
-7. compute deterministic source-count and weighted consensus scores
-8. preserve provenance
-9. emit downstream-compatible TSV artifacts
-10. produce logs, validation reports, and reproducibility manifests
+5. preserve source provenance
+6. construct gene-source evidence tables
+7. preserve legacy weighted scoring during transition
+8. emit semantic-channel score columns
+9. prevent scoring inflation
+10. support future ClinVar, OMIM, PanelApp, transcriptomics, and metabolomics adapters without schema drift
 
 ---
 
-## 2. Guiding Architecture
+## 2. Current Strategic Decision
 
-The pipeline should follow a simple stage-based flow:
+GSC will use a **staged semantic rollout**.
 
-```text
-config
-  ↓
-validate inputs
-  ↓
-normalize gene identifiers
-  ↓
-build source-level normalized records
-  ↓
-build gene-source matrix
-  ↓
-compute source frequency and weighted consensus scores
-  ↓
-write consensus outputs and provenance tables
-  ↓
-validate outputs and reproducibility
-```
+Do not immediately replace `consensus_score`.
 
-Core design rule:
+Transition behavior:
 
 ```text
-scripts/ are thin execution wrappers.
-src/gene_set_consensus/ contains reusable logic.
+legacy weighted score remains backward-compatible
+semantic-channel scores are added experimentally
+semantic_consensus_score is emitted
+consensus_score becomes semantic_consensus_score only in a future declared release
 ```
+
+This avoids breaking existing outputs while enabling semantic scoring validation.
 
 ---
 
 ## 3. Development Phases
 
-### Phase 0 — Repository Scaffold and Planning Artifacts
+### Phase A — Preserve Current Stable Pipeline
 
-Goal: create the repo shell before writing pipeline logic.
+Status: partially complete.
+
+Current stable capabilities:
+
+- phenotype-scoped execution
+- source validation
+- source manifest validation
+- release manifest validation
+- GTR raw evidence parser
+- GTR gene summary builder
+- experimental GTR releases
+- semantic metadata propagation
+- legacy output compatibility
+
+Do not destabilize production releases while implementing semantic scoring.
+
+---
+
+### Phase B — Add Scoring Profile Config Layer
+
+Goal: make semantic scoring behavior explicit and deterministic.
 
 Create:
 
 ```text
-gene_set_consensus/
-├── README.md
-├── Makefile
-├── run_pipeline.py
-├── requirements.txt
-├── .gitignore
-├── config/
-├── data/
-├── docs/
-├── environment/
-├── logs/
-├── results/
-├── scripts/
-├── src/
-└── tests/
+config/scoring_profiles/
+  epilepsy_semantic_v0.1.yaml
+  mitochondrial_semantic_v0.1.yaml
+
+config/scoring_rules/
+  epi25_semantic_rules.yaml
+  gtr_utilization_rules.yaml
+  mitocarta_contextual_rules.yaml
+  genes4epilepsy_exploratory_rules.yaml
 ```
 
-Then add:
+Each scoring profile must define:
 
-```text
-docs/maps/milestone_map.md
-docs/contracts/system_contract.md
-docs/plans/implementation_plan.md
-docs/architecture.md
-docs/methodology.md
-docs/data_dictionary.md
-docs/notes.md
+```yaml
+profile:
+  profile_id:
+  phenotype_family:
+  version:
+  active_score:
+  emit_legacy_scores:
+  emit_semantic_scores:
+
+tier_weights:
+  platinum: 4.0
+  gold: 3.0
+  silver: 1.5
+  bronze: 0.75
+  annotation_only: 0.0
+
+channel_caps:
+  direct_disease_score: 4.0
+  clinical_interpretation_score: 3.0
+  contextual_biology_score: 2.0
+  utilization_score: 1.0
+  exploratory_score: 0.75
+  convergence_score: 1.5
+
+modifier_defaults:
+  source_quality_modifier: 1.0
+  phenotype_match_modifier: 1.0
+  independence_modifier: 1.0
 ```
 
 Commit target:
 
 ```text
-Initialize GSC repository scaffold
+Add semantic scoring profile configs
+```
+
+Validation required:
+
+```bash
+python scripts/validation/validate_scoring_profile.py --profile config/scoring_profiles/epilepsy_semantic_v0.1.yaml
+python scripts/validation/validate_scoring_profile.py --profile config/scoring_profiles/mitochondrial_semantic_v0.1.yaml
 ```
 
 ---
 
-### Phase 1 — Example Data and Schemas
+### Phase C — Extend Source Metadata Contract
 
-Goal: define small, safe, committable test data.
+Goal: make source metadata first-class scoring input.
 
-Create:
+Update phenotype configs/source manifests to include or inherit:
 
-```text
-data/example/source_a_genes.tsv
-data/example/source_b_genes.tsv
-data/example/source_c_genes.tsv
-data/example/source_metadata.tsv
-data/example/identifier_map.tsv
-data/schemas/source_gene_list_schema.tsv
-data/schemas/source_metadata_schema.tsv
-data/schemas/consensus_gene_set_schema.tsv
+```yaml
+evidence_semantics:
+evidence_tier:
+semantic_channel:
+scoring_rule_id:
 ```
 
-Example gene-list files should intentionally include:
+Current canonical mappings:
 
-- repeated genes within one source
-- same gene across multiple sources
-- one deprecated/alias symbol
-- one unresolved symbol
-- one gene with stable ID
-- one gene with symbol only
-
-This makes validation meaningful from the beginning.
+| Source | semantic_channel | evidence_tier |
+|---|---|---|
+| Epi25 exome-wide significant | direct_disease | platinum |
+| Epi25 strong subthreshold | direct_disease | gold |
+| Epi25 candidate | direct_disease | silver |
+| MitoCarta | contextual_biology | gold |
+| GTR | clinical_utilization | silver |
+| Genes4Epilepsy | exploratory_literature | bronze |
 
 Commit target:
 
 ```text
-Add example gene-set inputs and schemas
+Add semantic scoring metadata to source configs
 ```
+
+Tests:
+
+- config rejects unknown semantic channel
+- config rejects unknown evidence tier
+- source without semantic metadata becomes `annotation_only` only when allowed by profile
 
 ---
 
-### Phase 2 — Configuration System
+### Phase D — Update Normalization and Aggregation Schema
 
-Goal: make all behavior config-driven.
+Goal: propagate semantic metadata through all intermediate tables.
 
-Create:
+Update `normalized_source_records.tsv` to include:
 
 ```text
-config/config.yaml
-config/config.sys76.yaml
-config/config.mark.yaml
-config/phenotypes/example_phenotype.yaml
-config/phenotypes/mitochondrial_disease.yaml
+evidence_semantics
+evidence_tier
+semantic_channel
+scoring_rule_id
 ```
 
-Implement module skeleton:
+Update `gene_frequency_table.tsv` to include:
 
 ```text
-src/gene_set_consensus/config.py
-src/gene_set_consensus/models.py
-```
-
-Configuration must define:
-
-- run environment
-- input paths
-- output paths
-- phenotype ID
-- source definitions
-- source weights
-- source tiers
-- gene column mapping
-- identifier normalization policy
-- scoring model
-- output options
-- validation strictness
-
-Do not hard-code thresholds or source weights.
-
-Commit target:
-
-```text
-Add config-driven phenotype setup
-```
-
----
-
-### Phase 3 — Logging and Run Management
-
-Goal: create robust logs before major transformation logic.
-
-Create:
-
-```text
-src/gene_set_consensus/logging_utils.py
-src/gene_set_consensus/io.py
-```
-
-Required behavior:
-
-- generate `run_id`
-- create run-scoped log directory
-- create run-scoped interim/processed directories
-- write `pipeline.log`
-- write step-specific logs
-- record config path and phenotype
-- record input/output paths
-- record warnings and failures
-
-Run directory pattern:
-
-```text
-logs/{run_id}/
-data/interim/{run_id}/
-data/processed/{run_id}/
+evidence_semantics_summary
+evidence_tier_summary
+semantic_channel_summary
 ```
 
 Commit target:
 
 ```text
-Add run management and logging utilities
+Propagate semantic scoring metadata through aggregation
 ```
+
+Tests:
+
+- semantic summaries match source rows
+- no `unspecified` values appear in experimental configs
+- legacy outputs remain valid
 
 ---
 
-### Phase 4 — Input Validation
+### Phase E — Implement Semantic Scoring Engine
 
-Goal: fail fast on invalid inputs.
+Goal: compute semantic-channel score columns without replacing legacy score.
 
-Create:
-
-```text
-src/gene_set_consensus/validation.py
-scripts/step_01_validate_inputs.py
-scripts/validation/validate_input_schema.py
-tests/unit/test_config.py
-```
-
-Validation checks:
-
-- config exists
-- phenotype config exists
-- phenotype ID present
-- at least one source present
-- source IDs unique
-- source weights numeric
-- source files exist
-- source files are TSV/CSV
-- required gene columns present
-- at least one gene identifier column present
-- no empty source files
-- output directories writable
-
-Expected output:
+Update or create:
 
 ```text
-data/interim/{run_id}/input_validation_summary.tsv
-logs/{run_id}/step_01_validate_inputs.log
-```
-
-Commit target:
-
-```text
-Implement input validation stage
-```
-
----
-
-### Phase 5 — Gene Identifier Normalization
-
-Goal: normalize source records without losing original source information.
-
-Create:
-
-```text
-src/gene_set_consensus/normalization.py
-scripts/step_02_normalize_genes.py
-tests/unit/test_normalization.py
-scripts/validation/validate_identifier_mapping.py
-```
-
-Required behavior:
-
-- preserve original input gene label
-- strip whitespace
-- normalize casing
-- use identifier map when available
-- resolve aliases where possible
-- mark deprecated/resolved symbols
-- flag ambiguous symbols
-- flag unresolved symbols
-- preserve source row number
-- generate stable source record hash
-
-Expected output:
-
-```text
-data/interim/{run_id}/normalized_source_records.tsv
-```
-
-Required columns:
-
-```text
-run_id
-phenotype
-source_id
-source_name
-source_type
-weight_tier
-source_weight
-input_gene_symbol
-normalized_gene_symbol
-gene_id
-mapping_status
-evidence_label
-source_row_number
-source_record_hash
-```
-
-Commit target:
-
-```text
-Implement gene identifier normalization
-```
-
----
-
-### Phase 6 — Source Matrix Construction
-
-Goal: create a deterministic gene × source matrix.
-
-Create:
-
-```text
-src/gene_set_consensus/aggregation.py
-scripts/step_03_build_source_matrix.py
-tests/unit/test_aggregation.py
-```
-
-Required behavior:
-
-- collapse duplicates within the same source
-- preserve one contribution per gene per source
-- aggregate across sources
-- compute source membership indicators
-- compute `source_count`
-- compute `weighted_source_sum`
-- produce deterministic column ordering
-- preserve sparse single-source genes if configured
-
-Expected outputs:
-
-```text
-data/processed/{run_id}/gene_source_matrix.tsv
-data/processed/{run_id}/gene_frequency_table.tsv
-```
-
-Commit target:
-
-```text
-Implement source matrix aggregation
-```
-
----
-
-### Phase 7 — Consensus Scoring
-
-Goal: implement deterministic, explainable v1 scoring.
-
-Create:
-
-```text
-src/gene_set_consensus/scoring.py
+src/gene_set_consensus/semantic_scoring.py
+src/gene_set_consensus/scoring_profiles.py
 scripts/step_04_score_consensus.py
-tests/unit/test_scoring.py
+tests/unit/test_semantic_scoring.py
 ```
 
-Required v1 scoring:
+Required output columns:
 
 ```text
-base_score = source_count
-weighted_source_sum = sum(source_weight for contributing sources)
-consensus_score = weighted_source_sum
+semantic_consensus_score
+direct_disease_score
+clinical_interpretation_score
+contextual_biology_score
+utilization_score
+exploratory_score
+convergence_score
+conflict_penalty
+scoring_profile
+active_score
+score_explanation
 ```
 
-Rules:
-
-- preserve raw source count
-- preserve weighted contribution
-- use only configured weights
-- fail if scoring mode unsupported
-- do not compare across phenotypes
-- do not use hidden amplification
-- sort deterministically
-
-Expected output:
+Formula:
 
 ```text
-data/processed/{run_id}/scored_gene_evidence.tsv
+semantic_consensus_score =
+    direct_disease_score
+  + clinical_interpretation_score
+  + contextual_biology_score
+  + utilization_score
+  + exploratory_score
+  + convergence_score
+  - conflict_penalty
+```
+
+Each channel must be capped.
+
+Commit target:
+
+```text
+Implement semantic-channel scoring outputs
+```
+
+Tests:
+
+- channel cap enforcement
+- semantic_consensus_score arithmetic
+- consensus_score remains legacy when `active_score: weighted_source_sum`
+- consensus_score equals semantic score when `active_score: semantic_consensus_score`
+
+---
+
+### Phase F — Implement Source-Specific Rules
+
+Goal: avoid generic scoring drift.
+
+#### F1 — Epi25 Rules
+
+Implement deterministic scoring for Epi25 evidence classes:
+
+```text
+exomewide_significant = 4.0
+strong_subthreshold = 3.0
+candidate_signal = 1.5
+annotation_only_or_non_enriched = 0.0
+```
+
+Required Epi25 ingestion outputs:
+
+```text
+phenotype_stratum
+variant_class
+evidence_class
+p_value_raw
+p_value_numeric
+p_value_zero_flag
+odds_ratio
+case_count
+control_count
+ensembl_gene_id
+hgnc_symbol
+```
+
+Do not collapse Epi25 into a single undifferentiated epilepsy gene list.
+
+Commit target:
+
+```text
+Add Epi25 semantic scoring rules
+```
+
+#### F2 — GTR Rules
+
+Implement utilization scoring with saturation:
+
+```text
+weighted_panel_support =
+    targeted_gene_count × 1.0
+  + small_panel_count × 0.75
+  + medium_panel_count × 0.5
+  + large_panel_count × 0.25
+  + exome_or_genome_count × 0.0
+
+utilization_score =
+    min(1.0, log(1 + weighted_panel_support) / log(21))
+```
+
+Required GTR summary fields:
+
+```text
+gtr_test_count
+independent_lab_count
+test_scope_summary
+targeted_gene_count
+small_panel_count
+medium_panel_count
+large_panel_count
+exome_or_genome_count
 ```
 
 Commit target:
 
 ```text
-Implement deterministic consensus scoring
+Add saturated GTR utilization scoring
+```
+
+#### F3 — MitoCarta Rules
+
+Implement contextual biology score:
+
+```text
+mitochondrial disease profile: 2.0
+broad epilepsy profile: 1.0 unless mitochondrial epilepsy profile selected
+```
+
+Commit target:
+
+```text
+Add MitoCarta contextual scoring rule
+```
+
+#### F4 — Genes4Epilepsy Rules
+
+Implement exploratory score:
+
+```text
+Genes4Epilepsy membership = 0.75
+```
+
+Commit target:
+
+```text
+Add exploratory literature scoring rule
 ```
 
 ---
 
-### Phase 8 — Provenance and Final Output Writing
+### Phase G — Output Contract Update
 
-Goal: emit downstream-compatible artifacts.
+Goal: emit final transitional semantic output.
 
-Create:
+Update:
 
 ```text
-src/gene_set_consensus/provenance.py
-src/gene_set_consensus/reporting.py
+src/gene_set_consensus/output_validation.py
 scripts/step_05_write_outputs.py
-tests/unit/test_provenance.py
+tests/validation/test_output_contract.py
 ```
 
-Required final outputs:
-
-```text
-results/tables/{phenotype}/consensus_gene_set.tsv
-results/tables/{phenotype}/gene_source_matrix.tsv
-results/tables/{phenotype}/gene_frequency_table.tsv
-results/tables/{phenotype}/gene_provenance.tsv
-results/reports/{phenotype}/run_manifest.yaml
-results/reports/{phenotype}/validation_report.md
-```
-
-`consensus_gene_set.tsv` must include:
+Final consensus output must include:
 
 ```text
 phenotype
 gene_id
 gene_symbol
-consensus_score
 source_count
 weighted_source_sum
+consensus_score
+semantic_consensus_score
+direct_disease_score
+clinical_interpretation_score
+contextual_biology_score
+utilization_score
+exploratory_score
+convergence_score
+conflict_penalty
 source_list
 weight_tier_summary
-mapping_status
+evidence_semantics_summary
+evidence_tier_summary
+semantic_channel_summary
+mapping_status_summary
 provenance_id
 run_id
 gsc_version
 generated_at
+scoring_profile
+active_score
+score_explanation
 ```
 
 Commit target:
 
 ```text
-Write consensus outputs and provenance tables
+Extend output contract for semantic scoring
 ```
 
 ---
 
-### Phase 9 — Output Validation
+### Phase H — Validation and Inflation Testing
 
-Goal: prove that the outputs satisfy the contract.
+Goal: prove semantic scoring prevents known failure modes.
 
 Create:
 
 ```text
-scripts/step_06_validate_outputs.py
-scripts/validation/validate_consensus_outputs.py
-scripts/validation/validate_reproducibility.py
-tests/validation/test_output_contract.py
+tests/unit/test_semantic_scoring.py
+tests/validation/test_semantic_output_contract.py
+tests/validation/test_score_inflation_guards.py
+scripts/validation/validate_scoring_profile.py
+scripts/validation/validate_semantic_scores.py
 ```
 
-Validation checks:
+Required checks:
 
-- all required files created
-- all required columns present
-- no duplicate final `(phenotype, gene_id)` records when `gene_id` exists
-- source counts match source matrix
-- weighted scores match source weights
-- source list matches provenance rows
-- unresolved identifiers reported
-- output sort is deterministic
-- manifest contains input/output hashes
+```text
+GTR + Genes4Epilepsy < Epi25 exome-wide
+MitoCarta alone < MitoCarta + ClinVar/OMIM
+Broad GTR WES/WGS does not increase utilization_score
+ClinVar variant counts do not linearly inflate clinical_interpretation_score
+Duplicate genes within one source do not inflate channel scores
+Unknown semantic channel fails validation
+Unknown tier fails validation
+```
 
 Commit target:
 
 ```text
-Add output validation checks
+Add semantic scoring validation and inflation guards
 ```
 
 ---
 
-### Phase 10 — End-to-End Pipeline Entrypoint
+### Phase I — Experimental Release Evaluation
 
-Goal: make the repository runnable as a pipeline.
+Goal: evaluate semantic scoring without touching production.
 
-Implement:
+Use experimental releases only:
 
 ```text
-run_pipeline.py
-Makefile
-scripts/run_pipeline.sh
+epilepsy_gold_bronze_gtr_experimental_v0.1
+mitocarta_gtr_experimental_v0.1
 ```
 
-Expected commands:
+Run:
 
 ```bash
-python run_pipeline.py --config config/config.yaml --phenotype example_phenotype
-make test
-make run-example
+python run_pipeline.py --phenotype epilepsy_gold_bronze_gtr_experimental
+python run_pipeline.py --phenotype mitocarta_gtr_experimental
 ```
 
-`run_pipeline.py` should execute stages in order:
+Inspect known genes:
+
+Epilepsy:
 
 ```text
-01 validate inputs
-02 normalize genes
-03 build source matrix
-04 score consensus
-05 write outputs
-06 validate outputs
+SCN1A
+DEPDC5
+NPRL3
+ALDH7A1
+POLG
+NEXMIF
+SYNGAP1
+WDR45
+```
+
+Mitochondrial:
+
+```text
+POLG
+TWNK
+TK2
+SURF1
+NDUFS-family genes
+MT-ATP6
 ```
 
 Commit target:
 
 ```text
-Add end-to-end pipeline runner
+Evaluate experimental semantic scoring releases
 ```
 
 ---
 
-### Phase 11 — Unit, Integration, and Reproducibility Testing
+### Phase J — Release Promotion Decision
 
-Goal: make this a tested software project rather than a script collection.
+Semantic scoring may become primary only after:
 
-Create tests:
+- test suite passes
+- inflation tests pass
+- known-gene behavior reviewed
+- score explanations are interpretable
+- README documents scoring interpretation
+- production release configs explicitly opt in
 
-```text
-tests/unit/test_config.py
-tests/unit/test_normalization.py
-tests/unit/test_aggregation.py
-tests/unit/test_scoring.py
-tests/unit/test_provenance.py
-tests/integration/test_example_pipeline.py
-tests/validation/test_output_contract.py
-```
-
-Required test coverage:
-
-- config parsing
-- missing config failure
-- source duplicate handling
-- gene symbol normalization
-- alias/deprecated symbol mapping
-- ambiguous identifier flagging
-- duplicate within-source collapse
-- across-source count behavior
-- weighted score calculation
-- output schema
-- provenance joinability
-- repeated-run deterministic output
-
-Commit target:
+Promotion commit target:
 
 ```text
-Add tests for GSC pipeline behavior
+Promote semantic scoring profile for GSC v1
 ```
+
+Until then:
+
+```text
+consensus_score = weighted_source_sum
+```
+
+remains production-safe.
 
 ---
 
-### Phase 12 — GTR-Derived Input Support
+## 4. Backward Compatibility Plan
 
-Goal: satisfy v1 clinical-context integration milestone without overbuilding.
-
-Approach:
-
-- do not write a full GTR scraper in v1 unless already available
-- ingest pre-exported GTR-derived TSV files
-- treat GTR as one or more configured sources
-- preserve condition/test/panel metadata if available
-
-Recommended GTR TSV schema:
+During transition preserve:
 
 ```text
-condition_label
-condition_id
-test_name
-test_id
-panel_name
-gene_symbol
-gene_id
-source_version
-download_date
-```
-
-Create:
-
-```text
-src/gene_set_consensus/gtr.py
-scripts/validation/validate_gtr_source.py
-tests/unit/test_gtr.py
-```
-
-Expected output behavior:
-
-- GTR-derived genes contribute like other sources
-- GTR provenance retains condition/test/panel context
-- GTR evidence remains phenotype-scoped
-- GTR does not become sample-specific
-
-Commit target:
-
-```text
-Add GTR-derived source ingestion support
-```
-
----
-
-### Phase 13 — VDB/RDGP Compatibility Checks
-
-Goal: make GSC downstream-compatible without implementing downstream repos.
-
-Add validation checks:
-
-```text
-scripts/validation/validate_vdb_rdgp_compatibility.py
-```
-
-Check that final outputs contain:
-
-```text
-phenotype
-gene_id
-gene_symbol
+weighted_source_sum
+weight_tier_summary
 consensus_score
-source_list
-source_count
 ```
 
-Check invalid conditions:
-
-- missing phenotype
-- missing both `gene_id` and `gene_symbol`
-- duplicate `(phenotype, gene_id)`
-- output lacks provenance trace
-- RDGP-style `sample_id` appears in GSC output
-
-Commit target:
+Add:
 
 ```text
-Add downstream compatibility validation
+semantic_consensus_score
+semantic channel score columns
+evidence_semantics_summary
+evidence_tier_summary
+semantic_channel_summary
+```
+
+Do not remove legacy fields until downstream compatibility is verified.
+
+---
+
+## 5. Reproducibility Plan
+
+Semantic scoring must be deterministic.
+
+Required:
+
+- all weights in config
+- all caps in config
+- all modifiers in config
+- source-specific rule IDs recorded
+- scoring profile recorded in final outputs
+- no free-text inference
+- deterministic sort order
+- checksum-based reproducibility validation
+
+---
+
+## 6. Suggested Commit Sequence
+
+```text
+Add semantic scoring profile configs
+Add semantic scoring metadata to source configs
+Propagate semantic scoring metadata through aggregation
+Implement semantic-channel scoring outputs
+Add Epi25 semantic scoring rules
+Add saturated GTR utilization scoring
+Add MitoCarta contextual scoring rule
+Add exploratory literature scoring rule
+Extend output contract for semantic scoring
+Add semantic scoring validation and inflation guards
+Evaluate experimental semantic scoring releases
+Document semantic scoring usage and interpretation
+Promote semantic scoring profile for GSC v1
 ```
 
 ---
 
-### Phase 14 — MARK Probe Harnesses
+## 7. Risk Register
 
-Goal: support MARK execution and Guacamole-safe debugging.
-
-Create:
-
-```text
-scripts/mark_probes/mark_smoketest_gsc.sh
-scripts/mark_probes/mark_run_gsc_example.sh
-```
-
-Probe behavior:
-
-- run from MARK `~/Desktop/`
-- `cd` into `/root/dev/portfolio_projects/gene_set_consensus`
-- activate `.venv`
-- run tests or example pipeline
-- write repo logs under `logs/{run_id}/`
-- write downloadable probe log to `~/Desktop/`
-
-Example probe log:
-
-```text
-~/Desktop/gsc_mark_smoketest_{timestamp}.log
-```
-
-Commit target:
-
-```text
-Add MARK smoke-test probes
-```
+| Risk | Mitigation |
+|---|---|
+| Legacy and semantic scores confuse users | Keep `active_score` explicit and document transition |
+| New semantic channels drift uncontrolled | Require profile version bump and validation |
+| GTR panel counts inflate scores | Use saturation and broad-test exclusion |
+| ClinVar variant counts inflate clinical interpretation | Use max qualifying assertion class, not variant count |
+| Epi25 loses subtype/variant-class meaning | Preserve phenotype stratum and variant class |
+| MitoCarta interpreted as disease causality | Confine to contextual biology |
+| Genes4Epilepsy over-ranks candidates | Cap exploratory score at 0.75 |
+| Hidden modifier inference | Fail or annotation_only when rules absent |
+| Output schema breaks downstream consumers | Preserve legacy columns during transition |
 
 ---
 
-### Phase 15 — Documentation Completion
+## 8. Final Implementation Principle
 
-Goal: make the repository legible to outside reviewers.
+GSC should implement semantic scoring as a deterministic, explainable, provenance-preserving extension of the existing pipeline.
 
-Create or finalize:
-
-```text
-README.md
-docs/architecture.md
-docs/methodology.md
-docs/data_dictionary.md
-docs/notes.md
-docs/contracts/system_contract.md
-docs/plans/implementation_plan.md
-```
-
-README must explain:
-
-- what GSC does
-- what GSC does not do
-- why phenotype scope matters
-- example inputs
-- example outputs
-- how to run the pipeline
-- how to run tests
-- how outputs integrate with RDGP/VDB/RSP
-- assumptions
-- limitations
-- edge cases
-- validation strategy
-
-Commit target:
+The winning architecture is:
 
 ```text
-Document GSC architecture and usage
+legacy compatibility
++
+semantic decomposition
++
+explicit scoring profiles
++
+source-specific deterministic rules
++
+inflation guards
++
+auditable outputs
 ```
-
----
-
-## 4. Minimal Viable Pipeline Definition
-
-The MVP is complete when this command works:
-
-```bash
-python run_pipeline.py --config config/config.yaml --phenotype example_phenotype
-```
-
-and produces:
-
-```text
-results/tables/example_phenotype/consensus_gene_set.tsv
-results/tables/example_phenotype/gene_source_matrix.tsv
-results/tables/example_phenotype/gene_frequency_table.tsv
-results/tables/example_phenotype/gene_provenance.tsv
-results/reports/example_phenotype/run_manifest.yaml
-results/reports/example_phenotype/validation_report.md
-logs/{run_id}/pipeline.log
-```
-
-The MVP must include tests for:
-
-- duplicate handling
-- source counting
-- scoring
-- provenance
-- output schema
-
----
-
-## 5. v1.0 Release Definition
-
-GSC v1.0 is complete when the repository supports:
-
-- phenotype-specific multi-source aggregation
-- explicit source weighting
-- provenance-preserving final outputs
-- GTR-derived input ingestion
-- VDB/RDGP-compatible output schema
-- end-to-end example run
-- local sys76 run
-- MARK smoke test
-- validation report
-- reproducibility checksum
-- documented assumptions, limitations, edge cases, validation, and implementation notes
-
----
-
-## 6. Implementation Order Summary
-
-```text
-0. scaffold repo and docs
-1. add example data and schemas
-2. add config system
-3. add logging/run management
-4. implement input validation
-5. implement gene normalization
-6. implement aggregation/matrix construction
-7. implement consensus scoring
-8. write final outputs/provenance
-9. validate outputs
-10. add end-to-end runner
-11. add tests
-12. add GTR-derived input support
-13. add VDB/RDGP compatibility checks
-14. add MARK probes
-15. complete documentation
-```
-
----
-
-## 7. Suggested Commit Sequence
-
-```text
-Initialize GSC repository scaffold
-Add planning artifacts for GSC architecture
-Add example gene-set inputs and schemas
-Add config-driven phenotype setup
-Add run management and logging utilities
-Implement input validation stage
-Implement gene identifier normalization
-Implement source matrix aggregation
-Implement deterministic consensus scoring
-Write consensus outputs and provenance tables
-Add output validation checks
-Add end-to-end pipeline runner
-Add tests for GSC pipeline behavior
-Add GTR-derived source ingestion support
-Add downstream compatibility validation
-Add MARK smoke-test probes
-Document GSC architecture and usage
-```
-
----
-
-## 8. Testing Plan
-
-### Unit Tests
-
-Test individual functions:
-
-- config loading
-- source metadata parsing
-- identifier normalization
-- duplicate collapse
-- source matrix construction
-- scoring
-- provenance ID generation
-- output sorting
-
-### Integration Tests
-
-Test full example pipeline:
-
-```bash
-pytest tests/integration/
-```
-
-Expected assertions:
-
-- pipeline exits successfully
-- expected outputs exist
-- row counts match fixture expectations
-- consensus scores match expected values
-- provenance rows join to consensus rows
-- no sample-specific fields appear
-
-### Validation Tests
-
-Test output contract:
-
-```bash
-python scripts/validation/validate_consensus_outputs.py \
-  --consensus results/tables/example_phenotype/consensus_gene_set.tsv \
-  --provenance results/tables/example_phenotype/gene_provenance.tsv
-```
-
-### Reproducibility Test
-
-Run example twice and compare deterministic output hashes.
-
-Exclude from checksum comparison:
-
-- log files
-- generated timestamps
-- run manifest timestamp fields
-
-Include in checksum comparison:
-
-- `consensus_gene_set.tsv`
-- `gene_source_matrix.tsv`
-- `gene_frequency_table.tsv`
-- `gene_provenance.tsv`
-
----
-
-## 9. Logging Plan
-
-Every run must create:
-
-```text
-logs/{run_id}/pipeline.log
-logs/{run_id}/step_01_validate_inputs.log
-logs/{run_id}/step_02_normalize_genes.log
-logs/{run_id}/step_03_build_source_matrix.log
-logs/{run_id}/step_04_score_consensus.log
-logs/{run_id}/step_05_write_outputs.log
-logs/{run_id}/step_06_validate_outputs.log
-```
-
-Every log should include:
-
-- run ID
-- phenotype
-- timestamp
-- input file paths
-- row counts
-- warnings
-- validation failures
-- output file paths
-- completion status
-
-MARK probe logs should be downloadable from:
-
-```text
-/root/Desktop/
-```
-
-or equivalently:
-
-```text
-~/Desktop/
-```
-
-inside MARK.
-
----
-
-## 10. Reproducibility Plan
-
-Reproducibility requires:
-
-- config-driven execution
-- no hard-coded paths
-- input file hashes
-- output file hashes
-- deterministic sorting
-- explicit source weights
-- preserved run manifest
-- versioned phenotype config
-- stable schema
-- tests using example data
-- local and MARK smoke tests
-
----
-
-## 11. Data Management Plan
-
-### Git-Tracked
-
-Allowed in repo:
-
-- small example TSV files
-- schema files
-- small fixture files
-- config templates
-- tests
-- scripts
-- source code
-- docs
-
-### Not Git-Tracked
-
-Do not commit:
-
-- large GTR exports
-- large MitoCarta exports if bulky
-- database dumps
-- downloaded raw external datasets
-- large generated outputs
-- local virtual environments
-- MARK logs downloaded from Desktop unless curated and small
-
-### Storage Locations
-
-sys76:
-
-```text
-/mnt/storage/gene_sets
-/mnt/storage/gtr
-/mnt/storage/databases
-```
-
-MARK:
-
-```text
-/data/storage/gene_sets
-/data/storage/gtr
-/data/storage/databases
-```
-
----
-
-## 12. Environment Plan
-
-Use one repo-local virtual environment:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-`requirements.txt` should start minimal:
-
-```text
-pandas
-pyyaml
-pytest
-```
-
-Optional later dependencies:
-
-```text
-pandera
-pydantic
-rich
-```
-
-Do not require Docker for v1.
-
----
-
-## 13. Interface Compliance Plan
-
-### GSC ↔ RDGP
-
-GSC final outputs must be phenotype-scoped:
-
-```text
-(phenotype, gene_id)
-```
-
-RDGP integration must require selected phenotype context.
-
-Forbidden in GSC outputs:
-
-```text
-sample_id
-variant_id
-zygosity
-clinical_significance_per_sample
-rdgp_score
-```
-
-### GSC ↔ VDB
-
-GSC outputs must preserve:
-
-```text
-gene_id
-gene_symbol
-```
-
-to support joins to VDB gene tables.
-
-### GSC ↔ RSP
-
-Future RSP evidence may be accepted only as gene-level functional evidence. It must not convert GSC into a sample-level repository.
-
-### GSC ↔ VAP
-
-VAP may consume GSC outputs as annotation context. GSC must not depend on VAP to run.
-
----
-
-## 14. Risk Register
-
-| Risk | Impact | Mitigation |
-|---|---|---|
-| Gene symbol aliases mis-normalized | False consensus records | Use explicit mapping table and mapping status |
-| Duplicate genes inflate source count | Inflated score | Collapse within-source duplicates |
-| Missing gene IDs reduce VDB joinability | Weak downstream integration | Preserve symbol fallback and unresolved flags |
-| Source weights become hidden assumptions | Unexplainable score | Require weights in phenotype config |
-| GTR data format varies | Parser fragility | Ingest normalized GTR-derived TSV first |
-| Phenotype definitions differ across sources | Mixed evidence context | Require phenotype-specific configs |
-| Scores compared across phenotypes | Invalid interpretation | Document and block cross-phenotype comparison |
-| MARK clipboard instability slows debugging | Lost execution context | Use MARK probes and file-based logs |
-| Large data accidentally committed | Repo bloat | Use `.gitignore` and storage paths |
-| GSC drifts into RDGP | Scope contamination | Block sample-specific fields in validation |
-
----
-
-## 15. Assumptions
-
-- The first implementation will use small local example data.
-- Source gene lists can be represented as TSV/CSV.
-- Source authority can be encoded as deterministic numeric weights.
-- A static identifier map is acceptable for v1.
-- GTR integration can begin from pre-exported/normalized GTR-derived TSV.
-- sys76 is used for development and local testing.
-- MARK is used for smoke testing and scaled runs if needed.
-- Python/Bash are sufficient for v1.
-
----
-
-## 16. Limitations
-
-- v1 scoring is heuristic, not probabilistic.
-- v1 does not solve phenotype ontology harmonization.
-- v1 does not automate external database download.
-- v1 does not automate literature mining.
-- v1 does not include RNA-seq analysis.
-- v1 does not perform enrichment analysis.
-- v1 does not include a production database unless later justified.
-- v1 identifier normalization may be incomplete.
-
----
-
-## 17. Edge Cases to Test Explicitly
-
-- same gene appears twice in one source
-- same gene appears in three sources
-- gene appears only in low-weight source
-- gene appears only in high-weight source
-- deprecated symbol resolves to current symbol
-- ambiguous symbol flagged
-- missing gene ID allowed under fallback mode
-- missing gene ID fails under strict mode
-- GTR source has same gene repeated across multiple panels
-- source file is empty
-- phenotype config has duplicate source ID
-- source weight is missing
-- output contains accidental `sample_id`
-
----
-
-## 18. Validation Strategy
-
-Before v1.0 release, perform:
-
-1. local example run on sys76
-2. repeated local run with checksum comparison
-3. unit test suite
-4. integration test suite
-5. validation script on final outputs
-6. manual spot-check of 3–5 known phenotype genes
-7. GTR-derived input run
-8. downstream compatibility validation
-9. MARK smoke test using probe script
-10. README usage review from fresh clone perspective
-
----
-
-## 19. First Build Slice
-
-The first implementation slice should stop after a working MVP using example data.
-
-Build only:
-
-```text
-config parsing
-input validation
-normalization
-aggregation
-scoring
-output writing
-basic tests
-```
-
-Do not build GTR integration, MARK probes, or advanced documentation until the MVP works.
-
-This prevents overbuilding before the core contract is proven.
-
----
-
-## 20. Final Implementation Principle
-
-GSC should be built as a small, serious, inspectable system.
-
-The winning architecture is not clever. It is:
-
-```text
-clear inputs
-explicit configuration
-auditable transformations
-deterministic outputs
-preserved provenance
-validated contracts
-```
-
-That is the engineering standard for this repository.

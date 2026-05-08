@@ -18,12 +18,12 @@
 
 ## 1. Executive conclusion
 
-The four CSV files downloaded from the Epi25 WES browser are **directly useful for GSC** because they provide gene-level burden statistics for epilepsy case-control comparisons. They should not be treated as a hand-curated epilepsy gene list. Instead, they should be treated as **source evidence tables** from a Gold-tier consortium resource.
+The four CSV files downloaded from the Epi25 WES browser are **directly useful for GSC** because they provide gene-level burden statistics for epilepsy case-control comparisons. They should not be treated as a hand-curated epilepsy gene list. Instead, they should be treated as **source evidence tables** from a Platinum-tier consortium resource.
 
 Recommended GSC treatment:
 
 ```text
-gold / consortium source: Epi25
+platinum / consortium source: Epi25
 source release: browser export downloaded 2026-05-06
 analysis type: gene-level ultra-rare variant burden
 phenotype strata: EPI, DEE, GGE, NAFE
@@ -46,14 +46,14 @@ The key transformation is to convert the four wide browser-export files into a s
 
 ---
 
-## 2. Why Epi25 belongs in GSC Gold
+## 2. Why Epi25 belongs in GSC Platinum
 
 Epi25 is not a typical individual-publication gene list. It is a large international consortium resource built from harmonized whole-exome sequencing, standardized phenotyping, large-scale case-control burden testing, and browser-released summary data.
 
 Therefore, in the GSC provenance hierarchy:
 
 ```text
-Gold   = consortium-scale resources and large coordinated genetic studies
+Platinum   = consortium-scale resources and large coordinated genetic studies
 Silver = individual publications / single-lab or narrower cohort studies
 Bronze = mined sources, GTR-derived panels, text-mining, indirect aggregation
 ```
@@ -61,7 +61,7 @@ Bronze = mined sources, GTR-derived panels, text-mining, indirect aggregation
 Epi25 should be classified as:
 
 ```text
-source_tier = gold
+source_tier = platinum
 source_type = consortium_wes_burden
 source_name = Epi25 Collaborative
 ```
@@ -69,7 +69,7 @@ source_name = Epi25 Collaborative
 Important schema distinction:
 
 ```text
-Gold/Silver/Bronze = provenance tier
+Platinum/Gold/Silver/Bronze = provenance tier
 core/extended/candidate = biological/evidence-confidence group within a source
 ```
 
@@ -208,7 +208,7 @@ For every row, add:
 
 ```text
 source_name = Epi25
-source_tier = gold
+source_tier = platinum
 source_type = consortium_wes_burden
 source_release = browser_export_2026_05_06
 publication_anchor = Epi25_2024_Nat_Neurosci
@@ -472,7 +472,7 @@ gene_set_consensus/
 └── data/
     └── disease/
         └── epilepsy/
-            └── gold/
+            └── platinum/
                 └── epi25/
                     ├── 2019/
                     │   ├── raw/
@@ -568,7 +568,7 @@ Do not collapse Epi25 into a single undifferentiated epilepsy gene list.
 Instead, GSC should preserve these orthogonal axes:
 
 ```text
-provenance tier: gold
+provenance tier: platinum
 phenotype: EPI / DEE / GGE / NAFE
 variant class: PTV / damaging missense / CNV / GWAS later
 evidence class: exomewide / strong_candidate / exploratory
@@ -598,9 +598,9 @@ source metadata YAML
 Outputs:
 
 ```text
-data/disease/epilepsy/gold/epi25/2024/processed/epi25_2024_browser_burden_long.tsv
-data/disease/epilepsy/gold/epi25/2024/processed/epi25_2024_exomewide_ptv_core.tsv
-data/disease/epilepsy/gold/epi25/2024/processed/epi25_2024_candidates_ranked.tsv
+data/disease/epilepsy/platinum/epi25/2024/processed/epi25_2024_browser_burden_long.tsv
+data/disease/epilepsy/platinum/epi25/2024/processed/epi25_2024_exomewide_ptv_core.tsv
+data/disease/epilepsy/platinum/epi25/2024/processed/epi25_2024_candidates_ranked.tsv
 ```
 
 Minimum deterministic behavior:
@@ -617,4 +617,4 @@ Minimum deterministic behavior:
 
 ## 13. Bottom line
 
-The four browser CSVs are highly useful because they provide deterministic, re-runnable source evidence for Epi25-derived epilepsy gene sets. They require transformation, but not reinterpretation. The safest GSC strategy is to preserve them as Gold raw evidence, normalize them into a long-format burden table, map Ensembl IDs to HGNC symbols, and generate multiple explicit gene-set products rather than one flattened epilepsy list.
+The four browser CSVs are highly useful because they provide deterministic, re-runnable source evidence for Epi25-derived epilepsy gene sets. They require transformation, but not reinterpretation. The safest GSC strategy is to preserve them as Platinum raw evidence, normalize them into a long-format burden table, map Ensembl IDs to HGNC symbols, and generate multiple explicit gene-set products rather than one flattened epilepsy list.
