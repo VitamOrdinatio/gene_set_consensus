@@ -75,6 +75,29 @@ def classify_test_scope(test_name, test_categories):
         return "targeted_gene"
     return "unknown"
 
+def classify_scope_from_gene_count(genes_per_test):
+    if genes_per_test <= 5:
+        return "targeted_gene"
+    if genes_per_test <= 25:
+        return "small_panel"
+    if genes_per_test <= 100:
+        return "medium_panel"
+    return "large_panel"
+
+def classify_scope_assignment_method(test_scope):
+    if test_scope in {"genome", "exome"}:
+        return "explicit_exome_genome"
+    if test_scope in {
+        "targeted_gene",
+        "small_panel",
+        "medium_panel",
+        "large_panel",
+    }:
+        return "empirical_gene_count"
+    if test_scope == "panel_unsized":
+        return "text_category_heuristic"
+    return "unknown"
+
 def extract_trait_records(assertion):
     traits = []
     for node in assertion.iter():
@@ -201,7 +224,10 @@ def main():
                 last_touched = elem.attrib.get("LastTouched", "")
                 test_name = child_text(elem, "TestName")
                 test_categories = get_test_categories(elem)
-                test_scope = classify_test_scope(test_name, test_categories)
+                provisional_test_scope = classify_test_scope(
+                    test_name,
+                    test_categories
+                )
 
                 for assertion in elem.iter():
                     if strip_ns(assertion.tag) != "ClinVarAssertion":
@@ -239,7 +265,7 @@ def main():
                                 "test_name": test_name,
                                 "test_version": test_version,
                                 "test_categories": test_categories,
-                                "test_scope": test_scope,
+                                "test_scope": provisional_test_scope,
                                 "broad_test_policy": rule.get("broad_test_policy", ""),
                                 "match_scope": rule.get("match_scope", ""),
                                 "ontology_expansion": str(rule.get("ontology_expansion", False)),
@@ -255,6 +281,40 @@ def main():
                 elem.clear()
 
     df = pd.DataFrame(rows)
+    if not df.empty:
+        genes_per_test = (
+            df.groupby("gtr_accession")["gene_symbol"]
+            .nunique()
+            .to_dict()
+        )
+
+        df["genes_per_test"] = (
+            df["gtr_accession"]
+            .map(genes_per_test)
+            .fillna(0)
+            .astype(int)
+        )
+
+        empirical_scopes = []
+
+        for _, row in df.iterrows():
+            current_scope = row["test_scope"]
+
+            if current_scope in {"genome", "exome"}:
+                empirical_scopes.append(current_scope)
+            else:
+                empirical_scopes.append(
+                    classify_scope_from_gene_count(
+                        row["genes_per_test"]
+                    )
+                )
+
+        df["test_scope"] = empirical_scopes
+
+        df["test_scope_assignment_method"] = (
+            df["test_scope"]
+            .apply(classify_scope_assignment_method)
+        )
     if not df.empty:
         df = df.drop_duplicates().sort_values(
             ["gene_symbol", "gtr_accession", "matched_trait_id", "measure_id"]
