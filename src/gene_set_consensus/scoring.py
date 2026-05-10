@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 
 SUPPORTED_CONSENSUS_FORMULAS = {"weighted_score"}
@@ -22,13 +23,34 @@ DEFAULT_CHANNEL_VALUES = {
 def _split_pipe(value):
     return [x.strip() for x in str(value).split("|") if x.strip()]
 
+def _safe_float(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+def calculate_gtr_utilization_score(row):
+    weighted_panel_support = (
+        _safe_float(row.get("targeted_gene_count", 0)) * 1.00
+        + _safe_float(row.get("small_panel_count", 0)) * 0.75
+        + _safe_float(row.get("medium_panel_count", 0)) * 0.50
+        + _safe_float(row.get("large_panel_count", 0)) * 0.25
+        + _safe_float(row.get("panel_unsized_count", 0)) * 0.10
+        + _safe_float(row.get("unknown_scope_count", 0)) * 0.05
+        + _safe_float(row.get("exome_or_genome_count", 0)) * 0.00
+    )
+    return min(1.0, math.log2(1.0 + weighted_panel_support))
+
 def _semantic_scores_from_summary(row):
     scores = {column: 0.0 for column in DEFAULT_CHANNEL_VALUES}
     channels = _split_pipe(row.get("semantic_channel_summary", ""))
     for channel in channels:
         score_column = SEMANTIC_SCORE_COLUMNS.get(channel)
         if score_column:
-            scores[score_column] = DEFAULT_CHANNEL_VALUES[score_column]
+            if channel == "clinical_utilization":
+                scores[score_column] = calculate_gtr_utilization_score(row)
+            else:
+                scores[score_column] = DEFAULT_CHANNEL_VALUES[score_column]
     return scores
 
 def _make_score_explanation(row):

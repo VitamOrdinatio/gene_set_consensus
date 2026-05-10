@@ -1,5 +1,18 @@
 import pandas as pd
 
+GTR_SCOPE_COUNT_COLUMNS = [
+    "targeted_gene_count",
+    "small_panel_count",
+    "medium_panel_count",
+    "large_panel_count",
+    "panel_unsized_count",
+    "exome_or_genome_count",
+    "unknown_scope_count",
+]
+
+def _numeric_sum(values):
+    return pd.to_numeric(values, errors="coerce").fillna(0).sum()
+
 def _gene_key_columns(df):
     if "gene_id" in df.columns and df["gene_id"].fillna("").ne("").any():
         return ["gene_id", "normalized_gene_symbol"]
@@ -49,7 +62,14 @@ def build_gene_frequency_table(normalized_df, gene_source_matrix):
             weight_tier_summary=("weight_tier", lambda x: "|".join(sorted(set(x)))),
             evidence_semantics_summary=("evidence_semantics", lambda x: "|".join(sorted(set(x)))),
             evidence_tier_summary=("evidence_tier", lambda x: "|".join(sorted(set(x)))),
-            semantic_channel_summary=("semantic_channel", lambda x: "|".join(sorted(set(x))))
+            semantic_channel_summary=("semantic_channel", lambda x: "|".join(sorted(set(x)))),
+            targeted_gene_count=("targeted_gene_count", _numeric_sum),
+            small_panel_count=("small_panel_count", _numeric_sum),
+            medium_panel_count=("medium_panel_count", _numeric_sum),
+            large_panel_count=("large_panel_count", _numeric_sum),
+            panel_unsized_count=("panel_unsized_count", _numeric_sum),
+            exome_or_genome_count=("exome_or_genome_count", _numeric_sum),
+            unknown_scope_count=("unknown_scope_count", _numeric_sum)
         )
         .reset_index()
     )
@@ -71,7 +91,14 @@ def build_gene_frequency_table(normalized_df, gene_source_matrix):
             "evidence_semantics_summary",
             "evidence_tier_summary",
             "semantic_channel_summary",
-            "mapping_status_summary"
+            "mapping_status_summary",
+            "targeted_gene_count",
+            "small_panel_count",
+            "medium_panel_count",
+            "large_panel_count",
+            "panel_unsized_count",
+            "exome_or_genome_count",
+            "unknown_scope_count"
         ]
     ]
     frequency = frequency.sort_values(

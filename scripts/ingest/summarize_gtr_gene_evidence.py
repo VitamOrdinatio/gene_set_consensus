@@ -4,6 +4,16 @@ import argparse
 import pandas as pd
 
 EXCLUDED_TEST_SCOPES = {"exome", "genome"}
+GTR_SCOPE_COLUMNS = {
+    "targeted_gene": "targeted_gene_count",
+    "small_panel": "small_panel_count",
+    "medium_panel": "medium_panel_count",
+    "large_panel": "large_panel_count",
+    "panel_unsized": "panel_unsized_count",
+    "exome": "exome_or_genome_count",
+    "genome": "exome_or_genome_count",
+    "unknown": "unknown_scope_count",
+}
 
 def explode_pipe_values(values):
     out = []
@@ -29,6 +39,38 @@ def pipe_unique_exploded(values, limit=None):
 def count_unique_exploded(values):
     return len(set(explode_pipe_values(values)))
 
+def count_unique_tests_by_scope(group):
+    counts = {
+        "targeted_gene_count": 0,
+        "small_panel_count": 0,
+        "medium_panel_count": 0,
+        "large_panel_count": 0,
+        "panel_unsized_count": 0,
+        "exome_or_genome_count": 0,
+        "unknown_scope_count": 0,
+    }
+
+    if "test_scope" not in group.columns or "gtr_accession" not in group.columns:
+        return counts
+
+    unique_pairs = (
+        group[["test_scope", "gtr_accession"]]
+        .drop_duplicates()
+        .fillna("")
+    )
+
+    for _, row in unique_pairs.iterrows():
+        scope = str(row["test_scope"]).strip()
+        accession = str(row["gtr_accession"]).strip()
+
+        if not accession:
+            continue
+
+        count_column = GTR_SCOPE_COLUMNS.get(scope, "unknown_scope_count")
+        counts[count_column] += 1
+
+    return counts
+
 def summarize(input_path, output_path, source_id, source_name, source_tier):
     df = pd.read_csv(input_path, sep="\t", dtype=str).fillna("")
 
@@ -49,10 +91,18 @@ def summarize(input_path, output_path, source_id, source_name, source_tier):
 
         matched_keyword_count = count_unique_exploded(group["matched_keyword"])
         matched_trait_name_count = count_unique_exploded(group["matched_trait_name"])
+        scope_counts = count_unique_tests_by_scope(group)
         rows.append({
             "gene_symbol": gene_symbol,
             "gene_id": gene_id,
             "gtr_test_count": len(gtr_accessions),
+            "targeted_gene_count": scope_counts["targeted_gene_count"],
+            "small_panel_count": scope_counts["small_panel_count"],
+            "medium_panel_count": scope_counts["medium_panel_count"],
+            "large_panel_count": scope_counts["large_panel_count"],
+            "panel_unsized_count": scope_counts["panel_unsized_count"],
+            "exome_or_genome_count": scope_counts["exome_or_genome_count"],
+            "unknown_scope_count": scope_counts["unknown_scope_count"],
             "independent_lab_count": len(lab_ids),
             "matched_trait_count": len(trait_ids),
             "unique_matched_keyword_count": matched_keyword_count,

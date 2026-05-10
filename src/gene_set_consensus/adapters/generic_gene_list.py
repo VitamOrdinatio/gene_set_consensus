@@ -59,11 +59,4 @@ class GenericGeneListAdapter(SourceAdapter):
             if col not in out.columns:
                 out[col] = ""
 
-        return out[
-            [
-                "gene_symbol",
-                "gene_id",
-                "evidence_label",
-                "notes"
-            ]
-        ]
+        return out

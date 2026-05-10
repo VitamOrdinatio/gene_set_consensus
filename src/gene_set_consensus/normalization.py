@@ -93,7 +93,14 @@ def normalize_source_dataframe(
             "mapping_status": mapping_status,
             "evidence_label": row.get("evidence_label", ""),
             "notes": row.get("notes", ""),
-            "source_record_hash": source_record_hash
+            "source_record_hash": source_record_hash,
+            "targeted_gene_count": row.get("targeted_gene_count", ""),
+            "small_panel_count": row.get("small_panel_count", ""),
+            "medium_panel_count": row.get("medium_panel_count", ""),
+            "large_panel_count": row.get("large_panel_count", ""),
+            "panel_unsized_count": row.get("panel_unsized_count", ""),
+            "exome_or_genome_count": row.get("exome_or_genome_count", ""),
+            "unknown_scope_count": row.get("unknown_scope_count", "")
         })
 
     return pd.DataFrame(normalized_rows)
