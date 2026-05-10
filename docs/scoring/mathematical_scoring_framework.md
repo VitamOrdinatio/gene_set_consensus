@@ -294,9 +294,7 @@ MitoCarta supports mitochondrial localization/function, not disease causality.
 
 GTR contributes to:
 
-```text
-utilization_score
-```
+`utilization_score`
 
 Recommended maximum:
 
@@ -304,25 +302,44 @@ Recommended maximum:
 max utilization_score = 1.0
 ```
 
+GTR evidence reflects diagnostic testing utilization, not disease causality. Therefore, GTR scoring must suppress broad or ambiguous testing contexts and must saturate rapidly.
+
 Suggested weighted panel support:
 
 ```text
 weighted_panel_support =
-    targeted_gene_count × 1.0
+    targeted_gene_count × 1.00
   + small_panel_count × 0.75
-  + medium_panel_count × 0.5
+  + medium_panel_count × 0.50
   + large_panel_count × 0.25
-  + exome_or_genome_count × 0.0
+  + panel_unsized_count × 0.10
+  + unknown_scope_count × 0.05
+  + exome_or_genome_count × 0.00
 ```
 
 Then:
 
 ```text
 utilization_score =
-    min(1.0, log(1 + weighted_panel_support) / log(21))
+    min(1.0, log2(1 + weighted_panel_support))
 ```
 
-This makes GTR positive but weak, and prevents large panels or WES/WGS tests from inflating consensus.
+Implementation note:
+`log2(1 + weighted_panel_support)` must be capped at 1.0. 
+
+This means GTR utilization can provide positive support, but cannot exceed the utilization channel cap.
+
+Interpretation:
+
+- targeted gene tests contribute most strongly
+- small and medium panels contribute moderately
+- large panels contribute weakly
+- unsized panels contribute very weakly
+- unknown-scope tests contribute minimally
+- exome/genome tests contribute zero utilization score
+- hundreds of panel observations cannot linearly inflate confidence
+
+This makes GTR positive but weak, preserves clinical-utilization value, and prevents broad or ambiguous testing reuse from dominating consensus scoring.
 
 ### 8.4 Genes4Epilepsy
 
