@@ -132,6 +132,64 @@ is the primary route.
 
 Analyte-based tests should not be forced into gene-set evidence in v1.
 
+## GTR Test Scope Classification Policy
+
+GTR test scope must be assigned using an empirical two-pass strategy whenever possible.
+
+The parser should first extract all gene-test observations, then calculate:
+
+```text
+genes_per_test = number of unique gene symbols observed for each GTR accession
+```
+
+Then assign `test_scope` using deterministic thresholds:
+
+```text
+genes_per_test <= 5      targeted_gene
+genes_per_test <= 25     small_panel
+genes_per_test <= 100    medium_panel
+genes_per_test > 100     large_panel
+```
+
+This replaces purely text/category-derived panel classification when enough gene-level observations are available.
+
+Rationale:
+
+- GTR test names and categories are heterogeneous.
+- Many panel tests lack reliable structured panel-size metadata.
+- Empirical `genes_per_test` provides a reproducible approximation of test breadth.
+- Test breadth matters for utilization scoring because broad panels should contribute less than targeted tests.
+- WES/WGS tests remain excluded or scored as zero contribution where explicitly identified.
+
+Caveats:
+
+`genes_per_test` is calculated from parsed GTR gene observations, not necessarily the complete laboratory wet-lab target design.
+- A test may appear smaller than its true assay size if GTR records are incomplete.
+- Explicit exome/genome classifications should override empirical gene-count thresholds.
+- The thresholds are heuristic and must remain documented/versioned.
+
+Implementation rule:
+
+The parser may initially assign a provisional `test_scope` using test name/category text. After all rows are extracted, a deterministic second-pass classifier should revise non-exome/genome scopes using `genes_per_test`.
+
+The final output should preserve both:
+
+`test_scope`
+`genes_per_test`
+
+and optionally:
+
+`test_scope_assignment_method`
+
+Recommended assignment methods:
+
+```text
+explicit_exome_genome
+empirical_gene_count
+text_category_heuristic
+unknown
+```
+
 ## Analyte and Metabolomics Future
 
 Analyte-based clinical tests are scientifically valuable and should be preserved for future work.
