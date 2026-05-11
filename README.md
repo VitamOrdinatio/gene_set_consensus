@@ -72,8 +72,6 @@ provenance-aware consensus outputs
 downstream translational workflows
 ```
 
-# Core Architecture
-
 ```text
                     ┌──────────────────────────────┐
                     │ External Gene Evidence       │
