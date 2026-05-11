@@ -409,6 +409,24 @@ pytest
 
 # Example Outputs
 
+Curated semantic interpretation examples are available under:
+
+```text
+docs/examples/
+```
+
+Including:
+
+- epilepsy semantic ranking examples
+- mitochondrial semantic ranking examples
+- curated semantic output tables
+- ontology-aware interpretation walkthroughs
+
+See:
+- [Example Readme](docs/examples/README.md)
+- [Epilepsy: Semantic Output Example](docs/examples/epilepsy_semantic_output_example.md)
+- [Mitochondria: Semantic Output Example](docs/examples/mitochondrial_semantic_output_example.md)
+
 GSC generates provenance-aware semantic outputs including:
 
 | Output | Purpose |
