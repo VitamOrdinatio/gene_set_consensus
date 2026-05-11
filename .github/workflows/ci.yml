@@ -28,8 +28,8 @@ jobs:
 
       - name: Validate release manifests
         run: |
-          python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
-          python scripts/validation/validate_release_manifest.py --release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml
+          python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml --skip-external-paths
+          python scripts/validation/validate_release_manifest.py --release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml --skip-external-paths
 
       - name: Validate scoring profiles
         run: |

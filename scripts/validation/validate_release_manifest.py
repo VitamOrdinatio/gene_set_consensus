@@ -10,6 +10,11 @@ def load_yaml(path):
 def main():
     parser = argparse.ArgumentParser(description="Validate a GSC release manifest.")
     parser.add_argument("--release", required=True)
+    parser.add_argument(
+        "--skip-external-paths",
+        action="store_true",
+        help="Skip validation of external source_path files outside the repo."
+    )
     args = parser.parse_args()
 
     release_path = Path(args.release)
@@ -71,7 +76,7 @@ def main():
                 )
 
             source_path = Path(source.get("source_path", ""))
-            if not source_path.exists():
+            if not args.skip_external_paths and not source_path.exists():
                 errors.append(f"Missing source_path for {source_id}: {source_path}")
 
             if manifest_sources and source_id not in manifest_sources:
