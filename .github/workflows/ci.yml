@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile Python files
+        run: |
+          python -m py_compile $(find src scripts tests -name "*.py" | tr '\n' ' ')
+
+      - name: Validate release manifests
+        run: |
+          python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
+          python scripts/validation/validate_release_manifest.py --release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml
+
+      - name: Validate scoring profiles
+        run: |
+          python scripts/validation/validate_scoring_profile.py --profile config/scoring_profiles/epilepsy_semantic_v0.1.yaml
+          python scripts/validation/validate_scoring_profile.py --profile config/scoring_profiles/mitochondrial_semantic_v0.1.yaml
+
+      - name: Run tests
+        run: |
+          pytest
