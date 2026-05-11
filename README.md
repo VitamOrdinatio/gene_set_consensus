@@ -1,5 +1,11 @@
 # gene_set_consensus
 
+![CI](https://github.com/VitamOrdinatio/gene_set_consensus/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-active_development-green)
+![Architecture](https://img.shields.io/badge/architecture-semantic_ontology-purple)
+
 `gene_set_consensus` (GSC) is a semantic evidence integration framework for phenotype-scoped consensus gene prioritization.
 
 GSC integrates heterogeneous gene evidence sources into reproducible, provenance-aware consensus gene sets using:
