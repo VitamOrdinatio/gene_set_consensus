@@ -21,6 +21,10 @@ GSC is designed as an upstream scientific evidence layer for downstream reposito
 
 # Scientific Motivation
 
+## Semantic Evidence Ontology Framework
+
+![GSC Semantic Evidence Ontology Framework](assets/gsc_semantic_ontology_framework.png)
+
 Gene lists originating from different biological and clinical sources are not equally informative.
 
 Examples:
