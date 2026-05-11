@@ -29,7 +29,7 @@ GSC is designed as an upstream scientific evidence layer for downstream reposito
 
 ## Semantic Evidence Ontology Framework
 
-![GSC Semantic Evidence Ontology Framework](assets/gsc_semantic_ontology_framework.png)
+![GSC Semantic Evidence Ontology Framework](assets/diagrams/gsc_semantic_ontology_framework.png)
 
 Gene lists originating from different biological and clinical sources are not equally informative.
 
@@ -429,9 +429,9 @@ Including:
 - ontology-aware interpretation walkthroughs
 
 See:
-- [Example Readme](docs/examples/README.md)
-- [Epilepsy: Semantic Output Example](docs/examples/epilepsy_semantic_output_example.md)
-- [Mitochondria: Semantic Output Example](docs/examples/mitochondrial_semantic_output_example.md)
+[Example Readme](docs/examples/README.md)
+[Epilepsy: Semantic Output Example](docs/examples/epilepsy_semantic_output_example.md)
+[Mitochondria: Semantic Output Example](docs/examples/mitochondrial_semantic_output_example.md)
 
 GSC generates provenance-aware semantic outputs including:
 
