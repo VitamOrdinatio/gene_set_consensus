@@ -41,10 +41,13 @@ A successful MARK validation requires:
 - epilepsy GTR summary generation completes
 - mitochondrial GTR summary generation completes
 - semantic epilepsy release completes
+- semantic DEE release completes
+- semantic NAFE release completes
 - semantic mitochondrial release completes
 - output contract validation passes
 - key consensus outputs are reproducible or explainably equivalent
 - all deviations are documented
+
 
 ---
 
@@ -93,7 +96,9 @@ Recommended storage structure:
 │   ├── epi25/
 │   │   └── 2024/
 │   │       └── processed/
-│   │           └── epi25_2024_epi_high_confidence.tsv
+│   │           ├── epi25_2024_epi_high_confidence.tsv
+│   │           ├── epi25_2024_dee_high_confidence.tsv
+│   │           └── epi25_2024_nafe_high_confidence.tsv
 │   ├── genes4epilepsy/
 │   │   └── genes4epilepsy.tsv
 │   ├── mitocarta/
@@ -202,6 +207,8 @@ Required files:
 ```text
 gtr_ftp.xml.gz
 epi25_2024_epi_high_confidence.tsv
+epi25_2024_dee_high_confidence.tsv
+epi25_2024_nafe_high_confidence.tsv
 genes4epilepsy.tsv
 mitocarta_human.tsv
 Human.MitoCarta3.0.xls
@@ -356,6 +363,18 @@ Run epilepsy semantic release:
 make run-epilepsy-semantic
 ```
 
+Run DEE (epilepsy subtype) semantic release:
+
+```bash
+make run-dee-semantic
+```
+
+Run NAFE (epilepsy subtype) semantic release:
+
+```bash
+make run-nafe-semantic
+```
+
 Run mitochondrial semantic release:
 
 ```bash
@@ -380,6 +399,12 @@ awk -F'\t' '$3 ~ /^(SCN1A|DEPDC5|NPRL3|SYNGAP1|POLG)$/ {print}' \
 
 awk -F'\t' '$3 ~ /^(POLG|TWNK|TFAM|SURF1|CYC1)$/ {print}' \
   results/tables/mitochondrial_semantic_gtr_experimental/consensus_gene_set.tsv
+
+awk -F'\t' '$3 ~ /^(NEXMIF|SCN1A|STX1B|SYNGAP1|WDR45)$/ {print}' \
+  results/tables/dee_semantic_gtr_experimental/consensus_gene_set.tsv
+
+awk -F'\t' '$3 ~ /^(DEPDC5|NPRL3)$/ {print}' \
+  results/tables/nafe_semantic_gtr_experimental/consensus_gene_set.tsv
 ```
 
 Inspect headers:
@@ -398,6 +423,8 @@ Recommended comparison targets:
 ```text
 results/tables/epilepsy_semantic_gtr_experimental/consensus_gene_set.tsv
 results/tables/mitochondrial_semantic_gtr_experimental/consensus_gene_set.tsv
+results/tables/dee_semantic_gtr_experimental/consensus_gene_set.tsv
+results/tables/nafe_semantic_gtr_experimental/consensus_gene_set.tsv
 ```
 
 Suggested checks:
