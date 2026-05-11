@@ -1,5 +1,6 @@
 phenotype:
   phenotype_id: mitocarta_gtr_experimental
+  config_status: current_semantic_experimental
   phenotype_label: MitoCarta + GTR experimental consensus
   version: v0.1
 sources:

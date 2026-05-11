@@ -1,5 +1,6 @@
 phenotype:
   phenotype_id: epilepsy
+  config_status: template_legacy
   phenotype_label: "Epilepsy"
   version: "v0.1-template"
 

@@ -1,5 +1,6 @@
 phenotype:
   phenotype_id: epilepsy_gold_bronze_registry_minimal
+  config_status: deprecated_transitional
   phenotype_label: "Epilepsy gold + bronze consensus (minimal registry)"
   version: "v0.1"
 

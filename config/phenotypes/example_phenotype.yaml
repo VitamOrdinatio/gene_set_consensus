@@ -1,5 +1,6 @@
 phenotype:
   phenotype_id: example_phenotype
+  config_status: template_legacy
   phenotype_label: Example phenotype
   version: v0.1
 sources:
