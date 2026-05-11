@@ -2,6 +2,8 @@
 	test \
 	compile \
 	validate-releases \
+	validate-release-paths \
+	validate-all-with-paths \
 	validate-scoring-profiles \
 	validate-source-manifests \
 	validate-all \
@@ -20,6 +22,10 @@ compile:
 	python -m py_compile $$(find src scripts tests -name "*.py" | tr '\n' ' ')
 
 validate-releases:
+	python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml --skip-external-paths
+	python scripts/validation/validate_release_manifest.py --release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml --skip-external-paths
+
+validate-release-paths:
 	python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
 	python scripts/validation/validate_release_manifest.py --release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml
 
@@ -32,6 +38,9 @@ validate-source-manifests:
 	python scripts/validation/validate_source_manifest.py --manifest manifests/sources/mitochondrial_manifest.yaml
 
 validate-all: compile validate-releases validate-scoring-profiles validate-source-manifests test
+
+validate-all-with-paths: compile validate-release-paths validate-scoring-profiles validate-source-manifests test
+
 
 run-example:
 	python run_pipeline.py \
