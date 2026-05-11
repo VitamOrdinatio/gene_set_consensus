@@ -1,30 +1,57 @@
-.PHONY: run-example validate-example reproduce test clean-runtime show-consensus show-tree
+.PHONY: \
+	test \
+	compile \
+	validate-releases \
+	validate-scoring-profiles \
+	validate-source-manifests \
+	validate-all \
+	run-example \
+	run-epilepsy-semantic \
+	run-mito-semantic \
+	show-epilepsy-consensus \
+	show-mito-consensus \
+	show-tree \
+	clean-runtime
+
+test:
+	pytest
+
+compile:
+	python -m py_compile $$(find src scripts tests -name "*.py" | tr '\n' ' ')
+
+validate-releases:
+	python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
+	python scripts/validation/validate_release_manifest.py --release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml
+
+validate-scoring-profiles:
+	python scripts/validation/validate_scoring_profile.py --profile config/scoring_profiles/epilepsy_semantic_v0.1.yaml
+	python scripts/validation/validate_scoring_profile.py --profile config/scoring_profiles/mitochondrial_semantic_v0.1.yaml
+
+validate-source-manifests:
+	python scripts/validation/validate_source_manifest.py --manifest manifests/sources/epilepsy_manifest.yaml
+	python scripts/validation/validate_source_manifest.py --manifest manifests/sources/mitochondrial_manifest.yaml
+
+validate-all: compile validate-releases validate-scoring-profiles validate-source-manifests test
 
 run-example:
 	python run_pipeline.py \
 		--config config/config.yaml \
 		--phenotype example_phenotype \
-		--source-manifest manifests/sources/example_source_manifest.yaml \
 		--identifier-map data/example/identifier_map.tsv
 
-validate-example:
-	python scripts/step_06_validate_outputs.py \
-		--config config/config.yaml \
-		--phenotype example_phenotype \
-		--run-id $$(ls -td data/processed/run_* | head -n 1 | xargs -n1 basename)
+run-epilepsy-semantic:
+	python run_pipeline.py \
+		--release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
 
-reproduce:
-	python scripts/validation/validate_reproducibility.py \
-		--config config/config.yaml \
-		--phenotype example_phenotype \
-		--source-manifest manifests/sources/example_source_manifest.yaml \
-		--identifier-map data/example/identifier_map.tsv
+run-mito-semantic:
+	python run_pipeline.py \
+		--release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml
 
-test:
-	pytest
+show-epilepsy-consensus:
+	column -t -s $$'\t' results/tables/epilepsy_semantic_gtr_experimental/consensus_gene_set.tsv | head -n 25
 
-show-consensus:
-	column -t -s $$'\t' results/tables/example_phenotype/consensus_gene_set.tsv
+show-mito-consensus:
+	column -t -s $$'\t' results/tables/mitochondrial_semantic_gtr_experimental/consensus_gene_set.tsv | head -n 25
 
 show-tree:
 	tree -L 4
@@ -35,22 +62,3 @@ clean-runtime:
 	find data/processed -mindepth 1 ! -name README.md -exec rm -rf {} +
 	find results/tables -mindepth 1 -exec rm -rf {} +
 	find results/reports -mindepth 1 -exec rm -rf {} +
-
-
-run-mito:
-	@echo "Preparing mitochondrial disease execution target"
-	@echo "Requires real source files under /mnt/storage"
-
-run-epilepsy:
-	@echo "Preparing epilepsy execution target"
-	@echo "Requires real source files under /mnt/storage"
-
-
-validate-releases:
-	python scripts/validation/validate_release_manifest.py --release config/releases/epilepsy_gold_bronze_v0.1.yaml
-	python scripts/validation/validate_release_manifest.py --release config/releases/mitocarta_only_v0.1.yaml
-
-
-validate-source-manifests:
-	python scripts/validation/validate_source_manifest.py --manifest manifests/sources/epilepsy_manifest.yaml
-	python scripts/validation/validate_source_manifest.py --manifest manifests/sources/mitochondrial_manifest.yaml
