@@ -73,7 +73,7 @@ sources:
     extraction_rule_version: gtr_mitochondrial_terms_v0.1
     derived_from: /mnt/storage/gtr/gtr_ftp.xml
     derived_artifact: /mnt/storage/gene_sets/gtr_mitochondria/processed/gtr_mitochondria_gene_summary.tsv
-    evidence_semantics: clinical_testing_utilization
+    evidence_semantics: clinical_utilization
     notes: Planned silver-tier GTR summary source. Not active in production release yet.
     provider: NCBI Genetic Testing Registry
     acquisition_method: local_pinned_ftp_xml_derivation

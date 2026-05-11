@@ -31,7 +31,7 @@ sources:
   source_release: GTR_FTP_late_2025
   source_path: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
   acquisition_date: late_2025
-  evidence_semantics: clinical_testing_utilization
+  evidence_semantics: clinical_utilization
   experimental: true
 rules:
 - config/rules/epi25_rules.yaml

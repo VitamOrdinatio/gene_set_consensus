@@ -115,7 +115,7 @@ def summarize(input_path, output_path, source_id, source_name, source_tier):
             "source_id": source_id,
             "source_name": source_name,
             "source_tier": source_tier,
-            "evidence_label": "gtr_clinical_testing_utilization",
+            "evidence_label": "gtr_clinical_utilization",
             "notes": (
                 f"raw_rows={raw_rows}; "
                 f"raw_unique_genes={raw_unique_genes}; "
