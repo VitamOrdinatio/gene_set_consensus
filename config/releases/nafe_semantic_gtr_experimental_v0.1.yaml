@@ -1,0 +1,51 @@
+release:
+  release_id: nafe_semantic_gtr_experimental_v0.1
+  phenotype_id: nafe_semantic_gtr_experimental
+  release_date: '2026-05-07'
+  release_family: semantic_ontology
+  gsc_version: 0.1.0
+  release_status: experimental
+  revision_policy: Versioned scientific interpretation; not immutable biological truth.
+  notes: Experimental semantic release integrating Epi25 NAFE high-confidence evidence
+    with GTR clinical utilization evidence as silver-tier supporting evidence.
+execution:
+  phenotype_config: config/phenotypes/nafe_semantic_gtr_experimental.yaml
+  source_manifest: manifests/sources/epilepsy_manifest.yaml
+  identifier_map: data/metadata/gene_identifier_maps/epilepsy_identifier_map.tsv
+  scoring_profile: config/scoring_profiles/epilepsy_semantic_v0.1.yaml
+sources:
+- source_id: epi25_2024_nafe_high_confidence
+  source_tier: platinum
+  source_weight: 3.0
+  source_release: Epi25_2024
+  source_path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_nafe_high_confidence.tsv
+  acquisition_date: '2026-05-06'
+  evidence_semantics: statistical_association
+  semantic_channel: direct_disease
+- source_id: genes4epilepsy
+  source_tier: bronze
+  source_weight: 1.0
+  source_release: Genes4Epilepsy_v1
+  source_path: /mnt/storage/gene_sets/genes4epilepsy/genes4epilepsy.tsv
+  acquisition_date: '2026-05-06'
+  evidence_semantics: exploratory_literature
+  semantic_channel: exploratory_literature
+- source_id: gtr_epilepsy_gene_summary
+  source_tier: silver
+  source_weight: 2.0
+  source_release: GTR_FTP_late_2025
+  source_path: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
+  acquisition_date: late_2025
+  evidence_semantics: clinical_utilization
+  experimental: true
+  semantic_channel: clinical_utilization
+rules:
+- config/rules/epi25_rules.yaml
+- config/rules/epi25_rollups.yaml
+expected_behavior:
+  legacy_score_formula: weighted_source_sum
+  active_score: weighted_source_sum
+  semantic_scoring_status: observational
+  notes: Expected behavior applies to this release and source snapshot only. Semantic
+    scores are emitted for interpretation, but weighted_source_sum remains the active
+    ranking score.

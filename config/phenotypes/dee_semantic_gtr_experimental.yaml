@@ -1,0 +1,52 @@
+phenotype:
+  phenotype_id: dee_semantic_gtr_experimental
+  config_status: current_semantic_experimental
+  phenotype_label: DEE semantic + GTR experimental consensus
+  version: v0.1
+sources:
+- source_id: epi25_2024_dee_high_confidence
+  source_name: Epi25 2024 DEE high-confidence genes
+  source_type: consortium_wes_burden
+  adapter: generic_gene_list
+  file_path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_dee_high_confidence.tsv
+  gene_column: gene_symbol
+  weight_tier: gold
+  evidence_semantics: statistical_association
+  evidence_tier: platinum
+  source_weight: 3.0
+  semantic_channel: direct_disease
+  scoring_rule_id: epi25_exomewide_v0.1
+- source_id: genes4epilepsy
+  source_name: Genes4Epilepsy
+  source_type: literature_derived
+  adapter: generic_gene_list
+  file_path: /mnt/storage/gene_sets/genes4epilepsy/genes4epilepsy.tsv
+  gene_column: gene_symbol
+  weight_tier: bronze
+  evidence_semantics: exploratory_literature
+  evidence_tier: bronze
+  source_weight: 1.0
+  semantic_channel: exploratory_literature
+  scoring_rule_id: genes4epilepsy_membership_v0.1
+- source_id: gtr_epilepsy_gene_summary
+  source_name: GTR epilepsy gene summary
+  source_type: gtr_gene_summary
+  adapter: generic_gene_list
+  file_path: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
+  gene_column: gene_symbol
+  weight_tier: silver
+  evidence_semantics: clinical_utilization
+  evidence_tier: silver
+  source_weight: 2.0
+  semantic_channel: clinical_utilization
+  scoring_rule_id: gtr_utilization_v0.1
+scoring:
+  base_score: source_count
+  weighted_score: sum_source_weights
+  consensus_score_formula: weighted_score
+  minimum_source_count: 1
+  include_single_source_genes: true
+  deterministic_sort:
+  - consensus_score: descending
+  - source_count: descending
+  - gene_symbol: ascending

@@ -26,8 +26,12 @@ the files in this directory are curated examples intended to remain version-cont
 |---|---|
 | `epilepsy_semantic_output_example.md` | epilepsy semantic ranking interpretation |
 | `mitochondrial_semantic_output_example.md` | mitochondrial semantic ranking interpretation |
+| `dee_semantic_output_example.md` | DEE subtype semantic ranking interpretation |
+| `nafe_semantic_output_example.md` | NAFE subtype semantic ranking interpretation |
 | `tables/epilepsy_semantic_selected_genes.tsv` | curated epilepsy semantic example table |
 | `tables/mitochondrial_semantic_selected_genes.tsv` | curated mitochondrial semantic example table |
+| `tables/dee_semantic_selected_genes.tsv` | curated DEE subtype semantic example table |
+| `tables/nafe_semantic_selected_genes.tsv` | curated NAFE subtype semantic example table |
 
 ---
 

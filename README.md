@@ -254,6 +254,16 @@ python run_pipeline.py \
   --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
 ```
 
+Current semantic epilepsy-family releases include:
+
+| Release | Direct disease anchor | Interpretation |
+|---|---|---|
+| `epilepsy_semantic_gtr_experimental_v0.1` | Epi25 EPI high-confidence genes | broad epilepsy semantic overlay |
+| `dee_semantic_gtr_experimental_v0.1` | Epi25 DEE high-confidence genes | developmental and epileptic encephalopathy subtype overlay |
+| `nafe_semantic_gtr_experimental_v0.1` | Epi25 NAFE high-confidence genes | non-acquired focal epilepsy subtype overlay |
+
+GGE is intentionally not represented as a high-confidence semantic release because no GGE genes reached the configured 2024 Epi25 high-significance threshold.
+
 Release manifests define:
 
 - phenotype configuration
@@ -300,7 +310,7 @@ GSC includes extensive automated validation.
 Current test suite:
 
 ```text
-43 automated tests
+46 automated tests
 ```
 
 Validation coverage includes:
@@ -396,6 +406,24 @@ python run_pipeline.py \
 
 ---
 
+## Run DEE Subtype Semantic Release
+
+```bash
+python run_pipeline.py \
+  --release config/releases/dee_semantic_gtr_experimental_v0.1.yaml
+```
+
+---
+
+## Run NAFE Subtype Semantic Release
+
+```bash
+python run_pipeline.py \
+  --release config/releases/nafe_semantic_gtr_experimental_v0.1.yaml
+```
+
+---
+
 ## Run Semantic Mitochondrial Release
 
 ```bash
@@ -424,14 +452,18 @@ docs/examples/
 Including:
 
 - epilepsy semantic ranking examples
+- DEE subtype semantic ranking examples
+- NAFE subtype semantic ranking examples
 - mitochondrial semantic ranking examples
 - curated semantic output tables
 - ontology-aware interpretation walkthroughs
 
 See:
-[Example Readme](docs/examples/README.md)
 [Epilepsy: Semantic Output Example](docs/examples/epilepsy_semantic_output_example.md)
+[DEE: Semantic Output Example](docs/examples/dee_semantic_output_example.md)
+[NAFE: Semantic Output Example](docs/examples/nafe_semantic_output_example.md)
 [Mitochondria: Semantic Output Example](docs/examples/mitochondrial_semantic_output_example.md)
+[Example Readme](docs/examples/README.md)
 
 GSC generates provenance-aware semantic outputs including:
 
@@ -572,6 +604,7 @@ Planned future directions include:
 - network convergence scoring
 - noncoding regulatory integration
 - phenotype ontology propagation
+- subtype-aware epilepsy semantic overlays
 - semantic conflict resolution
 - probabilistic semantic scoring
 
@@ -594,7 +627,7 @@ Potential downstream uses include:
 
 # License
 
-TBD
+MIT License
 
 ---
 

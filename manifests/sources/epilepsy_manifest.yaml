@@ -22,6 +22,50 @@ sources:
     path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_epi_high_confidence.tsv
     file_format: tsv
   weight_tier: gold
+- adapter: generic_gene_list
+  biological_context:
+    genome_build: GRCh38
+    phenotype: epilepsy
+    phenotype_scope: NAFE
+    species: Homo sapiens
+  file_metadata:
+    file_format: tsv
+    path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_nafe_high_confidence.tsv
+  provenance:
+    acquisition_date: '2026-05-06'
+    acquisition_method: derived_from_browser_and_publication_evidence
+    evidence_channels:
+    - browser_exomewide_ptv
+    - publication_joint_cnv_snv_high_confidence
+    - phenotype_rollup
+    provider: Epi25
+    source_release: Epi25_2024
+  source_id: epi25_2024_nafe_high_confidence
+  source_name: Epi25 2024 NAFE high-confidence genes
+  source_type: consortium_wes_burden
+  weight_tier: gold
+- adapter: generic_gene_list
+  biological_context:
+    genome_build: GRCh38
+    phenotype: epilepsy
+    phenotype_scope: DEE
+    species: Homo sapiens
+  file_metadata:
+    file_format: tsv
+    path: /mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_dee_high_confidence.tsv
+  provenance:
+    acquisition_date: '2026-05-06'
+    acquisition_method: derived_from_browser_and_publication_evidence
+    evidence_channels:
+    - browser_exomewide_ptv
+    - publication_joint_cnv_snv_high_confidence
+    - phenotype_rollup
+    provider: Epi25
+    source_release: Epi25_2024
+  source_id: epi25_2024_dee_high_confidence
+  source_name: Epi25 2024 DEE high-confidence genes
+  source_type: consortium_wes_burden
+  weight_tier: gold
 - source_id: genes4epilepsy
   source_name: Genes4Epilepsy
   source_type: literature_derived
@@ -76,7 +120,8 @@ sources:
     derived_from: /mnt/storage/gtr/gtr_ftp.xml
     derived_artifact: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
     evidence_semantics: clinical_utilization
-    notes: Planned silver-tier GTR summary source. Not active in production release yet.
+    notes: Planned silver-tier GTR summary source. Not active in production release
+      yet.
     provider: NCBI Genetic Testing Registry
     acquisition_method: local_pinned_ftp_xml_derivation
     acquisition_date: late_2025

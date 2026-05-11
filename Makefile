@@ -56,11 +56,27 @@ run-mito-semantic:
 	python run_pipeline.py \
 		--release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml
 
+
+run-dee-semantic:
+	python run_pipeline.py \
+		--release config/releases/dee_semantic_gtr_experimental_v0.1.yaml
+
+run-nafe-semantic:
+	python run_pipeline.py \
+		--release config/releases/nafe_semantic_gtr_experimental_v0.1.yaml
+
 show-epilepsy-consensus:
 	column -t -s $$'\t' results/tables/epilepsy_semantic_gtr_experimental/consensus_gene_set.tsv | head -n 25
 
 show-mito-consensus:
 	column -t -s $$'\t' results/tables/mitochondrial_semantic_gtr_experimental/consensus_gene_set.tsv | head -n 25
+
+
+show-dee-consensus:
+	column -t -s $$'\t' results/tables/dee_semantic_gtr_experimental/consensus_gene_set.tsv | head -n 25
+
+show-nafe-consensus:
+	column -t -s $$'\t' results/tables/nafe_semantic_gtr_experimental/consensus_gene_set.tsv | head -n 25
 
 show-tree:
 	tree -L 4
