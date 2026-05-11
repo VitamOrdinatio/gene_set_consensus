@@ -1,71 +1,375 @@
 # gene_set_consensus
 
-`gene_set_consensus` (GSC) builds phenotype-scoped consensus gene sets from multiple heterogeneous gene-list sources.
+`gene_set_consensus` (GSC) is a semantic evidence integration framework for phenotype-scoped consensus gene prioritization.
 
-GSC is designed as a reproducible upstream evidence layer for downstream repositories such as:
+GSC integrates heterogeneous gene evidence sources into reproducible, provenance-aware consensus gene sets using:
+
+- semantic evidence ontologies
+- deterministic aggregation
+- inflation-aware scoring controls
+- release-driven runtime configuration
+- reproducible validation pipelines
+
+GSC is designed as an upstream scientific evidence layer for downstream repositories including:
 
 - `variant_annotation_pipeline` (VAP)
 - `variant_database` (VDB)
 - `rnaseq_pipeline` (RSP)
 - `rare_disease_gene_prioritization` (RDGP)
 
+---
+
+# Scientific Motivation
+
+Gene lists originating from different biological and clinical sources are not equally informative.
+
+Examples:
+
+| Evidence Type | Example |
+|---|---|
+| statistical disease association | Epi25 burden studies |
+| curated localization biology | MitoCarta |
+| clinical utilization | GTR diagnostic testing panels |
+| exploratory literature aggregation | literature-derived epilepsy lists |
+
+Naive overlap counting creates several problems:
+
+- broad clinical testing panels inflate gene importance
+- exploratory literature overlap can dominate disease-specific evidence
+- contextual biology becomes conflated with causality
+- heterogeneous evidence types become difficult to interpret
+
+GSC addresses these issues using a semantic evidence ontology framework that separates:
+
+- evidence semantics
+- evidence tiers
+- semantic evidence channels
+- utilization behavior
+- contextual biology
+- direct disease association
+
+The goal is not merely to count evidence sources, but to preserve biological and clinical interpretability during consensus construction.
 
 ---
 
-## What GSC Does
+# Core Architecture
 
 GSC converts:
 
 ```text
-multiple phenotype-associated gene lists
-→ normalized gene identifiers
-→ source-aware gene matrix
-→ weighted consensus gene evidence
-→ provenance-aware output tables
+heterogeneous phenotype-associated gene sources
+        ↓
+identifier normalization
+        ↓
+semantic ontology assignment
+        ↓
+source-aware aggregation
+        ↓
+inflation-aware semantic scoring
+        ↓
+provenance-aware consensus outputs
+        ↓
+downstream translational workflows
 ```
 
+# Core Architecture
+
+```text
+                    ┌──────────────────────────────┐
+                    │ External Gene Evidence       │
+                    │------------------------------│
+                    │ • Epi25 burden studies       │
+                    │ • MitoCarta                  │
+                    │ • GTR clinical panels        │
+                    │ • Literature-derived lists   │
+                    └──────────────┬───────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────┐
+                    │ Source Adapters              │
+                    │------------------------------│
+                    │ • generic_gene_list          │
+                    │ • gtr_panel                  │
+                    │ • mitocarta                  │
+                    └──────────────┬───────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────┐
+                    │ Identifier Normalization     │
+                    │------------------------------│
+                    │ • HGNC normalization         │
+                    │ • ENSG resolution            │
+                    │ • provenance preservation    │
+                    └──────────────┬───────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────┐
+                    │ Semantic Ontology Assignment │
+                    │------------------------------│
+                    │ • evidence_semantics         │
+                    │ • evidence_tiers             │
+                    │ • semantic_channels          │
+                    └──────────────┬───────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────┐
+                    │ Aggregation + Inflation      │
+                    │ Controls                     │
+                    │------------------------------│
+                    │ • panel-size classification  │
+                    │ • utilization saturation     │
+                    │ • deterministic aggregation  │
+                    └──────────────┬───────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────┐
+                    │ Semantic Scoring Profiles    │
+                    │------------------------------│
+                    │ • phenotype-specific scoring │
+                    │ • semantic weighting         │
+                    │ • ontology-aware ranking     │
+                    └──────────────┬───────────────┘
+                                   │
+                ┌──────────────────┴──────────────────┐
+                ▼                                     ▼
+┌──────────────────────────────┐      ┌──────────────────────────────┐
+│ Consensus Outputs            │      │ Provenance Outputs           │
+│------------------------------│      │------------------------------│
+│ • consensus_gene_set.tsv     │      │ • gene_provenance.tsv        │
+│ • gene_frequency_table.tsv   │      │ • run_manifest.yaml          │
+│ • gene_source_matrix.tsv     │      │ • validation reports         │
+└──────────────────────────────┘      └──────────────────────────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────────┐
+                    │ Downstream Ecosystem         │
+                    │------------------------------│
+                    │ • VAP                        │
+                    │ • VDB                        │
+                    │ • RSP                        │
+                    │ • RDGP                       │
+                    └──────────────────────────────┘
+```
+
+Core architectural principles:
+
+- deterministic execution
+- provenance preservation
+- reproducibility
+- phenotype-scoped execution
+- semantic explainability
+- release-driven runtime configuration
+- ontology validation
+- backward-compatible migration strategy
 
 ---
 
-## What GSC Does Not Do
+# Semantic Ontology System
 
-GSC does not:
-    - call variants 
-    - parse VCF/BAM/FASTQ files 
-    - perform enrichment analysis 
-    - perform RNA-seq analysis 
-    - rank patient-specific genes 
-    - store sample-specific evidence 
+GSC uses explicit semantic evidence separation rather than naive source counting.
 
-GSC is phenotype-scoped and gene-level.
+## Evidence Semantics
 
-The core evidence identity is:
-`(phenotype, gene_id)`
+Examples:
 
-
----
-
-## Current Status
-Current working MVP includes:
-  - config-driven execution 
-  - phenotype config files 
-  - source adapters 
-  - identifier normalization 
-  - gene-source matrix construction 
-  - weighted consensus scoring 
-  - provenance table generation 
-  - output contract validation 
-  - reproducibility validation 
-  - source manifest support 
-  - Makefile operator commands 
-  - pytest test suite 
-
+| Semantic Meaning | Example |
+|---|---|
+| `statistical_association` | Epi25 burden evidence |
+| `functional_localization` | MitoCarta mitochondrial localization |
+| `clinical_utilization` | GTR diagnostic panel utilization |
+| `exploratory_literature` | literature-derived gene aggregation |
 
 ---
 
-## Quick Start
+## Evidence Tiers
 
-Create and activate a virtual environment:
+Examples:
+
+| Tier | Interpretation |
+|---|---|
+| `platinum` | strong direct disease evidence |
+| `gold` | strong contextual biology |
+| `silver` | supporting utilization evidence |
+| `bronze` | exploratory evidence |
+
+---
+
+## Semantic Channels
+
+Examples:
+
+| Channel | Interpretation |
+|---|---|
+| `direct_disease` | direct disease association |
+| `clinical_utilization` | clinical testing prevalence |
+| `contextual_biology` | biologically relevant context |
+| `exploratory_literature` | hypothesis-generating evidence |
+
+---
+
+# Inflation Controls
+
+GSC includes semantic inflation controls designed to suppress artificial score inflation from broad clinical testing panels.
+
+Example problem:
+
+```text
+Gene A:
+- appears in one highly specific epilepsy burden study
+
+Gene B:
+- appears in hundreds of broad exome diagnostic panels
+```
+
+Naive counting incorrectly prioritizes Gene B.
+
+GSC mitigates this using:
+
+- semantic evidence separation
+- utilization-specific channels
+- panel-size classification
+- utilization saturation logic
+- deterministic aggregation controls
+
+Broad utilization evidence is preserved for interpretability but prevented from overwhelming direct disease evidence.
+
+---
+
+# Release-Driven Runtime
+
+Modern GSC execution is release-driven.
+
+Example:
+
+```bash
+python run_pipeline.py \
+  --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
+```
+
+Release manifests define:
+
+- phenotype configuration
+- scoring profiles
+- source manifests
+- release metadata
+- semantic evidence expectations
+- provenance expectations
+
+This architecture supports:
+
+- reproducible execution
+- frozen release behavior
+- phenotype-specific scoring strategies
+- downstream auditability
+
+---
+
+# Scoring Profiles
+
+GSC supports phenotype-specific semantic scoring profiles.
+
+Current examples include:
+
+- `epilepsy_semantic_v0.1.yaml`
+- `mitochondrial_semantic_v0.1.yaml`
+
+Scoring profiles control:
+
+- active scoring mode
+- semantic weighting behavior
+- utilization handling
+- inflation suppression
+- semantic channel interpretation
+
+Current semantic scores remain deterministic and heuristic rather than probabilistic.
+
+---
+
+# Validation and Testing
+
+GSC includes extensive automated validation.
+
+Current test suite:
+
+```text
+43 automated tests
+```
+
+Validation coverage includes:
+
+- ontology validation
+- semantic namespace locking
+- inflation control validation
+- release-runtime validation
+- scoring-profile validation
+- provenance joinability
+- output contract validation
+- identifier normalization behavior
+- GTR scope classification
+- semantic output validation
+- deterministic reproducibility
+
+Example:
+
+```bash
+pytest
+```
+
+Release validation:
+
+```bash
+python scripts/validation/validate_release_manifest.py \
+  --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
+```
+
+Scoring profile validation:
+
+```bash
+python scripts/validation/validate_scoring_profile.py \
+  --profile config/scoring_profiles/epilepsy_semantic_v0.1.yaml
+```
+
+---
+
+# Repository Evolution
+
+GSC evolved through several architectural phases.
+
+## Phase 1 — Source Count Architecture
+
+- direct overlap counting
+- deterministic but semantically naive
+
+## Phase 2 — Weighted Tier Architecture
+
+- introduced weighted evidence tiers
+- improved prioritization behavior
+- still lacked semantic separation
+
+## Phase 3 — Semantic Ontology Architecture
+
+Current generation:
+
+- semantic evidence channels
+- ontology validation
+- inflation controls
+- release-driven runtime
+- semantic scoring profiles
+- provenance-aware semantic outputs
+
+See:
+
+```text
+docs/migration/semantic_migration.md
+```
+
+for additional migration details.
+
+---
+
+# Quick Start
+
+## Environment Setup
 
 ```bash
 python -m venv .venv
@@ -73,192 +377,208 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Run the example pipeline:
+---
+
+## Run Semantic Epilepsy Release
 
 ```bash
-make run-example
+python run_pipeline.py \
+  --release config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml
 ```
-
-Run reproducibility validation:
-
-```bash
-make reproduce
-```
-
-Run tests:
-```bash
-make test
-```
-
-Inspect the consensus output:
-
-```bash
-make show-consensus
-```
-
 
 ---
 
-## Example Outputs
+## Run Semantic Mitochondrial Release
 
-The example run writes:
-- `results/tables/example_phenotype/consensus_gene_set.tsv`
-- `results/tables/example_phenotype/gene_source_matrix.tsv`
-- `results/tables/example_phenotype/gene_frequency_table.tsv`
-- `results/tables/example_phenotype/gene_provenance.tsv`
-- `results/reports/example_phenotype/run_manifest.yaml`
-- `results/reports/example_phenotype/validation_report.md`
-- `results/reports/example_phenotype/output_contract_validation.tsv`
-
-
+```bash
+python run_pipeline.py \
+  --release config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml
+```
 
 ---
 
-## Repository Structure
+## Run Validation Suite
 
-| Folder | Utility
-| ------- |  ------- |
-| `config/` | pipeline and phenotype configs |
-| `data/example/` | tiny toy data for reproducible testing |
-| `data/schemas/` | tabular schema descriptions |
-| `docs/` | architecture, contracts, plans, notes |
-| `manifests/sources/` | source provenance manifests|
-| `scripts/` | executable pipeline steps and validators |
-| `src/gene_set_consensus/` | reusable Python package code |
+```bash
+pytest
+```
+
+---
+
+# Example Outputs
+
+GSC generates provenance-aware semantic outputs including:
+
+| Output | Purpose |
+|---|---|
+| `consensus_gene_set.tsv` | final semantic consensus ranking |
+| `gene_source_matrix.tsv` | source presence matrix |
+| `gene_frequency_table.tsv` | aggregated semantic evidence table |
+| `gene_provenance.tsv` | provenance-aware source traceability |
+| `run_manifest.yaml` | runtime execution metadata |
+| `validation_report.md` | validation summary |
+| `output_contract_validation.tsv` | output schema validation |
+
+---
+
+# Repository Structure
+
+| Folder | Purpose |
+|---|---|
+| `config/` | phenotype configs, scoring profiles, releases |
+| `data/example/` | toy reproducible example datasets |
+| `docs/` | architecture, migration, governance |
+| `manifests/sources/` | source provenance manifests |
+| `scripts/` | pipeline execution and validation scripts |
+| `src/gene_set_consensus/` | reusable package code |
 | `tests/` | unit, integration, and validation tests |
-| `results/` | generated outputs; not committed |
-| `logs/` | generated logs; not committed |
-
-
+| `results/` | generated outputs (not committed) |
+| `logs/` | generated logs (not committed) |
 
 ---
 
-## Source Adapters
+# Source Adapters
 
-GSC separates biological source type from file parsing strategy.
+GSC separates:
 
-`source_type` describes biological meaning:
+```text
+biological source meaning
+≠
+file parsing strategy
+```
+
+## Source Types
+
+Examples:
+
 - `curated_database`
 - `clinical_panel`
 - `literature_derived`
-- `user_provided`
+- `consortium_wes_burden`
 
-`adapter` describes file structure:
+## Adapters
+
+Examples:
+
 - `generic_gene_list`
 - `gtr_panel`
+- `mitocarta`
 
-This means a clinical panel can use `generic_gene_list` if it is already flattened into a simple TSV, while a full GTR-style export should use `gtr_panel`.
-
-
-
----
-
-## Real Source Storage
-
-Real gene-set files should not be committed to Git.
-
-Use external storage:
-  - sys76: `/mnt/storage/gene_sets/`
-  - sys76 GTR: `/mnt/storage/gtr/`
-  - MARK: `/data/storage/gene_sets/`
-  - MARK GTR: `/data/storage/gtr/`
-
-Phenotype configs point to those files using `file_path`.
-
+This separation allows biologically distinct sources to reuse parsing logic while preserving semantic interpretation.
 
 ---
 
-## Assumptions
+# Real Source Storage
 
-  - Input gene lists are phenotype-associated by configuration. 
-  - Source authority is represented with explicit numeric weights. 
-  - Gene identifier normalization depends on the configured identifier map. 
-  - Absence from a source is not negative evidence. 
+Real source files should not be committed to Git.
 
+Recommended staging locations:
 
----
+| System | Gene Sets | GTR |
+|---|---|---|
+| sys76 | `/mnt/storage/gene_sets/` | `/mnt/storage/gtr/` |
+| MARK | `/data/storage/gene_sets/` | `/data/storage/gtr/` |
 
-## Limitations
-
-  - v1 scoring is heuristic and deterministic, not probabilistic. 
-  - v1 does not perform phenotype ontology harmonization. 
-  - v1 does not automate external source downloads. 
-  - v1 does not perform literature mining. 
-  - v1 does not compare consensus scores across phenotypes. 
-
+Phenotype configs reference staged files using explicit file paths.
 
 ---
 
-## Validation
+# Real Source Ingestion: MitoCarta
 
-GSC validates:
-  - input schemas 
-  - source configuration 
-  - identifier normalization behavior 
-  - output contracts 
-  - forbidden sample/variant-level fields 
-  - provenance joinability 
-  - reproducibility across repeated runs 
+MitoCarta ingestion is operator-staged rather than automatically downloaded.
 
+Reasons:
 
----
+- source schemas may change
+- provenance should remain auditable
+- acquisition versions should remain explicit
+- large external resources should remain outside Git
 
-## Current Development Target
+Expected staging:
 
-Near-term development is focused on:
-1. strengthening source adapters 
-2. preparing real MitoCarta / GTR / Epi25 ingestion 
-3. adding `make run-mito` and `make run-epilepsy`
-4. improving documentation and validation reports 
-5. preparing future downstream compatibility with VDB/RDGP/RSP
-
----
-
-## Real Source Ingestion: MitoCarta
-
-For v1, MitoCarta ingestion is operator-staged rather than automatically downloaded.
-
-Manual staging is preferred because:
-- source formats may change over time
-- downloaded files should remain outside Git
-- acquisition date and source version should be recorded explicitly
-- source provenance should be auditable
-
-Expected sys76 staging location:
-
-
-`/mnt/storage/gene_sets/mitocarta/`
-
+```text
+/mnt/storage/gene_sets/mitocarta/
+```
 
 Recommended staged files:
 
-`/mnt/storage/gene_sets/mitocarta/Human.MitoCarta3.0.xls`
-`/mnt/storage/gene_sets/mitocarta/mitocarta_human.tsv`
+```text
+/mnt/storage/gene_sets/mitocarta/Human.MitoCarta3.0.xls
+/mnt/storage/gene_sets/mitocarta/mitocarta_human.tsv
+```
 
-The original downloaded Excel file should be preserved.
+The original downloaded Excel workbook should always be preserved.
 
-For v1, the operator may export the `human_mitocarta` worksheet as TSV without renaming columns manually.
-
-The MitoCarta adapter reads native MitoCarta columns directly, including:
-
-- `Symbol`
-- `HumanGeneID`
-- `Description`
-- `MitoCarta3.0_List`
-- `MitoCarta3.0_Evidence`
-- `MitoCarta3.0_SubMitoLocalization`
-- `MitoCarta3.0_MitoPathways`
-- `EnsemblGeneID_mapping_version_20200130`
-
-The adapter translates native MitoCarta fields into GSC's internal source schema:
-
-- `Symbol` → `gene_symbol`
-- `EnsemblGeneID_mapping_version_20200130` → `gene_id`
-- `MitoCarta3.0_Evidence` → `evidence_label`
-- selected source fields → `notes`
-
-The operator should not manually rename MitoCarta columns to match GSC. Column translation belongs to the `mitocarta` adapter.
-
-Do not commit real MitoCarta source files to Git.
+The MitoCarta adapter reads native MitoCarta columns directly and performs schema translation internally.
 
 ---
+
+# Assumptions
+
+- input gene lists are phenotype-associated
+- absence from a source is not negative evidence
+- semantic interpretation depends on configured ontology assignments
+- identifier normalization depends on configured mapping resources
+- semantic scores are deterministic and reproducible
+
+---
+
+# Limitations
+
+- semantic scoring remains heuristic rather than probabilistic
+- phenotype ontology harmonization remains limited in v1
+- automated external source acquisition is intentionally limited
+- literature mining is not yet automated
+- cross-phenotype semantic calibration remains future work
+- semantic governance remains curated rather than learned
+
+---
+
+# Future Directions
+
+Planned future directions include:
+
+- ClinVar semantic integration
+- OMIM integration
+- PanelApp integration
+- GenCC integration
+- transcriptomic convergence overlays
+- network convergence scoring
+- noncoding regulatory integration
+- phenotype ontology propagation
+- semantic conflict resolution
+- probabilistic semantic scoring
+
+---
+
+# Downstream Ecosystem Integration
+
+GSC is designed as a reusable upstream evidence framework.
+
+Potential downstream uses include:
+
+| Repository | Example Use |
+|---|---|
+| `VAP` | variant prioritization overlays |
+| `VDB` | semantic evidence persistence |
+| `RSP` | transcriptomic convergence overlays |
+| `RDGP` | rare disease gene prioritization |
+
+---
+
+# License
+
+TBD
+
+---
+
+# Development Status
+
+Current architecture status:
+
+```text
+semantic ontology architecture
+release-driven runtime
+deterministic semantic scoring
+active development
+```
