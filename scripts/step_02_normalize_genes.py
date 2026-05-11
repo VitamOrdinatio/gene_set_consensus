@@ -28,12 +28,8 @@ from gene_set_consensus.adapters.registry import (
     get_adapter
 )
 
-from gene_set_consensus.manifests import (
-    load_source_manifest,
-    build_manifest_source_lookup
-)
-
-from gene_set_consensus.source_registry import hydrate_sources
+# Source manifests are retained for audit/provenance compatibility.
+# Runtime source definitions are now phenotype-config authoritative.
 
 def detect_separator(path):
     suffix = Path(path).suffix.lower()
@@ -82,15 +78,11 @@ def main():
 
     identifier_map = load_identifier_map(args.identifier_map)
 
-    manifest_lookup = {}
     if args.source_manifest:
-        manifest = load_source_manifest(args.source_manifest)
-        manifest_lookup = build_manifest_source_lookup(manifest)
-        phenotype_config["sources"] = hydrate_sources(
-            phenotype_config["sources"],
-            args.source_manifest
+        logger.info(
+            f"source_manifest={args.source_manifest} "
+            "(audit-only; runtime uses phenotype source definitions)"
         )
-        logger.info(f"source_manifest={args.source_manifest}")
 
     all_normalized = []
 
@@ -101,12 +93,11 @@ def main():
         logger.info(f"loading_source={source['source_id']}")
         logger.info(f"source_path={source_path}")
 
-        manifest_record = manifest_lookup.get(source["source_id"], {})
-
-        adapter_name = source.get(
-            "adapter",
-            manifest_record.get("adapter", "generic_gene_list")
-        )
+        adapter_name = source.get("adapter")
+        if not adapter_name:
+            raise ValueError(
+                f"Source {source['source_id']} missing required adapter field"
+            )
 
         logger.info(
             f"adapter={adapter_name}"

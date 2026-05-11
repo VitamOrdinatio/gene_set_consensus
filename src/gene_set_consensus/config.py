@@ -38,3 +38,14 @@ def load_phenotype_config(phenotype_path):
 
 def resolve_phenotype_config_path(config, phenotype):
     return Path("config") / "phenotypes" / f"{phenotype}.yaml"
+
+def load_release_config(release_path):
+    config = load_yaml(release_path)
+    required_top_keys = ["release", "execution"]
+    missing = [key for key in required_top_keys if key not in config]
+    if missing:
+        raise ValueError(f"Release config missing required keys: {missing}")
+    execution = config["execution"]
+    if "phenotype_config" not in execution:
+        raise ValueError("Release execution missing required field: phenotype_config")
+    return config

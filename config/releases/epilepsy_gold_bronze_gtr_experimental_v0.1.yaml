@@ -11,6 +11,7 @@ execution:
   phenotype_config: config/phenotypes/epilepsy_gold_bronze_gtr_experimental.yaml
   source_manifest: manifests/sources/epilepsy_manifest.yaml
   identifier_map: data/metadata/gene_identifier_maps/epilepsy_identifier_map.tsv
+  scoring_profile: config/scoring_profiles/epilepsy_semantic_v0.1.yaml
 sources:
 - source_id: epi25_2024_epi_high_confidence
   source_tier: gold

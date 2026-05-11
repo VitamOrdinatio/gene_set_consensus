@@ -7,10 +7,12 @@ release:
   revision_policy: Versioned scientific interpretation based on MitoCarta3.0; future MitoCarta releases may change membership.
   experimental: true
   notes: Experimental release including planned silver-tier GTR clinical testing utilization evidence.
+# config/releases/mitocarta_gtr_experimental_v0.1.yaml
 execution:
   phenotype_config: config/phenotypes/mitocarta_gtr_experimental.yaml
   source_manifest: manifests/sources/mitochondrial_manifest.yaml
   identifier_map: data/example/identifier_map.tsv
+  scoring_profile: config/scoring_profiles/mitochondrial_semantic_v0.1.yaml
 sources:
 - source_id: mitocarta_human
   source_tier: gold

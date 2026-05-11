@@ -1,11 +1,19 @@
 #!/usr/bin/env python
 from pathlib import Path
 import argparse
+import sys
 import gzip
 import re
 import yaml
 import pandas as pd
 from xml.etree import ElementTree as ET
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+
+from gene_set_consensus.gtr_scope import (
+    classify_scope_from_gene_count,
+    classify_scope_assignment_method,
+)
 
 def open_text(path):
     path = Path(path)
@@ -73,29 +81,6 @@ def classify_test_scope(test_name, test_categories):
         return "panel_unsized"
     if any(term in text for term in ["single gene", "deletion test", "duplication test"]):
         return "targeted_gene"
-    return "unknown"
-
-def classify_scope_from_gene_count(genes_per_test):
-    if genes_per_test <= 5:
-        return "targeted_gene"
-    if genes_per_test <= 25:
-        return "small_panel"
-    if genes_per_test <= 100:
-        return "medium_panel"
-    return "large_panel"
-
-def classify_scope_assignment_method(test_scope):
-    if test_scope in {"genome", "exome"}:
-        return "explicit_exome_genome"
-    if test_scope in {
-        "targeted_gene",
-        "small_panel",
-        "medium_panel",
-        "large_panel",
-    }:
-        return "empirical_gene_count"
-    if test_scope == "panel_unsized":
-        return "text_category_heuristic"
     return "unknown"
 
 def extract_trait_records(assertion):

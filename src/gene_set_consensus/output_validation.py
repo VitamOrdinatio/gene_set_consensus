@@ -1,3 +1,5 @@
+from gene_set_consensus.semantic_ontology import validate_semantic_record
+
 FORBIDDEN_GSC_COLUMNS = {
     "sample_id",
     "variant_id",
@@ -115,6 +117,20 @@ def validate_outputs(consensus_df, provenance_df):
         errors.extend(validate_consensus_identity(consensus_df))
         errors.extend(validate_provenance_join(consensus_df, provenance_df))
         errors.extend(validate_score_consistency(consensus_df))
+
+        for idx, row in consensus_df.iterrows():
+            semantic_errors = validate_semantic_record(row.to_dict())
+            for semantic_error in semantic_errors:
+                errors.append(
+                    f"Consensus row {idx + 1}: {semantic_error}"
+                )
+
+        for idx, row in provenance_df.iterrows():
+            semantic_errors = validate_semantic_record(row.to_dict())
+            for semantic_error in semantic_errors:
+                errors.append(
+                    f"Provenance row {idx + 1}: {semantic_error}"
+                )
     unresolved = consensus_df["mapping_status_summary"].fillna("").str.contains("unresolved").sum() if "mapping_status_summary" in consensus_df.columns else 0
     ambiguous = consensus_df["mapping_status_summary"].fillna("").str.contains("ambiguous").sum() if "mapping_status_summary" in consensus_df.columns else 0
     if unresolved:
