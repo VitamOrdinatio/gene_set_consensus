@@ -431,7 +431,12 @@ Suggested checks:
 
 ```bash
 sha256sum results/tables/epilepsy_semantic_gtr_experimental/consensus_gene_set.tsv
+
 sha256sum results/tables/mitochondrial_semantic_gtr_experimental/consensus_gene_set.tsv
+
+sha256sum results/tables/dee_semantic_gtr_experimental/consensus_gene_set.tsv
+
+sha256sum results/tables/nafe_semantic_gtr_experimental/consensus_gene_set.tsv
 ```
 
 If exact hashes differ, compare:
