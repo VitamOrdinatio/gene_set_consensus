@@ -470,15 +470,15 @@ Goal: evaluate semantic scoring without touching production.
 Use experimental releases only:
 
 ```text
-epilepsy_gold_bronze_gtr_experimental_v0.1
-mitocarta_gtr_experimental_v0.1
+epilepsy_semantic_gtr_experimental_v0.1
+mitochondrial_semantic_gtr_experimental_v0.1
 ```
 
 Run:
 
 ```bash
-python run_pipeline.py --phenotype epilepsy_gold_bronze_gtr_experimental
-python run_pipeline.py --phenotype mitocarta_gtr_experimental
+python run_pipeline.py --phenotype epilepsy_semantic_gtr_experimental
+python run_pipeline.py --phenotype mitochondrial_semantic_gtr_experimental
 ```
 
 Inspect known genes:

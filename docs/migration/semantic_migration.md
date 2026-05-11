@@ -101,8 +101,8 @@ Key scientific goals:
 
 Representative configs:
 
-- epilepsy_gold_bronze_gtr_experimental.yaml
-- mitocarta_gtr_experimental.yaml
+- epilepsy_semantic_gtr_experimental.yaml
+- mitochondrial_semantic_gtr_experimental.yaml
 
 ---
 

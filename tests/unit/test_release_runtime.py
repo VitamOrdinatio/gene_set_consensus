@@ -9,14 +9,14 @@ from gene_set_consensus.pipeline_runtime import (
 def test_phenotype_from_config_path():
     assert (
         phenotype_from_config_path(
-            "config/phenotypes/epilepsy_gold_bronze_gtr_experimental.yaml"
+            "config/phenotypes/epilepsy_semantic_gtr_experimental.yaml"
         )
-        == "epilepsy_gold_bronze_gtr_experimental"
+        == "epilepsy_semantic_gtr_experimental"
     )
 
 def test_release_resolves_epilepsy_runtime_inputs():
     args = SimpleNamespace(
-        release="config/releases/epilepsy_gold_bronze_gtr_experimental_v0.1.yaml",
+        release="config/releases/epilepsy_semantic_gtr_experimental_v0.1.yaml",
         phenotype=None,
         identifier_map="data/example/identifier_map.tsv",
         source_manifest=None,
@@ -25,15 +25,15 @@ def test_release_resolves_epilepsy_runtime_inputs():
 
     resolved = resolve_execution_args(args)
 
-    assert resolved["phenotype"] == "epilepsy_gold_bronze_gtr_experimental"
+    assert resolved["phenotype"] == "epilepsy_semantic_gtr_experimental"
     assert resolved["identifier_map"] == "data/metadata/gene_identifier_maps/epilepsy_identifier_map.tsv"
     assert resolved["source_manifest"] == "manifests/sources/epilepsy_manifest.yaml"
     assert resolved["scoring_profile"] == "config/scoring_profiles/epilepsy_semantic_v0.1.yaml"
-    assert resolved["release_id"] == "epilepsy_gold_bronze_gtr_experimental_v0.1"
+    assert resolved["release_id"] == "epilepsy_semantic_gtr_experimental_v0.1"
 
 def test_release_resolves_mitochondrial_runtime_inputs():
     args = SimpleNamespace(
-        release="config/releases/mitocarta_gtr_experimental_v0.1.yaml",
+        release="config/releases/mitochondrial_semantic_gtr_experimental_v0.1.yaml",
         phenotype=None,
         identifier_map="data/example/identifier_map.tsv",
         source_manifest=None,
@@ -42,11 +42,11 @@ def test_release_resolves_mitochondrial_runtime_inputs():
 
     resolved = resolve_execution_args(args)
 
-    assert resolved["phenotype"] == "mitocarta_gtr_experimental"
+    assert resolved["phenotype"] == "mitochondrial_semantic_gtr_experimental"
     assert resolved["identifier_map"] == "data/example/identifier_map.tsv"
     assert resolved["source_manifest"] == "manifests/sources/mitochondrial_manifest.yaml"
     assert resolved["scoring_profile"] == "config/scoring_profiles/mitochondrial_semantic_v0.1.yaml"
-    assert resolved["release_id"] == "mitocarta_gtr_experimental_v0.1"
+    assert resolved["release_id"] == "mitochondrial_semantic_gtr_experimental_v0.1"
 
 def test_phenotype_mode_requires_phenotype():
     args = SimpleNamespace(

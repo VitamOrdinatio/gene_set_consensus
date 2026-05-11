@@ -59,10 +59,15 @@ def main():
                     f"release={source.get('source_weight')} config={config_source.get('source_weight')}"
                 )
 
-            if str(source.get("source_tier")) != str(config_source.get("weight_tier")):
+            config_tier = config_source.get(
+                "evidence_tier",
+                config_source.get("weight_tier")
+            )
+
+            if str(source.get("source_tier")) != str(config_tier):
                 errors.append(
                     f"Tier mismatch for {source_id}: "
-                    f"release={source.get('source_tier')} config={config_source.get('weight_tier')}"
+                    f"release={source.get('source_tier')} config={config_tier}"
                 )
 
             source_path = Path(source.get("source_path", ""))
