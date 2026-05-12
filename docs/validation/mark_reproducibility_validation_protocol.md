@@ -281,4 +281,16 @@ Get for sys76 and MARK:
 - row counts
 - deterministic output confirmation
 
+From mark probe 02 log: 
+
+```text
+c598762369f4f59b661ff7c6a5615d02f2aaa79dc1cf6b57aa7cfc92d83b200a  /data/storage/gsc/gtr/raw/gtr_ftp.xml.gz
+e458622b81026fd5cc22d0fae29c02d029835acf9c1940773c2cb61706ccd6ac  /data/storage/gsc/gene_sets/epi25/2024/raw/DEE_results_2026_05_06_16_21_39.csv
+302027a1be652615a790c2bd8778576320d1e2aac16e904f09a03e24a150d891  /data/storage/gsc/gene_sets/epi25/2024/raw/EPI_results_2026_05_06_16_21_36.csv
+4fea70e5a2f6f982cabf842fd826ee017ff4794abc7adb601732dc6198868615  /data/storage/gsc/gene_sets/epi25/2024/raw/GGE_results_2026_05_06_16_21_42.csv
+8aa1213234ca4444690d7c99a9e3793539bd09a01b80b17f3eac6368dd2747d7  /data/storage/gsc/gene_sets/epi25/2024/raw/NAFE_results_2026_05_06_16_21_44.csv
+6f75544797788c703d91e3272e2353c693d52c982caca969257a791eeaa4f3d0  /data/storage/gsc/gene_sets/genes4epilepsy/genes4epilepsy.tsv
+4f3df76724a17ad214efa942482bf72e27ccdb5f5e39eb8a1b5f8c3c7b4f9d2c  /data/storage/gsc/gene_sets/mitocarta/mitocarta_human.tsv
+```
+
 ---
