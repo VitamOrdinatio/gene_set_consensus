@@ -14,6 +14,7 @@ def main():
     parser = argparse.ArgumentParser(description="Validate final GSC outputs.")
     parser.add_argument("--config", default="config/config.yaml")
     parser.add_argument("--phenotype", required=True)
+    parser.add_argument("--phenotype-config", default=None)
     parser.add_argument("--run-id", required=True)
     args = parser.parse_args()
     project_config = load_project_config(args.config)

@@ -44,6 +44,8 @@ def main():
     parser = argparse.ArgumentParser(description="Normalize GSC source gene identifiers.")
     parser.add_argument("--config", default="config/config.yaml")
     parser.add_argument("--phenotype", required=True)
+    parser.add_argument("--phenotype-config", default=None)
+
     parser.add_argument(
         "--identifier-map",
         default="data/example/identifier_map.tsv"
@@ -55,9 +57,13 @@ def main():
 
     project_config = load_project_config(args.config)
 
-    phenotype_path = resolve_phenotype_config_path(
-        project_config,
-        args.phenotype
+    phenotype_path = (
+        Path(args.phenotype_config)
+        if args.phenotype_config
+        else resolve_phenotype_config_path(
+            project_config,
+            args.phenotype
+        )
     )
 
     phenotype_config = load_phenotype_config(phenotype_path)

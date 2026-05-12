@@ -57,6 +57,7 @@ def main():
 
     resolved = resolve_execution_args(args)
     phenotype = resolved["phenotype"]
+    phenotype_config = resolved["phenotype_config"]
     identifier_map = resolved["identifier_map"]
     source_manifest = resolved["source_manifest"]
     scoring_profile = resolved["scoring_profile"]
@@ -69,6 +70,7 @@ def main():
     if release_id:
         print(f"[GSC] release_id={release_id}")
     print(f"[GSC] phenotype={phenotype}")
+    print(f"[GSC] phenotype_config={phenotype_config}")
     if scoring_profile:
         print(f"[GSC] scoring_profile={scoring_profile}")
     if source_manifest:
@@ -79,6 +81,8 @@ def main():
         args.config,
         "--phenotype",
         phenotype,
+        "--phenotype-config",
+        phenotype_config,
         "--run-id",
         run_id,
     ]

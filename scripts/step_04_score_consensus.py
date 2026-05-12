@@ -15,11 +15,16 @@ def main():
     parser = argparse.ArgumentParser(description="Score GSC consensus gene evidence.")
     parser.add_argument("--config", default="config/config.yaml")
     parser.add_argument("--phenotype", required=True)
+    parser.add_argument("--phenotype-config", default=None)
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--scoring-profile", default=None)
     args = parser.parse_args()
     project_config = load_project_config(args.config)
-    phenotype_path = resolve_phenotype_config_path(project_config, args.phenotype)
+    phenotype_path = (
+        Path(args.phenotype_config)
+        if args.phenotype_config
+        else resolve_phenotype_config_path(project_config, args.phenotype)
+    )
     phenotype_config = load_phenotype_config(phenotype_path)
     run_dirs = setup_run_dirs(project_config, args.run_id)
     logger = get_logger(
