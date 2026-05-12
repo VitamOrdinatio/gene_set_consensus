@@ -3,7 +3,7 @@
 ![CI](https://github.com/VitamOrdinatio/gene_set_consensus/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-active_development-green)
+![Status](https://img.shields.io/badge/status-v1_stable-green)
 ![Architecture](https://img.shields.io/badge/architecture-semantic_ontology-purple)
 
 `gene_set_consensus` (GSC) is a semantic evidence integration framework for phenotype-scoped consensus gene prioritization.
@@ -22,6 +22,31 @@ GSC is designed as an upstream scientific evidence layer for downstream reposito
 - `variant_database` (VDB)
 - `rnaseq_pipeline` (RSP)
 - `rare_disease_gene_prioritization` (RDGP)
+
+---
+
+# v1.0 Validation Highlights
+
+Architecture overview:
+
+- [`docs/design/gsc_architecture.md`](docs/design/gsc_architecture.md)
+
+GSC v1.0 includes:
+
+- 46 automated validation tests
+- release-driven semantic execution
+- subtype-aware epilepsy overlays
+- provenance-aware semantic scoring
+- cross-system reproducibility validation
+- independent Linux HPC validation on MARK
+- Sys76 vs MARK semantic comparison artifacts
+- runtime portability validation
+
+See:
+
+- [`docs/validation/README.md`](docs/validation/README.md)
+- [`docs/validation/comparisons/README.md`](docs/validation/comparisons/README.md)
+- [`docs/releases/gsc_v1_release_notes.md`](docs/releases/gsc_v1_release_notes.md)
 
 ---
 
@@ -63,6 +88,10 @@ The goal is not merely to count evidence sources, but to preserve biological and
 ---
 
 # Core Architecture
+
+Detailed architecture documentation:
+
+- [`docs/design/gsc_architecture.md`](docs/design/gsc_architecture.md)
 
 GSC converts:
 
@@ -459,11 +488,14 @@ Including:
 - ontology-aware interpretation walkthroughs
 
 See:
-[Epilepsy: Semantic Output Example](docs/examples/epilepsy_semantic_output_example.md)
-[DEE: Semantic Output Example](docs/examples/dee_semantic_output_example.md)
-[NAFE: Semantic Output Example](docs/examples/nafe_semantic_output_example.md)
-[Mitochondria: Semantic Output Example](docs/examples/mitochondrial_semantic_output_example.md)
-[Example Readme](docs/examples/README.md)
+- [Epilepsy: Semantic Output Example](docs/examples/epilepsy_semantic_output_example.md)
+- [DEE: Semantic Output Example](docs/examples/dee_semantic_output_example.md)
+- [NAFE: Semantic Output Example](docs/examples/nafe_semantic_output_example.md)
+- [Mitochondria: Semantic Output Example](docs/examples/mitochondrial_semantic_output_example.md)
+- [Example Readme](docs/examples/README.md)
+
+Example semantic interpretation walkthrough:
+- [`docs/examples/dee_semantic_walkthrough.md`](docs/examples/dee_semantic_walkthrough.md)
 
 GSC generates provenance-aware semantic outputs including:
 
@@ -589,6 +621,45 @@ The MitoCarta adapter reads native MitoCarta columns directly and performs schem
 - literature mining is not yet automated
 - cross-phenotype semantic calibration remains future work
 - semantic governance remains curated rather than learned
+
+---
+
+# Cross-System Reproducibility
+
+GSC v1.0 was validated across independent systems:
+
+| Environment | Role |
+|---|---|
+| Sys76 Pop!_OS workstation | primary development |
+| MARK Linux HPC environment | independent reproducibility validation |
+
+Validation demonstrated:
+
+- release portability
+- semantic reproducibility
+- deterministic subtype reconstruction
+- provenance-preserving semantic outputs
+- portable runtime overlays
+
+See:
+
+- [`docs/validation/README.md`](docs/validation/README.md)
+- [`docs/validation/comparisons/README.md`](docs/validation/comparisons/README.md)
+- [`docs/design/runtime_portability_refactor.md`](docs/design/runtime_portability_refactor.md)
+
+---
+
+# Documentation Map
+
+| Document | Purpose |
+|---|---|
+| `docs/design/gsc_architecture.md` | architecture overview |
+| `docs/examples/dee_semantic_walkthrough.md` | semantic interpretation walkthrough |
+| `docs/validation/README.md` | validation subsystem |
+| `docs/validation/comparisons/README.md` | Sys76 vs MARK reproducibility comparisons |
+| `docs/design/runtime_portability_refactor.md` | runtime portability rationale |
+| `docs/releases/gsc_v1_release_checklist.md` | v1 release validation checklist |
+| `docs/releases/gsc_v1_release_notes.md` | v1.0 release notes |
 
 ---
 
