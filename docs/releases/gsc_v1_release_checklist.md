@@ -1,5 +1,8 @@
 # GSC v1.0 Release Checklist
 
+GitHub Release:
+https://github.com/VitamOrdinatio/gene_set_consensus/releases/tag/v1.0.0
+
 ## Purpose
 
 This document records the final validation and release criteria for the initial GSC v1.0 public release.

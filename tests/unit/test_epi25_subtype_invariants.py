@@ -1,9 +1,11 @@
 from pathlib import Path
 import pandas as pd
 
-EPI = Path("/mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_epi_high_confidence.tsv")
-DEE = Path("/mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_dee_high_confidence.tsv")
-NAFE = Path("/mnt/storage/gene_sets/epi25/2024/processed/epi25_2024_nafe_high_confidence.tsv")
+BASE = Path(__file__).resolve().parent.parent / "test_data" / "epi25"
+
+EPI = BASE / "epi25_2024_epi_high_confidence.tsv"
+DEE = BASE / "epi25_2024_dee_high_confidence.tsv"
+NAFE = BASE / "epi25_2024_nafe_high_confidence.tsv"
 
 def read_genes(path):
     df = pd.read_csv(path, sep="\t", dtype=str).fillna("")

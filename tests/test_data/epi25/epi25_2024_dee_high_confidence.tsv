@@ -1,0 +1,6 @@
+gene_symbol	phenotype	source_name	source_tier	evidence_class
+NEXMIF	DEE	Epi25	gold	high_confidence
+SCN1A	DEE	Epi25	gold	high_confidence
+STX1B	DEE	Epi25	gold	high_confidence
+SYNGAP1	DEE	Epi25	gold	high_confidence
+WDR45	DEE	Epi25	gold	high_confidence
