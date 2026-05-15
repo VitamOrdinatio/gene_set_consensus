@@ -56,7 +56,8 @@ See:
 
 ![GSC Semantic Evidence Ontology Framework](assets/diagrams/gsc_semantic_ontology_framework.png)
 
-Gene lists originating from different biological and clinical sources are not equally informative.
+Gene lists originating from different biological and clinical sources are not equally informative. GSC models heterogeneous evidence semantically rather than treating all gene evidence as biologically equivalent.
+
 
 Examples:
 
@@ -693,6 +694,12 @@ Potential downstream uses include:
 | `VDB` | semantic evidence persistence |
 | `RSP` | transcriptomic convergence overlays |
 | `RDGP` | rare disease gene prioritization |
+
+---
+
+![GSC Semantic Prior Integration Framework](assets/diagrams/gsc_semantic_prior_integration_framework.png)
+
+The GSC Semantic Prior Integration Framework illustrates how phenotype-scoped semantic evidence from GSC enriches downstream sample-specific reasoning without replacing authoritative variant evidence. GSC acts as a semantic overlay layer that preserves biological meaning and clinical context while enabling more interpretable gene prioritization in RDGP.
 
 ---
 
