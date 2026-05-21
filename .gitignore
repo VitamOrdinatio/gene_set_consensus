@@ -1,4 +1,10 @@
+# Dev notes
 _notes/
+
+# Results
+results/
+/results
+/results/
 
 .venv/
 __pycache__/
