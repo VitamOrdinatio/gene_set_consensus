@@ -719,3 +719,11 @@ release-driven runtime
 deterministic semantic scoring
 active development
 ```
+
+---
+
+# References
+
+- Epi25 Collaborative. Exome sequencing of 20,979 individuals with epilepsy reveals shared and distinct ultra-rare genetic risk across disorder subtypes. Nat Neurosci. 2024;27(10):1864-1879. doi:10.1038/s41593-024-01747-8
+
+- Rath S, Sharma R, Gupta R, et al. MitoCarta3.0: an updated mitochondrial proteome now with sub-organelle localization and pathway annotations. Nucleic Acids Res. 2021;49(D1):D1541-D1547. doi:10.1093/nar/gkaa1011
