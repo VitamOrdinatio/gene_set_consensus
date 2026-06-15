@@ -99,6 +99,75 @@ GSC does not perform:
 
 ---
 
+### 3.1 Transitional Evidence Product (TEP) Role
+
+GSC source artifacts remain the authoritative producer outputs.
+
+GSC-TEP payloads are transport projections derived from those source artifacts.
+
+GSC-TEP payloads must not be treated as replacement source truth.
+
+GSC participates in the ecosystem as both:
+
+```text
+semantic prior producer
+
+and
+
+TEP producer
+```
+
+GSC-generated semantic prior evidence may be transported beyond repository boundaries through the GSC-TEP family.
+
+GSC-TEP exists to preserve:
+
+```text
+phenotype context
+semantic prior meaning
+source attribution
+semantic channel composition
+aggregation topology
+scoring context
+release identity
+provenance
+uncertainty
+future reinterpretability
+```
+
+during transport into persistence systems such as VDB.
+
+GSC remains authoritative for:
+
+```text
+semantic prior generation
+source aggregation
+consensus scoring
+semantic channel assignment
+release generation
+```
+
+GSC-TEP remains authoritative for:
+
+```text
+transport identity
+transport validation
+source artifact manifests
+payload preservation
+```
+
+GSC-TEP must not redefine GSC semantic meaning.
+
+GSC-TEP requirements are governed by:
+
+```text
+docs/contracts/gsc_tep_contract.md
+docs/design/gsc_tep_identity_model.md
+docs/validation/gsc_tep_validation_strategy.md
+docs/validation/gsc_tep_acceptance_criteria.md
+```
+
+---
+
 ## 4. Non-Negotiable Invariants
 
 ### 4.1 Phenotype Scope Invariant
@@ -111,6 +180,8 @@ Invalid behavior:
 single unscoped universal consensus score per gene
 ```
 
+---
+
 ### 4.2 Core Evidence Record Invariant
 
 The canonical gene-level evidence record is:
@@ -120,6 +191,8 @@ The canonical gene-level evidence record is:
 ```
 
 If `gene_id` is unavailable, GSC may use `normalized_gene_symbol` as a provisional key, but unresolved identifiers must be flagged.
+
+---
 
 ### 4.3 Non-Sample-Specific Invariant
 
@@ -131,9 +204,13 @@ GSC must not contain sample-specific fields such as:
 - patient-specific variant evidence
 - RDGP ranking output
 
+---
+
 ### 4.4 Variant Independence Invariant
 
 GSC must not aggregate variant-level data into disease-gene claims unless a future governed adapter explicitly defines such behavior. ClinVar-derived future evidence must be transformed into phenotype-scoped gene-level clinical interpretation evidence using explicit rules.
+
+---
 
 ### 4.5 Provenance Invariant
 
@@ -154,11 +231,52 @@ evidence_tier_summary
 provenance_id
 ```
 
+---
+
 ### 4.6 Semantic Separability Invariant
 
 Evidence channels must remain separable.
 
 No implementation may collapse all evidence into one irreversible score without preserving channel-specific components.
+
+---
+
+### 4.6.1 Semantic Preservation Invariant
+
+When exported through GSC-TEP, semantic prior evidence must remain scientifically reconstructable.
+
+At minimum, the following concepts must remain recoverable:
+
+```text
+phenotype context
+gene identity
+release identity
+source attribution
+semantic channel composition
+scoring context
+aggregation topology
+provenance
+uncertainty
+```
+
+GSC-TEP payloads must not collapse semantic prior evidence into:
+
+```text
+gene lists
+membership flags
+gene + score records
+phenotype-neutral annotations
+```
+
+Future consumers must be able to determine:
+
+```text
+Why did this semantic prior exist?
+```
+
+without requiring access to the original GSC execution environment.
+
+---
 
 ### 4.7 Determinism Invariant
 
@@ -730,6 +848,69 @@ Semantic scoring is implementation-ready when:
 - GTR saturation is deterministic
 - Epi25 stratified scoring is deterministic
 - ClinVar future behavior is constrained by contract even before implementation
+
+---
+
+## 13.1 GSC-TEP Contract Integration
+
+GSC-TEP construction is governed by the following repository-specific TEP artifacts:
+
+```text
+docs/contracts/gsc_tep_contract.md
+
+docs/design/gsc_tep_identity_model.md
+
+docs/validation/gsc_tep_validation_strategy.md
+
+docs/validation/gsc_tep_acceptance_criteria.md
+```
+
+These documents define:
+
+```text
+transport requirements
+
+identity preservation requirements
+
+validation requirements
+
+acceptance requirements
+```
+
+for GSC semantic prior transport.
+
+### GSC-TEP Certification Requirement
+
+A GSC-TEP must not be considered release-ready unless:
+
+```text
+identity preservation passes
+
+phenotype preservation passes
+
+source attribution preservation passes
+
+semantic channel preservation passes
+
+provenance preservation passes
+
+uncertainty preservation passes
+
+future reinterpretability passes
+```
+
+as defined by the GSC-TEP validation and acceptance framework.
+
+### VDB Transport Readiness
+
+A GSC release is considered transport-ready when:
+
+```text
+semantic prior evidence can be transported
+without loss of scientific meaning
+```
+
+and satisfies all GSC-TEP certification requirements.
 
 ---
 

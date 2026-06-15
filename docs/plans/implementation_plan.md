@@ -10,8 +10,9 @@
 | Owning agent | DEX — SWE Agent |
 | Intended location | `gene_set_consensus/docs/plans/implementation_plan.md` |
 | Companion artifact | `gene_set_consensus/docs/contracts/system_contract.md` |
-| Current target | v1.0 portfolio-ready repository with staged semantic-channel scoring |
+| Current target | v1.x repository with staged semantic scoring and GSC-TEP transport planning |
 | Implementation status | Active staged implementation plan |
+| TEP governance inputs | `gsc_tep_contract.md`; `gsc_tep_identity_model.md`; `gsc_tep_validation_strategy.md`; `gsc_tep_acceptance_criteria.md` |
 
 ---
 
@@ -31,6 +32,39 @@ The pipeline must:
 8. emit semantic-channel score columns
 9. prevent scoring inflation
 10. support future ClinVar, OMIM, PanelApp, transcriptomics, and metabolomics adapters without schema drift
+
+---
+
+Update `Current target` to:
+
+```text
+v1.x repository with staged semantic scoring and GSC-TEP transport planning
+```
+
+---
+
+## 1.1 GSC-TEP Implementation Objective
+
+In addition to generating phenotype-scoped semantic prior outputs, GSC must support future construction of GSC-TEPs.
+
+GSC-TEP implementation must preserve:
+
+```text
+phenotype context
+semantic prior meaning
+source attribution
+semantic channel composition
+aggregation topology
+scoring context
+release identity
+provenance
+uncertainty
+future reinterpretability
+```
+
+The implementation goal is not merely export generation.
+
+The implementation goal is deterministic transport of GSC semantic priors into downstream persistence systems such as VDB without loss of scientific meaning.
 
 ---
 
@@ -542,6 +576,164 @@ remains production-safe.
 
 ---
 
+### Phase K — GSC-TEP Contract Alignment
+
+Goal: align implementation planning with the repository-specific GSC-TEP contract stack.
+
+Required governing documents:
+
+```text
+docs/contracts/gsc_tep_contract.md
+docs/design/gsc_tep_identity_model.md
+docs/validation/gsc_tep_validation_strategy.md
+docs/validation/gsc_tep_acceptance_criteria.md
+```
+
+Implementation must treat these documents as the authoritative TEP planning layer.
+
+Commit target:
+
+```text
+Add GSC-TEP implementation planning foundation
+```
+
+Validation required:
+
+```text
+confirm system_contract references GSC-TEP governance artifacts
+confirm implementation_plan includes GSC-TEP roadmap
+confirm no TEP implementation weakens semantic preservation requirements
+```
+
+---
+
+### Phase L — GSC-TEP Envelope and Manifest Design
+
+Goal: define the transport envelope and source artifact manifest required for GSC-TEP construction.
+
+Required envelope concepts:
+
+```text
+tep_id
+tep_type
+tep_schema_version
+tep_sleeve_version
+source_repository
+source_package_id
+source_identity_scope
+source_artifact_manifest
+creation_timestamp
+validation_state
+provenance
+```
+
+For GSC:
+
+```text
+source_repository = gene_set_consensus
+source_package_id = gsc_release_id
+source_identity_scope = gsc_release_id + phenotype + gene identity
+```
+
+Required source artifact manifest concepts:
+
+```text
+artifact_id
+artifact_type
+artifact_path_or_reference
+artifact_checksum_if_available
+source_repository
+source_package_id
+contributing_fields
+field_lineage
+semantic_role
+producer_ownership
+```
+
+Commit target:
+
+```text
+Design GSC-TEP envelope and source artifact manifest
+```
+
+---
+
+### Phase M — GSC-TEP Payload Construction
+
+Goal: construct a deterministic transport payload that preserves semantic prior meaning.
+
+Payload construction must preserve:
+
+```text
+semantic prior entity
+phenotype entity
+gene identity entity
+release entity
+score entity
+scoring profile entity
+semantic channel entity
+source contribution entity
+provenance entity
+aggregation topology entity
+uncertainty entity
+ontology context entity
+source artifact manifest entity
+```
+
+The payload must not collapse GSC outputs into:
+
+```text
+gene lists
+membership flags
+gene + score records
+phenotype-neutral annotations
+```
+
+Commit target:
+
+```text
+Implement GSC-TEP semantic prior payload construction
+```
+
+---
+
+### Phase N — GSC-TEP Validation and Certification
+
+Goal: prove that GSC-TEP preserves semantic prior meaning during transport.
+
+Validation classes:
+
+```text
+Envelope Validation
+Identity Validation
+Semantic Preservation Validation
+Provenance Validation
+Future Reinterpretability Validation
+```
+
+Certification requires:
+
+```text
+phenotype preservation passes
+release identity preservation passes
+source identity preservation passes
+source attribution preservation passes
+semantic channel preservation passes
+scoring context preservation passes
+aggregation topology preservation passes
+provenance preservation passes
+uncertainty preservation passes
+future reinterpretability passes
+```
+
+Commit target:
+
+```text
+Add GSC-TEP validation and acceptance checks
+```
+
+---
+
 ## 4. Backward Compatibility Plan
 
 During transition preserve:
@@ -603,6 +795,22 @@ Promote semantic scoring profile for GSC v1
 
 ---
 
+## 6.1 GSC-TEP Commit Sequence Additions
+
+Append to suggested commit sequence:
+
+```text
+Add GSC-TEP implementation planning foundation
+Design GSC-TEP envelope and source artifact manifest
+Implement GSC-TEP semantic prior payload construction
+Add GSC-TEP validation and acceptance checks
+Generate first fixture GSC-TEP from existing release outputs
+Evaluate GSC-TEP against acceptance criteria
+Prepare GSC-TEP for future VDB intake testing
+```
+
+---
+
 ## 7. Risk Register
 
 | Risk | Mitigation |
@@ -616,6 +824,21 @@ Promote semantic scoring profile for GSC v1
 | Genes4Epilepsy over-ranks candidates | Cap exploratory score at 0.75 |
 | Hidden modifier inference | Fail or annotation_only when rules absent |
 | Output schema breaks downstream consumers | Preserve legacy columns during transition |
+
+---
+
+## 7.1 GSC-TEP Risk Register Additions
+
+| Risk                                        | Mitigation                                                                    |
+| ------------------------------------------- | ----------------------------------------------------------------------------- |
+| GSC-TEP treated as replacement source truth | Preserve source artifacts as authoritative; treat TEP as transport projection |
+| Phenotype scope lost during transport       | Require `(gsc_release_id, phenotype, gene)` identity preservation             |
+| Release identity treated as metadata        | Treat `gsc_release_id` as part of semantic prior identity                     |
+| Semantic channels collapsed into one score  | Require semantic channel preservation validation                              |
+| Source attribution lost                     | Require source contribution entities and source artifact manifest             |
+| Uncertainty hidden through omission         | Require explicit uncertainty states                                           |
+| VDB reinterpretation of GSC meaning         | Preserve GSC authority boundary; VDB brokers and persists only                |
+| Future reinterpretability fails             | Require reconstruction test: “Why did this prior exist?”                      |
 
 ---
 
@@ -637,4 +860,24 @@ source-specific deterministic rules
 inflation guards
 +
 auditable outputs
+```
+
+---
+
+## 8.1 GSC-TEP Final Implementation Principle
+
+GSC-TEP implementation should be a deterministic, provenance-preserving transport extension of the existing GSC pipeline.
+
+The winning architecture is:
+
+```text
+source artifacts remain authoritative
++
+GSC-TEP projects semantic prior evidence
++
+transport identity remains distinct from biological identity
++
+release identity remains part of semantic prior identity
++
+VDB can discover, broker, and persist without redefining meaning
 ```
