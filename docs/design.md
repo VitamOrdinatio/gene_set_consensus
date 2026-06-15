@@ -364,9 +364,9 @@ Future modules include:
 
 ## Relationship to Other Repositories
 
-### repo2 — variant_annotation_pipeline
+### variant_annotation_pipeline (VAP)
 
-repo2 provides:
+VAP provides:
 
 - variant calling
 - annotation
