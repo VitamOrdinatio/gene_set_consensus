@@ -34,6 +34,14 @@ def load_phenotype_config(phenotype_path):
     source_ids = [source.get("source_id") for source in config["sources"]]
     if len(source_ids) != len(set(source_ids)):
         raise ValueError(f"Duplicate source_id values detected: {source_ids}")
+    if "package" not in config:
+        raise ValueError("Phenotype config missing required key: package")
+    if "package_id" not in config["package"]:
+        raise ValueError("Phenotype config package missing required field: package_id")
+    if not config["phenotype"].get("phenotype_id"):
+        raise ValueError("Phenotype config phenotype missing required field: phenotype_id")
+    if not config["package"].get("package_id"):
+        raise ValueError("Phenotype config package_id must not be empty")
     return config
 
 def resolve_phenotype_config_path(config, phenotype):

@@ -57,6 +57,7 @@ def main():
 
     resolved = resolve_execution_args(args)
     phenotype = resolved["phenotype"]
+    package_id = resolved["package_id"]
     phenotype_config = resolved["phenotype_config"]
     identifier_map = resolved["identifier_map"]
     source_manifest = resolved["source_manifest"]
@@ -70,6 +71,7 @@ def main():
     if release_id:
         print(f"[GSC] release_id={release_id}")
     print(f"[GSC] phenotype={phenotype}")
+    print(f"[GSC] package_id={package_id}")
     print(f"[GSC] phenotype_config={phenotype_config}")
     if scoring_profile:
         print(f"[GSC] scoring_profile={scoring_profile}")
@@ -126,6 +128,7 @@ def main():
         "scripts/step_04_score_consensus.py",
         *shared_args,
     ]
+
     if scoring_profile:
         step_04.extend(["--scoring-profile", scoring_profile])
 
@@ -135,18 +138,25 @@ def main():
         python,
         "scripts/step_05_write_outputs.py",
         *shared_args,
+        "--package-id",
+        package_id,
     ]
+
     if source_manifest:
         step_05.extend(["--source-manifest", source_manifest])
 
     run_step(step_05, "step_05_write_outputs")
 
+    step_06 = [
+        python,
+        "scripts/step_06_validate_outputs.py",
+        *shared_args,
+        "--package-id",
+        package_id,
+    ]
+
     run_step(
-        [
-            python,
-            "scripts/step_06_validate_outputs.py",
-            *shared_args,
-        ],
+        step_06,
         "step_06_validate_outputs",
     )
 

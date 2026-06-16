@@ -18,6 +18,7 @@ def main():
     parser.add_argument("--phenotype-config", default=None)
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--source-manifest", default=None)
+    parser.add_argument("--package-id", default=None)
     args = parser.parse_args()
     project_config = load_project_config(args.config)
     phenotype_path = (
@@ -26,7 +27,16 @@ def main():
         else resolve_phenotype_config_path(project_config, args.phenotype)
     )
     phenotype_config = load_phenotype_config(phenotype_path)
-    phenotype_id = phenotype_config["phenotype"]["phenotype_id"]
+
+    phenotype_id = (
+        phenotype_config["phenotype"]["phenotype_id"]
+    )
+
+    package_id = (
+        args.package_id
+        if args.package_id
+        else phenotype_config["package"]["package_id"]
+    )    
     gsc_version = project_config["project"]["version"]
     run_dirs = setup_run_dirs(project_config, args.run_id)
     logger = get_logger(
@@ -78,8 +88,8 @@ def main():
             "generated_at"
         ]
     ]
-    tables_dir = Path(project_config["paths"]["results_dir"]) / "tables" / phenotype_id
-    reports_dir = Path(project_config["paths"]["results_dir"]) / "reports" / phenotype_id
+    tables_dir = Path(project_config["paths"]["results_dir"]) / "tables" / package_id
+    reports_dir = Path(project_config["paths"]["results_dir"]) / "reports" / package_id
     tables_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
     consensus_output = tables_dir / "consensus_gene_set.tsv"
@@ -106,6 +116,7 @@ def main():
     )
     logger.info(f"run_id={args.run_id}")
     logger.info(f"phenotype={phenotype_id}")
+    logger.info(f"package_id={package_id}")
     logger.info(f"consensus_output={consensus_output}")
     logger.info(f"provenance_output={provenance_output}")
     logger.info(f"manifest_output={manifest_output}")

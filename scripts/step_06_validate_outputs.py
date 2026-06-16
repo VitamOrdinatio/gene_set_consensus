@@ -6,8 +6,8 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from gene_set_consensus.config import load_project_config
-from gene_set_consensus.logging_utils import setup_run_dirs, get_logger
+from gene_set_consensus.config import load_phenotype_config, load_project_config
+from gene_set_consensus.logging_utils import get_logger, setup_run_dirs
 from gene_set_consensus.output_validation import validate_outputs
 
 def main():
@@ -16,15 +16,38 @@ def main():
     parser.add_argument("--phenotype", required=True)
     parser.add_argument("--phenotype-config", default=None)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--package-id", default=None)
     args = parser.parse_args()
     project_config = load_project_config(args.config)
+
+    phenotype_config = load_phenotype_config(
+        args.phenotype_config
+    )
+
+    package_id = (
+        args.package_id
+        if args.package_id
+        else phenotype_config["package"]["package_id"]
+    )
+
     run_dirs = setup_run_dirs(project_config, args.run_id)
     logger = get_logger(
         "step_06_validate_outputs",
         run_dirs["logs_dir"] / "step_06_validate_outputs.log"
     )
-    tables_dir = Path(project_config["paths"]["results_dir"]) / "tables" / args.phenotype
-    reports_dir = Path(project_config["paths"]["results_dir"]) / "reports" / args.phenotype
+
+    tables_dir = (
+        Path(project_config["paths"]["results_dir"])
+        / "tables"
+        / package_id
+    )
+
+    reports_dir = (
+        Path(project_config["paths"]["results_dir"])
+        / "reports"
+        / package_id
+    )
+
     reports_dir.mkdir(parents=True, exist_ok=True)
     consensus_path = tables_dir / "consensus_gene_set.tsv"
     provenance_path = tables_dir / "gene_provenance.tsv"

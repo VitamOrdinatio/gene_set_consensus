@@ -1,8 +1,13 @@
 phenotype:
-  phenotype_id: epilepsy_semantic_gtr_experimental
+  phenotype_id: epilepsy
+  phenotype_label: Epilepsy
+
+package:
+  package_id: epilepsy_semantic_gtr_experimental
+  package_label: Epilepsy gold + bronze + GTR experimental consensus
   config_status: current_semantic_experimental
-  phenotype_label: Epilepsy gold + bronze + GTR experimental consensus
   version: v0.1
+
 sources:
 - source_id: epi25_2024_epi_high_confidence
   source_name: Epi25 2024 EPI high-confidence genes
