@@ -1,8 +1,13 @@
 phenotype:
-  phenotype_id: nafe_semantic_gtr_experimental
+  phenotype_id: nafe_epilepsy
+  phenotype_label: NAFE (Non-Acquired Focal Epilepsy)
+
+package:
+  package_id: nafe_semantic_gtr_experimental
+  package_label: NAFE semantic + GTR experimental consensus
   config_status: current_semantic_experimental
-  phenotype_label: NAFE semantic + GTR experimental consensus
   version: v0.1
+
 sources:
 - source_id: epi25_2024_nafe_high_confidence
   source_name: Epi25 2024 NAFE high-confidence genes

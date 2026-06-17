@@ -1,8 +1,13 @@
 phenotype:
-  phenotype_id: dee_semantic_gtr_experimental
+  phenotype_id: dee_epilepsy
+  phenotype_label: DEE (Developmental and Epileptic Encephalopathy)
+
+package:
+  package_id: dee_semantic_gtr_experimental
+  package_label: DEE semantic + GTR experimental consensus
   config_status: current_semantic_experimental
-  phenotype_label: DEE semantic + GTR experimental consensus
   version: v0.1
+
 sources:
 - source_id: epi25_2024_dee_high_confidence
   source_name: Epi25 2024 DEE high-confidence genes

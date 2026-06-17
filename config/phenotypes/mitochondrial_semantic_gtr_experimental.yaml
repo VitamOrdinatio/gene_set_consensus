@@ -1,8 +1,13 @@
 phenotype:
-  phenotype_id: mitochondrial_semantic_gtr_experimental
+  phenotype_id: mitochondrial_disease
+  phenotype_label: Mitochondrial Disease
+
+package:
+  package_id: mitochondrial_semantic_gtr_experimental
+  package_label: MitoCarta + GTR experimental consensus
   config_status: current_semantic_experimental
-  phenotype_label: MitoCarta + GTR experimental consensus
   version: v0.1
+
 sources:
 - source_id: mitocarta_human
   source_name: MitoCarta Human

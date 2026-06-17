@@ -1,8 +1,13 @@
 phenotype:
   phenotype_id: example_phenotype
-  config_status: template_legacy
   phenotype_label: Example phenotype
+
+package:
+  package_id: example_phenotype
+  package_label: Example phenotype fixture
+  config_status: fixture
   version: v0.1
+
 sources:
 - source_id: curated_panel
   source_name: Example Curated Panel
