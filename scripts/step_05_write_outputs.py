@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-from pathlib import Path
+
 import argparse
+import shutil
 import sys
 import pandas as pd
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -88,32 +90,181 @@ def main():
             "generated_at"
         ]
     ]
-    tables_dir = Path(project_config["paths"]["results_dir"]) / "tables" / package_id
-    reports_dir = Path(project_config["paths"]["results_dir"]) / "reports" / package_id
+
+    results_root = Path(project_config["paths"]["results_dir"])
+
+    run_results_dir = (
+        results_root
+        / "runs"
+        / args.run_id
+    )
+
+    run_tables_dir = (
+        run_results_dir
+        / "tables"
+        / package_id
+    )
+
+    run_reports_dir = (
+        run_results_dir
+        / "reports"
+        / package_id
+    )
+
+    run_tables_dir.mkdir(parents=True, exist_ok=True)
+    run_reports_dir.mkdir(parents=True, exist_ok=True)
+
+    tables_dir = results_root / "tables" / package_id
+    reports_dir = results_root / "reports" / package_id
+
     tables_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
-    consensus_output = tables_dir / "consensus_gene_set.tsv"
-    provenance_output = tables_dir / "gene_provenance.tsv"
+
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    reports_dir.mkdir(parents=True, exist_ok=True)
+
+    run_consensus_output = (
+        run_tables_dir / "consensus_gene_set.tsv"
+    )
+
+    run_provenance_output = (
+        run_tables_dir / "gene_provenance.tsv"
+    )
+
+    run_matrix_output = (
+        run_tables_dir / "gene_source_matrix.tsv"
+    )
+
+    run_frequency_output = (
+        run_tables_dir / "gene_frequency_table.tsv"
+    )
+
+    run_manifest_output = (
+        run_reports_dir / "run_manifest.yaml"
+    )
+
+    run_validation_output = (
+        run_reports_dir / "validation_report.md"
+    )
+
     matrix_output = tables_dir / "gene_source_matrix.tsv"
     frequency_output = tables_dir / "gene_frequency_table.tsv"
     manifest_output = reports_dir / "run_manifest.yaml"
     validation_output = reports_dir / "validation_report.md"
-    consensus_df.to_csv(consensus_output, sep="\t", index=False)
-    provenance_df.to_csv(provenance_output, sep="\t", index=False)
-    pd.read_csv(matrix_path, sep="\t", dtype=str).to_csv(matrix_output, sep="\t", index=False)
-    pd.read_csv(frequency_path, sep="\t", dtype=str).to_csv(frequency_output, sep="\t", index=False)
-    write_validation_report(validation_output, phenotype_id, consensus_df, provenance_df)
+
+    consensus_df.to_csv(
+        run_consensus_output,
+        sep="\t",
+        index=False,
+    )
+
+    provenance_df.to_csv(
+        run_provenance_output,
+        sep="\t",
+        index=False,
+    )
+
+    pd.read_csv(
+        matrix_path,
+        sep="\t",
+        dtype=str,
+    ).to_csv(
+        run_matrix_output,
+        sep="\t",
+        index=False,
+    )
+
+    pd.read_csv(
+        frequency_path,
+        sep="\t",
+        dtype=str,
+    ).to_csv(
+        run_frequency_output,
+        sep="\t",
+        index=False,
+    )
+
+    write_validation_report(
+        run_validation_output,
+        phenotype_id,
+        consensus_df,
+        provenance_df,
+    )
+
     write_run_manifest(
-        path=manifest_output,
+        path=run_manifest_output,
         run_id=args.run_id,
         phenotype=phenotype_id,
         config_file=Path(args.config),
         phenotype_config_file=phenotype_path,
         input_files=[normalized_path, scored_path, matrix_path, frequency_path],
-        output_files=[consensus_output, provenance_output, matrix_output, frequency_output, validation_output],
+        output_files=[
+            run_consensus_output,
+            run_provenance_output,
+            run_matrix_output,
+            run_frequency_output,
+            run_validation_output,
+        ],        
         status="PASS",
         source_manifest_file=Path(args.source_manifest) if args.source_manifest else None
     )
+    
+    # Mirror to Latest Layer
+    consensus_output = (
+        tables_dir / "consensus_gene_set.tsv"
+    )
+
+    provenance_output = (
+        tables_dir / "gene_provenance.tsv"
+    )
+
+    matrix_output = (
+        tables_dir / "gene_source_matrix.tsv"
+    )
+
+    frequency_output = (
+        tables_dir / "gene_frequency_table.tsv"
+    )
+
+    manifest_output = (
+        reports_dir / "run_manifest.yaml"
+    )
+
+    validation_output = (
+        reports_dir / "validation_report.md"
+    )
+
+    shutil.copy2(
+        run_consensus_output,
+        consensus_output,
+    )
+
+    shutil.copy2(
+        run_provenance_output,
+        provenance_output,
+    )
+
+    shutil.copy2(
+        run_matrix_output,
+        matrix_output,
+    )
+
+    shutil.copy2(
+        run_frequency_output,
+        frequency_output,
+    )
+
+    shutil.copy2(
+        run_manifest_output,
+        manifest_output,
+    )
+
+    shutil.copy2(
+        run_validation_output,
+        validation_output,
+    )    
+    
+    # Log Activity
     logger.info(f"run_id={args.run_id}")
     logger.info(f"phenotype={phenotype_id}")
     logger.info(f"package_id={package_id}")

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-from pathlib import Path
+
 import argparse
-import sys
+import shutil
 import pandas as pd
+from pathlib import Path
+import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
@@ -36,21 +38,53 @@ def main():
         run_dirs["logs_dir"] / "step_06_validate_outputs.log"
     )
 
+    results_root = Path(
+        project_config["paths"]["results_dir"]
+    )
+
+    run_results_dir = (
+        results_root
+        / "runs"
+        / args.run_id
+    )
+
+    run_tables_dir = (
+        run_results_dir
+        / "tables"
+        / package_id
+    )
+
+    run_reports_dir = (
+        run_results_dir
+        / "reports"
+        / package_id
+    )
+
+    run_reports_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
     tables_dir = (
-        Path(project_config["paths"]["results_dir"])
+        results_root
         / "tables"
         / package_id
     )
 
     reports_dir = (
-        Path(project_config["paths"]["results_dir"])
+        results_root
         / "reports"
         / package_id
     )
 
+    reports_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
     reports_dir.mkdir(parents=True, exist_ok=True)
-    consensus_path = tables_dir / "consensus_gene_set.tsv"
-    provenance_path = tables_dir / "gene_provenance.tsv"
+    consensus_path = run_tables_dir / "consensus_gene_set.tsv"
+    provenance_path = run_tables_dir / "gene_provenance.tsv"
     if not consensus_path.exists():
         raise FileNotFoundError(f"Missing consensus output: {consensus_path}")
     if not provenance_path.exists():
@@ -58,7 +92,7 @@ def main():
     consensus_df = pd.read_csv(consensus_path, sep="\t", dtype=str).fillna("")
     provenance_df = pd.read_csv(provenance_path, sep="\t", dtype=str).fillna("")
     errors, warnings = validate_outputs(consensus_df, provenance_df)
-    validation_path = reports_dir / "output_contract_validation.tsv"
+    validation_path = run_reports_dir / "output_contract_validation.tsv"
     with validation_path.open("w", encoding="utf-8") as handle:
         handle.write("level\tmessage\n")
         for warning in warnings:
@@ -69,6 +103,17 @@ def main():
             handle.write("info\toutput contract validation passed\n")
         elif not errors:
             handle.write("info\toutput contract validation passed with warnings\n")
+    
+    latest_validation_path = (
+        reports_dir
+        / "output_contract_validation.tsv"
+    )
+
+    shutil.copy2(
+        validation_path,
+        latest_validation_path,
+    )    
+    
     logger.info(f"run_id={args.run_id}")
     logger.info(f"phenotype={args.phenotype}")
     logger.info(f"consensus_path={consensus_path}")

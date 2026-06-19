@@ -61,9 +61,13 @@ weighted consensus scoring
    ↓
 provenance table generation
    ↓
+execution manifest generation
+   ↓
 output contract validation
    ↓
-reproducibility validation
+run finalization
+   ↓
+finalized manifest generation
 ```
 
 ---
@@ -254,21 +258,106 @@ RSP may later provide functional evidence. If incorporated into GSC, it must rem
 
 ## Runtime Model
 
-Each run uses one `run_id`.
+Each execution receives a unique `run_id`.
 
-Run-scoped artifacts are written to:
+GSC distinguishes between authoritative run-scoped artifacts and convenience export artifacts.
+
+### Run Lifecycle
+
+A GSC execution progresses through three preservation states.
+
+#### Execution State
+
+Outputs are generated and an execution manifest is created:
+
+```text
+run_manifest.yaml
+```
+
+This manifest captures the execution state immediately following output generation.
+
+---
+
+#### Validation State
+
+Output contract validation verifies:
+
+* required artifacts exist
+* output contracts are satisfied
+* provenance relationships remain intact
+
+Validation results are recorded in:
+
+```text
+output_contract_validation.tsv
+```
+
+---
+
+#### Finalized State
+
+Successful runs are finalized through a dedicated run finalization stage.
+
+Finalization produces:
+
+```text
+final_run_manifest.yaml
+```
+
+The finalized manifest serves as the authoritative preservation artifact for the completed run.
+
+Downstream systems should prefer finalized manifests whenever available.
+
+---
+
+### Authoritative Run Artifacts
+
+Run-scoped artifacts are preserved and constitute the authoritative producer record.
 
 ```text
 logs/{run_id}/
 data/interim/{run_id}/
 data/processed/{run_id}/
+results/runs/{run_id}/
 ```
 
-Final phenotype outputs are written to:
+These locations preserve the complete historical execution state required for provenance reconstruction and scientific reproducibility.
+
+---
+
+### Convenience Export Artifacts
+
+GSC additionally maintains package-scoped convenience exports:
+
 ```text
-results/tables/{phenotype}/
-results/reports/{phenotype}/
+results/tables/{package_id}/
+results/reports/{package_id}/
 ```
+
+These locations provide the most recent export view for a package and may be overwritten by subsequent executions.
+
+These locations are not authoritative.
+
+---
+
+### Provenance Boundary
+
+The authoritative GSC provenance boundary is:
+
+```text
+data/interim/{run_id}
+        ↓
+data/processed/{run_id}
+        ↓
+results/runs/{run_id}
+        ↓
+final_run_manifest.yaml
+```
+
+The finalized manifest represents the authoritative preservation anchor for a completed GSC execution.
+
+GSC-TEPs and future downstream systems should reference finalized run state rather than mutable convenience export locations.
+
 
 ---
 
