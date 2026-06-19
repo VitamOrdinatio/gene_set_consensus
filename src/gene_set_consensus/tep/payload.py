@@ -53,12 +53,49 @@ def _to_int(value: str | None):
         return None
 
 
+def _infer_gene_namespace(
+    gene_id: str | None,
+) -> str:
+    gene_id = _nullify(gene_id)
+
+    if gene_id is None:
+        return "unresolved"
+
+    if gene_id.startswith("ENSG"):
+        return "ensembl_gene"
+
+    return "unknown_namespace"
+
+
+def _has_multiple_gene_ids(
+    gene_id: str | None,
+) -> bool:
+    gene_id = _nullify(gene_id)
+
+    if gene_id is None:
+        return False
+
+    return "|" in gene_id
+
+
 def build_semantic_prior(
     row: Dict[str, str],
     release_id: str,
     ) -> Dict[str, Any]:
     phenotype = row["phenotype"]
     gene_symbol = row["gene_symbol"]
+
+    gene_id = _nullify(
+        row.get("gene_id")
+    )
+
+    gene_namespace = _infer_gene_namespace(
+        gene_id
+    )
+
+    multiple_gene_ids_present = _has_multiple_gene_ids(
+        gene_id
+    )
 
     semantic_prior_id = (
         f"{phenotype}::{gene_symbol}"
@@ -70,9 +107,11 @@ def build_semantic_prior(
             "gsc_release_id": release_id,
             "phenotype": row["phenotype"],
             "source_gene_symbol": row["gene_symbol"],
-            "source_gene_id": _nullify(row["gene_id"]),
+            "source_gene_id": gene_id,
+            "source_gene_namespace": gene_namespace,            
             "gene_symbol": row["gene_symbol"],
-            "gene_id": _nullify(row["gene_id"]),
+            "gene_id": gene_id,
+            "gene_namespace": gene_namespace,
             "mapping_status": _nullify(
                 row.get("mapping_status_summary")
             ),
@@ -155,7 +194,12 @@ def build_semantic_prior(
             "mapping_status_summary": _nullify(
                 row.get("mapping_status_summary")
             ),
-            "nullability_notes": [],
+            "mapping_uncertainty_present": multiple_gene_ids_present,
+            "nullability_notes": (
+                ["multiple_gene_ids_preserved"]
+                if multiple_gene_ids_present
+                else []
+            ),
         },
     }
 
