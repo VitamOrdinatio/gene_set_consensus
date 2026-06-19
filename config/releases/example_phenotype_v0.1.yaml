@@ -10,7 +10,7 @@ release:
 
 execution:
   phenotype_config: config/phenotypes/example_phenotype.yaml
-  source_manifest: manifests/sources/example_manifest.yaml
+  source_manifest: manifests/sources/example_source_manifest.yaml
   identifier_map: data/example/identifier_map.tsv
   scoring_profile: ''
 

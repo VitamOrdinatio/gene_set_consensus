@@ -42,7 +42,7 @@ sources:
       path: data/example/source_b_genes.tsv
       file_format: tsv
 
-  - source_id: literature_panel
+  - source_id: literature_list
     source_name: "Example literature-derived panel"
     source_type: literature_derived
     adapter: generic_gene_list
