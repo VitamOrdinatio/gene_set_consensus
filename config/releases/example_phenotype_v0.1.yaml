@@ -1,0 +1,47 @@
+release:
+  release_id: example_phenotype_v0.1
+  phenotype_id: example_phenotype
+  release_date: '2026-06-19'
+  release_family: example_fixture
+  gsc_version: 0.1.0
+  release_status: test_fixture
+  revision_policy: CI fixture; not biological truth.
+  notes: Lightweight example release for CI and end-to-end pipeline validation.
+
+execution:
+  phenotype_config: config/phenotypes/example_phenotype.yaml
+  source_manifest: manifests/sources/example_manifest.yaml
+  identifier_map: data/example/identifier_map.tsv
+  scoring_profile: ''
+
+sources:
+- source_id: curated_panel
+  source_tier: gold
+  source_weight: 3.0
+  source_release: example_fixture
+  source_path: data/example/source_a_genes.tsv
+  acquisition_date: test_fixture
+  evidence_semantics: example_curated
+  semantic_channel: direct_disease
+- source_id: clinical_panel
+  source_tier: silver
+  source_weight: 2.0
+  source_release: example_fixture
+  source_path: data/example/source_b_genes.tsv
+  acquisition_date: test_fixture
+  evidence_semantics: example_clinical
+  semantic_channel: clinical_utilization
+- source_id: literature_list
+  source_tier: bronze
+  source_weight: 1.0
+  source_release: example_fixture
+  source_path: data/example/source_c_genes.tsv
+  acquisition_date: test_fixture
+  evidence_semantics: example_literature
+  semantic_channel: exploratory_literature
+
+expected_behavior:
+  legacy_score_formula: weighted_source_sum
+  active_score: weighted_source_sum
+  semantic_scoring_status: fixture
+  notes: Expected behavior is limited to CI validation of pipeline mechanics.

@@ -5,9 +5,14 @@ import sys
 
 def test_example_pipeline_runs_end_to_end():
     result = subprocess.run(
-        [sys.executable, "run_pipeline.py", "--config", "config/config.yaml", "--phenotype", "example_phenotype"],
+        [
+            sys.executable,
+            "run_pipeline.py",
+            "--release",
+            "config/releases/example_phenotype_v0.1.yaml",
+        ],
         capture_output=True,
-        text=True
+        text=True,
     )
     assert result.returncode == 0, result.stderr
     consensus_path = Path("results/tables/example_phenotype/consensus_gene_set.tsv")
