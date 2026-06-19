@@ -160,6 +160,42 @@ def main():
         "step_06_validate_outputs",
     )
 
+    step_07 = [
+        python,
+        "scripts/step_07_finalize_run.py",
+        *shared_args,
+        "--package-id",
+        package_id,
+    ]
+
+    if release_id:
+        step_07.extend(
+            [
+                "--release-id",
+                release_id,
+            ]
+        )
+
+    run_step(
+        step_07,
+        "step_07_finalize_run",
+    )
+
+
+    step_08 = [
+        python,
+        "scripts/step_08_build_tep.py",
+        *shared_args,
+        "--package-id",
+        package_id,
+    ]
+
+    run_step(
+        step_08,
+        "step_08_build_tep",
+    )
+
+
     print("[GSC] pipeline completed successfully")
     print(f"[GSC] final_run_id={run_id}")
 
