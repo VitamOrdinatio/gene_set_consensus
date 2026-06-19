@@ -144,9 +144,15 @@ def build_manifest(
         ),
         "tables_dir": tables_dir.as_posix(),
         "reports_dir": reports_dir.as_posix(),
+        "checksum_authority": {
+            "authority_artifact": "final_run_manifest",
+            "authority_path": (
+                reports_dir / "final_run_manifest.yaml"
+            ).as_posix(),
+            "hash_algorithm": "sha256",
+        },
         "artifacts": artifacts,
     }
-
 
 def get_artifact_path(manifest: Dict[str, object], artifact_id: str) -> Path:
     """Return an artifact path from a manifest by artifact ID."""
