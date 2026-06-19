@@ -66,6 +66,34 @@ def default_output_path(
     )
 
 
+def authoritative_output_path(
+    run_context: Dict[str, Any],
+) -> Path:
+    """Return authoritative run-scoped TEP path."""
+    return (
+        Path("results")
+        / "teps"
+        / "gsc"
+        / run_context["package_id"]
+        / run_context["run_id"]
+        / "gsc_tep.json"
+    )
+
+
+def convenience_output_path(
+    run_context: Dict[str, Any],
+) -> Path:
+    """Return package-level convenience TEP path."""
+    return (
+        Path("results")
+        / "teps"
+        / "gsc"
+        / run_context["package_id"]
+        / "gsc_tep.json"
+    )
+
+
+
 def write_gsc_tep(
     tep: Dict[str, Any],
     output_path: str | Path,
@@ -102,13 +130,22 @@ def build_and_write_gsc_tep(
         validation_state=validation_state,
     )
 
-    resolved_output_path = (
-        Path(output_path)
-        if output_path is not None
-        else default_output_path(run_context=run_context)
+    authoritative_path = authoritative_output_path(
+        run_context=run_context
     )
 
-    return write_gsc_tep(
+    write_gsc_tep(
         tep=tep,
-        output_path=resolved_output_path,
+        output_path=authoritative_path,
     )
+
+    mirror_path = convenience_output_path(
+        run_context=run_context
+    )
+
+    write_gsc_tep(
+        tep=tep,
+        output_path=mirror_path,
+    )
+
+    return authoritative_path
