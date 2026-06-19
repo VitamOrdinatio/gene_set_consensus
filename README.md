@@ -6,6 +6,12 @@
 ![Status](https://img.shields.io/badge/status-v1_stable-green)
 ![Architecture](https://img.shields.io/badge/architecture-semantic_ontology-purple)
 
+---
+
+![GSC Evidence Aggregation Engine](assets/diagrams/gsc_evidence_aggregation_engine.png)
+
+---
+
 `gene_set_consensus` (GSC) is a semantic evidence integration framework for phenotype-scoped consensus gene prioritization.
 
 GSC integrates heterogeneous gene evidence sources into reproducible, provenance-aware consensus gene sets using:
