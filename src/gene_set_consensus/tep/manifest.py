@@ -27,10 +27,10 @@ REQUIRED_TABLE_ARTIFACTS = {
 
 
 REQUIRED_REPORT_ARTIFACTS = {
-    "run_manifest": {
-        "filename": "run_manifest.yaml",
+    "final_run_manifest": {
+        "filename": "final_run_manifest.yaml",
         "artifact_type": "yaml",
-        "semantic_role": "run_and_release_context",
+        "semantic_role": "authoritative_finalized_run_context",
     },
     "output_contract_validation": {
         "filename": "output_contract_validation.tsv",
@@ -68,26 +68,41 @@ def _require_file(path: Path) -> None:
 
 
 def build_manifest(
-    release_id: str,
-    results_dir: str | Path = "results",
+    run_context: Dict[str, object],
 ) -> Dict[str, object]:
     """Build the source artifact manifest for a GSC-TEP.
 
     Parameters
     ----------
-    release_id:
-        GSC release/package identifier, e.g. ``epilepsy_semantic_gtr_experimental``.
-    results_dir:
-        Root results directory. Defaults to ``results``.
+    run_context:
+        Finalized run context loaded from
+        final_run_manifest.yaml.
 
     Returns
     -------
     dict
         JSON-serializable manifest object.
     """
-    results_root = Path(results_dir)
-    tables_dir = results_root / "tables" / release_id
-    reports_dir = results_root / "reports" / release_id
+
+    authoritative_run_directory = Path(
+        str(run_context["authoritative_run_directory"])
+    )
+
+    package_id = str(
+        run_context["package_id"]
+    )
+
+    tables_dir = (
+        authoritative_run_directory
+        / "tables"
+        / package_id
+    )
+
+    reports_dir = (
+        authoritative_run_directory
+        / "reports"
+        / package_id
+    )
 
     if not tables_dir.exists():
         raise FileNotFoundError(f"Missing GSC tables directory: {tables_dir}")
@@ -121,7 +136,12 @@ def build_manifest(
         )
 
     return {
-        "source_package_id": release_id,
+        "run_id": run_context["run_id"],
+        "release_id": run_context["release_id"],
+        "source_package_id": package_id,
+        "authoritative_run_directory": (
+            authoritative_run_directory.as_posix()
+        ),
         "tables_dir": tables_dir.as_posix(),
         "reports_dir": reports_dir.as_posix(),
         "artifacts": artifacts,

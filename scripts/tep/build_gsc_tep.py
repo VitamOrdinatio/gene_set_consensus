@@ -7,10 +7,8 @@ Example
 -------
 
 python scripts/tep/build_gsc_tep.py \
-    --release-id epilepsy_semantic_gtr_experimental
-
-python scripts/tep/build_gsc_tep.py \
-    --release-id mitochondrial_semantic_gtr_experimental
+    --final-run-manifest \
+    results/runs/run_2026_06_17_213318/reports/epilepsy_semantic_gtr_experimental/final_run_manifest.yaml
 """
 
 import argparse
@@ -25,30 +23,25 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 
-from gene_set_consensus.tep.builder import (  # noqa: E402
+from gene_set_consensus.tep.builder import (
     build_and_write_gsc_tep,
     default_output_path,
 )
 
+from gene_set_consensus.tep.run_context import load_finalized_run_context
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Build a GSC-TEP from an existing GSC release package."
+        description="Build a GSC-TEP from a finalized GSC run."
     )
 
     parser.add_argument(
-        "--release-id",
+        "--final-run-manifest",
         required=True,
         help=(
-            "GSC release/package identifier "
-            "(e.g. epilepsy_semantic_gtr_experimental)"
+            "Path to finalized GSC run manifest "
+            "(final_run_manifest.yaml)."
         ),
-    )
-
-    parser.add_argument(
-        "--results-dir",
-        default="results",
-        help="Root GSC results directory.",
     )
 
     parser.add_argument(
@@ -56,7 +49,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help=(
             "Optional explicit output path. "
-            "Defaults to results/teps/gsc/<release_id>/gsc_tep.json"
+            "Defaults to results/teps/gsc/<package_id>/gsc_tep.json"
         ),
     )
 
@@ -72,25 +65,37 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
 
+    run_context = load_finalized_run_context(
+        args.final_run_manifest
+    )
+
     output_path = (
         Path(args.output_path)
         if args.output_path
         else default_output_path(
-            release_id=args.release_id,
-            results_dir=args.results_dir,
+            run_context=run_context,
         )
     )
 
     written_path = build_and_write_gsc_tep(
-        release_id=args.release_id,
-        results_dir=args.results_dir,
+        final_run_manifest_path=args.final_run_manifest,
         output_path=output_path,
         validation_state=args.validation_state,
     )
 
     print()
     print("[GSC-TEP] build successful")
-    print(f"[GSC-TEP] release_id: {args.release_id}")
+
+    print(
+        "[GSC-TEP] release_id: "
+        f"{run_context['release_id']}"
+    )
+
+    print(
+        "[GSC-TEP] run_id: "
+        f"{run_context['run_id']}"
+    )
+
     print(f"[GSC-TEP] output: {written_path}")
     print()
 
