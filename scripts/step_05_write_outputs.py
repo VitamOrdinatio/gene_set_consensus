@@ -10,7 +10,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from gene_set_consensus.config import load_project_config, load_phenotype_config, resolve_phenotype_config_path
 from gene_set_consensus.logging_utils import setup_run_dirs, get_logger
-from gene_set_consensus.provenance import build_gene_provenance, attach_provenance_ids
+from gene_set_consensus.provenance import (
+    build_gene_provenance,
+    attach_provenance_ids,
+    make_provenance_id,
+)
 from gene_set_consensus.reporting import write_run_manifest, write_validation_report
 
 def main():
@@ -55,6 +59,58 @@ def main():
     normalized_df = pd.read_csv(normalized_path, sep="\t", dtype=str).fillna("")
     scored_df = pd.read_csv(scored_path, sep="\t", dtype=str).fillna("")
     provenance_df = build_gene_provenance(normalized_df)
+    source_contributions_df = normalized_df.copy()
+    source_contributions_df["gene_id"] = (
+        source_contributions_df["gene_id"].fillna("")
+    )
+    source_contributions_df["normalized_gene_symbol"] = (
+        source_contributions_df["normalized_gene_symbol"].fillna("")
+    )
+    source_contributions_df["provenance_id"] = source_contributions_df.apply(
+        lambda row: make_provenance_id(
+            row["phenotype"],
+            row["gene_id"],
+            row["normalized_gene_symbol"],
+        ),
+        axis=1,
+    )
+
+    source_contributions_df = source_contributions_df[
+        [
+            "provenance_id",
+            "phenotype",
+            "gene_id",
+            "normalized_gene_symbol",
+            "source_id",
+            "source_name",
+            "source_type",
+            "source_weight",
+            "weight_tier",
+            "evidence_semantics",
+            "evidence_tier",
+            "semantic_channel",
+            "scoring_rule_id",
+            "input_gene_symbol",
+            "mapping_status",
+            "evidence_label",
+            "source_row_number",
+            "source_record_hash",
+        ]
+    ].rename(
+        columns={
+            "normalized_gene_symbol": "gene_symbol",
+        }
+    )
+
+    source_contributions_df = source_contributions_df.sort_values(
+        by=[
+            "phenotype",
+            "gene_symbol",
+            "source_id",
+            "source_row_number",
+        ],
+        ascending=[True, True, True, True],
+    ).reset_index(drop=True)    
     consensus_df = attach_provenance_ids(scored_df)
     consensus_df["run_id"] = args.run_id
     consensus_df["gsc_version"] = gsc_version
@@ -131,6 +187,10 @@ def main():
         run_tables_dir / "gene_provenance.tsv"
     )
 
+    run_source_contributions_output = (
+        run_tables_dir / "source_contributions.tsv"
+    )
+
     run_matrix_output = (
         run_tables_dir / "gene_source_matrix.tsv"
     )
@@ -160,6 +220,12 @@ def main():
 
     provenance_df.to_csv(
         run_provenance_output,
+        sep="\t",
+        index=False,
+    )
+
+    source_contributions_df.to_csv(
+        run_source_contributions_output,
         sep="\t",
         index=False,
     )
@@ -201,6 +267,7 @@ def main():
         output_files=[
             run_consensus_output,
             run_provenance_output,
+            run_source_contributions_output,
             run_matrix_output,
             run_frequency_output,
             run_validation_output,
@@ -216,6 +283,10 @@ def main():
 
     provenance_output = (
         tables_dir / "gene_provenance.tsv"
+    )
+
+    source_contributions_output = (
+        tables_dir / "source_contributions.tsv"
     )
 
     matrix_output = (
@@ -245,6 +316,11 @@ def main():
     )
 
     shutil.copy2(
+        run_source_contributions_output,
+        source_contributions_output,
+    )
+
+    shutil.copy2(
         run_matrix_output,
         matrix_output,
     )
@@ -270,6 +346,7 @@ def main():
     logger.info(f"package_id={package_id}")
     logger.info(f"consensus_output={consensus_output}")
     logger.info(f"provenance_output={provenance_output}")
+    logger.info(f"source_contributions_output={source_contributions_output}")
     logger.info(f"manifest_output={manifest_output}")
     logger.info(f"validation_output={validation_output}")
 

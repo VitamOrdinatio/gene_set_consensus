@@ -18,6 +18,11 @@ REQUIRED_TABLE_ARTIFACTS = {
         "artifact_type": "tsv",
         "semantic_role": "source_provenance_table",
     },
+    "source_contributions": {
+        "filename": "source_contributions.tsv",
+        "artifact_type": "tsv",
+        "semantic_role": "source_contribution_topology",
+    },
     "gene_source_matrix": {
         "filename": "gene_source_matrix.tsv",
         "artifact_type": "tsv",
