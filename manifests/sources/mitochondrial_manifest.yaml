@@ -4,6 +4,8 @@ sources:
   source_name: MitoCarta Human
   source_type: curated_database
   adapter: mitocarta
+  source_gene_namespace: ensembl_gene
+  canonical_gene_namespace: ensembl_gene
   status: active
   biological_context:
     phenotype: mitochondrial_disease
@@ -23,6 +25,8 @@ sources:
   source_name: GTR mitochondrial disease panel
   source_type: clinical_panel
   adapter: gtr_panel
+  source_gene_namespace: ncbi_gene
+  canonical_gene_namespace: ensembl_gene
   status: planned
   biological_context:
     phenotype: mitochondrial_disease
@@ -41,6 +45,8 @@ sources:
   source_name: Literature-derived mitochondrial disease genes
   source_type: literature_derived
   adapter: generic_gene_list
+  source_gene_namespace: unknown_namespace
+  canonical_gene_namespace: ensembl_gene
   status: planned
   biological_context:
     phenotype: mitochondrial_disease
@@ -59,6 +65,8 @@ sources:
   source_name: GTR mitochondrial gene summary
   source_type: gtr_gene_summary
   adapter: generic_gene_list
+  source_gene_namespace: ncbi_gene
+  canonical_gene_namespace: ensembl_gene
   file_path: /mnt/storage/gene_sets/gtr_mitochondria/processed/gtr_mitochondria_gene_summary.tsv
   gene_column: gene_symbol
   weight_tier: silver

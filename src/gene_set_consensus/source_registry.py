@@ -21,7 +21,29 @@ def hydrate_sources(phenotype_sources, manifest_path):
 
         # legacy fully-expanded config still supported
         if "adapter" in source and "file_path" in source:
-            hydrated.append(source)
+
+            source_id = source.get("source_id")
+            registry_source = registry.get(source_id, {})
+
+            hydrated_source = {
+                **source,
+                "source_gene_namespace": source.get(
+                    "source_gene_namespace",
+                    registry_source.get(
+                        "source_gene_namespace",
+                        "unknown_namespace",
+                    ),
+                ),
+                "canonical_gene_namespace": source.get(
+                    "canonical_gene_namespace",
+                    registry_source.get(
+                        "canonical_gene_namespace",
+                        "unknown_namespace",
+                    ),
+                ),
+            }
+
+            hydrated.append(hydrated_source)
             continue
 
         source_id = source.get("source_id")
@@ -38,6 +60,20 @@ def hydrate_sources(phenotype_sources, manifest_path):
             "adapter": registry_source["adapter"],
             "file_path": registry_source["file_metadata"]["path"],
             "gene_column": source.get("gene_column", registry_source.get("gene_column", "gene_symbol")),
+            "source_gene_namespace": source.get(
+                "source_gene_namespace",
+                registry_source.get(
+                    "source_gene_namespace",
+                    "unknown_namespace",
+                ),
+            ),
+            "canonical_gene_namespace": source.get(
+                "canonical_gene_namespace",
+                registry_source.get(
+                    "canonical_gene_namespace",
+                    "unknown_namespace",
+                ),
+            ),
             "weight_tier": source.get("weight_tier", registry_source.get("weight_tier", registry_source.get("source_tier", ""))),
             "source_weight": source["source_weight"],
         }

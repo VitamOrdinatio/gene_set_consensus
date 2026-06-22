@@ -67,6 +67,7 @@ def resolve_symbols(symbols):
                 "input_gene_symbol": query,
                 "normalized_gene_symbol": query,
                 "gene_id": "",
+                "gene_namespace": "unknown_namespace",
                 "ensembl_gene_id": "",
                 "hgnc_id": "",
                 "entrezgene": "",
@@ -88,6 +89,11 @@ def resolve_symbols(symbols):
             "input_gene_symbol": query,
             "normalized_gene_symbol": normalized_symbol,
             "gene_id": ensembl_gene,
+            "gene_namespace": (
+                "ensembl_gene"
+                if ensembl_gene
+                else "unknown_namespace"
+            ),
             "ensembl_gene_id": ensembl_gene,
             "hgnc_id": result.get("HGNC", ""),
             "entrezgene": result.get("entrezgene", ""),

@@ -24,9 +24,10 @@ from gene_set_consensus.normalization import (
     collapse_within_source_duplicates
 )
 
-from gene_set_consensus.adapters.registry import (
-    get_adapter
-)
+from gene_set_consensus.adapters.registry import get_adapter
+from gene_set_consensus.source_registry import hydrate_sources
+
+
 
 # Source manifests are retained for audit/provenance compatibility.
 # Runtime source definitions are now phenotype-config authoritative.
@@ -67,6 +68,12 @@ def main():
     )
 
     phenotype_config = load_phenotype_config(phenotype_path)
+
+    if args.source_manifest:
+        phenotype_config["sources"] = hydrate_sources(
+            phenotype_config["sources"],
+            args.source_manifest,
+        )
 
     phenotype_id = phenotype_config["phenotype"]["phenotype_id"]
 

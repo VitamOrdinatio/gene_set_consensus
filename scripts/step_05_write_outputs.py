@@ -79,8 +79,15 @@ def main():
         [
             "provenance_id",
             "phenotype",
+
+            "source_gene_id",
+            "source_gene_namespace",
+
             "gene_id",
+            "gene_namespace",
+
             "normalized_gene_symbol",
+
             "source_id",
             "source_name",
             "source_type",
@@ -119,6 +126,7 @@ def main():
         [
             "phenotype",
             "gene_id",
+            #"gene_namespace",
             "gene_symbol",
             "consensus_score",
             "semantic_consensus_score",

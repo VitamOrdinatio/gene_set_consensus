@@ -20,8 +20,15 @@ def build_gene_provenance(normalized_df):
     keep_cols = [
         "provenance_id",
         "phenotype",
+
+        "source_gene_id",
+        "source_gene_namespace",
+
         "gene_id",
+        "gene_namespace",
+
         "normalized_gene_symbol",
+
         "source_id",
         "source_name",
         "source_type",
@@ -31,7 +38,7 @@ def build_gene_provenance(normalized_df):
         "mapping_status",
         "evidence_label",
         "source_row_number",
-        "source_record_hash"
+        "source_record_hash",
     ]
     out = df[keep_cols].rename(columns={"normalized_gene_symbol": "gene_symbol"})
     out = out.sort_values(

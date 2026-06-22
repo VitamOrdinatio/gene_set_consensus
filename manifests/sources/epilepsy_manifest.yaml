@@ -4,6 +4,8 @@ sources:
   source_name: Epi25 2024 EPI high-confidence genes
   source_type: consortium_wes_burden
   adapter: generic_gene_list
+  source_gene_namespace: ensembl_gene
+  canonical_gene_namespace: ensembl_gene
   biological_context:
     phenotype: epilepsy
     phenotype_scope: EPI
@@ -23,6 +25,8 @@ sources:
     file_format: tsv
   weight_tier: gold
 - adapter: generic_gene_list
+  source_gene_namespace: ensembl_gene
+  canonical_gene_namespace: ensembl_gene
   biological_context:
     genome_build: GRCh38
     phenotype: epilepsy
@@ -45,6 +49,8 @@ sources:
   source_type: consortium_wes_burden
   weight_tier: gold
 - adapter: generic_gene_list
+  source_gene_namespace: ensembl_gene
+  canonical_gene_namespace: ensembl_gene
   biological_context:
     genome_build: GRCh38
     phenotype: epilepsy
@@ -70,6 +76,8 @@ sources:
   source_name: Genes4Epilepsy
   source_type: literature_derived
   adapter: generic_gene_list
+  source_gene_namespace: ncbi_gene
+  canonical_gene_namespace: ensembl_gene
   biological_context:
     phenotype: epilepsy
     species: Homo sapiens
@@ -87,6 +95,8 @@ sources:
   source_name: GTR epilepsy panel
   source_type: clinical_panel
   adapter: gtr_panel
+  source_gene_namespace: ncbi_gene
+  canonical_gene_namespace: ensembl_gene
   biological_context:
     phenotype: epilepsy
     species: Homo sapiens
@@ -105,6 +115,8 @@ sources:
   source_name: GTR epilepsy gene summary
   source_type: gtr_gene_summary
   adapter: generic_gene_list
+  source_gene_namespace: ncbi_gene
+  canonical_gene_namespace: ensembl_gene
   file_path: /mnt/storage/gene_sets/gtr_epilepsy/processed/gtr_epilepsy_gene_summary.tsv
   gene_column: gene_symbol
   weight_tier: silver

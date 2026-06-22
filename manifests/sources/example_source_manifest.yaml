@@ -6,6 +6,8 @@ sources:
     source_name: "Example curated mitochondrial panel"
     source_type: curated_database
     adapter: generic_gene_list
+    source_gene_namespace: unknown_namespace
+    canonical_gene_namespace: ensembl_gene
 
     biological_context:
       phenotype: mitochondrial_disease
@@ -26,6 +28,8 @@ sources:
     source_name: "Example clinical panel"
     source_type: clinical_panel
     adapter: generic_gene_list
+    source_gene_namespace: unknown_namespace
+    canonical_gene_namespace: ensembl_gene
 
     biological_context:
       phenotype: mitochondrial_disease
@@ -46,7 +50,9 @@ sources:
     source_name: "Example literature-derived panel"
     source_type: literature_derived
     adapter: generic_gene_list
-
+    source_gene_namespace: unknown_namespace
+    canonical_gene_namespace: ensembl_gene
+    
     biological_context:
       phenotype: mitochondrial_disease
       species: Homo sapiens

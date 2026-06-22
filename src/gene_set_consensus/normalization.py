@@ -8,7 +8,8 @@ def load_identifier_map(identifier_map_path):
         "input_gene_symbol",
         "normalized_gene_symbol",
         "gene_id",
-        "mapping_status"
+        "gene_namespace",
+        "mapping_status",
     ]
     missing = [c for c in required_columns if c not in df.columns]
     if missing:
@@ -46,6 +47,14 @@ def normalize_source_dataframe(
     scoring_rule_id = source_config.get("scoring_rule_id", "")
     weight_tier = source_config["weight_tier"]
     gene_column = source_config["gene_column"]
+    source_gene_namespace = source_config.get(
+        "source_gene_namespace",
+        "unknown_namespace",
+    )
+    canonical_gene_namespace = source_config.get(
+        "canonical_gene_namespace",
+        "unknown_namespace",
+    )
 
     for idx, row in source_df.iterrows():
 
@@ -55,18 +64,30 @@ def normalize_source_dataframe(
         mapping_record = identifier_map.get(normalized_input)
 
         adapter_gene_id = str(row.get("gene_id", "")).strip()
+        source_gene_id = adapter_gene_id
 
         if mapping_record:
             normalized_gene_symbol = mapping_record["normalized_gene_symbol"]
-            gene_id = mapping_record["gene_id"] if mapping_record["gene_id"] else adapter_gene_id
+            gene_id = (
+                mapping_record["gene_id"]
+                if mapping_record["gene_id"]
+                else adapter_gene_id
+            )
+            gene_namespace = (
+                mapping_record.get("gene_namespace", "")
+                or canonical_gene_namespace
+                or "unknown_namespace"
+            )
             mapping_status = mapping_record["mapping_status"]
         elif adapter_gene_id:
             normalized_gene_symbol = normalized_input
             gene_id = adapter_gene_id
+            gene_namespace = source_gene_namespace
             mapping_status = "adapter_gene_id_resolved"
         else:
             normalized_gene_symbol = normalized_input
             gene_id = ""
+            gene_namespace = "unknown_namespace"
             mapping_status = "unresolved"
 
         source_record_hash = make_source_record_hash(
@@ -88,8 +109,11 @@ def normalize_source_dataframe(
             "scoring_rule_id": scoring_rule_id,
             "source_row_number": idx + 1,
             "input_gene_symbol": raw_gene,
+            "source_gene_id": source_gene_id,
+            "source_gene_namespace": source_gene_namespace,
             "normalized_gene_symbol": normalized_gene_symbol,
             "gene_id": gene_id,
+            "gene_namespace": gene_namespace,
             "mapping_status": mapping_status,
             "evidence_label": row.get("evidence_label", ""),
             "notes": row.get("notes", ""),
