@@ -23,7 +23,12 @@ def build_gene_source_matrix(normalized_df):
     df["gene_id"] = df["gene_id"].fillna("")
     df["normalized_gene_symbol"] = df["normalized_gene_symbol"].fillna("")
     df["presence"] = 1
-    key_cols = ["phenotype", "gene_id", "normalized_gene_symbol"]
+    key_cols = [
+        "phenotype",
+        "gene_id",
+        "gene_namespace",
+        "normalized_gene_symbol",
+    ]
     source_order = sorted(df["source_id"].unique().tolist())
     matrix = (
         df.pivot_table(
@@ -54,8 +59,17 @@ def build_gene_frequency_table(normalized_df, gene_source_matrix):
     df = normalized_df.copy()
     df["gene_id"] = df["gene_id"].fillna("")
     df["normalized_gene_symbol"] = df["normalized_gene_symbol"].fillna("")
+
     grouped = (
-        df.groupby(["phenotype", "gene_id", "normalized_gene_symbol"], dropna=False)
+        df.groupby(
+            [
+                "phenotype",
+                "gene_id",
+                "gene_namespace",
+                "normalized_gene_symbol",
+            ],
+            dropna=False
+        )
         .agg(
             source_list=("source_id", lambda x: "|".join(sorted(set(x)))),
             mapping_status_summary=("mapping_status", lambda x: "|".join(sorted(set(x)))),
@@ -73,16 +87,24 @@ def build_gene_frequency_table(normalized_df, gene_source_matrix):
         )
         .reset_index()
     )
+
     frequency = gene_source_matrix.merge(
         grouped,
-        on=["phenotype", "gene_id", "normalized_gene_symbol"],
+        on=[
+            "phenotype",
+            "gene_id",
+            "gene_namespace",
+            "normalized_gene_symbol",
+        ],
         how="left"
     )
+
     frequency = frequency.rename(columns={"normalized_gene_symbol": "gene_symbol"})
     frequency = frequency[
         [
             "phenotype",
             "gene_id",
+            "gene_namespace",
             "gene_symbol",
             "source_count",
             "weighted_source_sum",

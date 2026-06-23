@@ -89,8 +89,13 @@ def build_semantic_prior(
         row.get("gene_id")
     )
 
-    gene_namespace = _infer_gene_namespace(
-        gene_id
+    gene_namespace = (
+        _nullify(
+            row.get("gene_namespace")
+        )
+        or _infer_gene_namespace(
+            gene_id
+        )
     )
 
     multiple_gene_ids_present = _has_multiple_gene_ids(
@@ -98,7 +103,10 @@ def build_semantic_prior(
     )
 
     semantic_prior_id = (
-        f"{phenotype}::{gene_symbol}"
+        f"{release_id}::"
+        f"{phenotype}::"
+        f"{gene_namespace}::"
+        f"{gene_id}"
     )
 
     return {

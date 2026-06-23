@@ -126,7 +126,7 @@ def main():
         [
             "phenotype",
             "gene_id",
-            #"gene_namespace",
+            "gene_namespace",
             "gene_symbol",
             "consensus_score",
             "semantic_consensus_score",
